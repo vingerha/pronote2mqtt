@@ -8,6 +8,8 @@ RUN apt-get update && \
     dpkg-reconfigure --frontend=noninteractive locales && \
     rm -rf /var/lib/apt/lists/*
     
+RUN mkdir -p /data
+    
 ENV LANG fr_FR.UTF-8
 ENV LC_ALL fr_FR.UTF-8
 ENV TZ=Europe/Paris
