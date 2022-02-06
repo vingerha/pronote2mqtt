@@ -1,0 +1,7 @@
+beautifulsoup4 >= 4.8.2
+pycryptodome >= 3.9.4
+requests >= 2.22.0
+# -- dev --
+mypy
+types-requests
+types-beautifulsoup4

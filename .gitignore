@@ -1,0 +1,6 @@
+# Project exclude paths
+.idea
+/venv/
+/.mypy_cache/
+/api.log
+*.pyc
