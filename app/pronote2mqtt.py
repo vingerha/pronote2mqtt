@@ -11,7 +11,7 @@ import time
 from dateutil.relativedelta import relativedelta
 import logging
 
-import pronote
+#import pronote
 import mqtt
 import standalone
 import hass
