@@ -1,6 +1,9 @@
 FROM python:3.9.7-slim
 
 COPY ./app /app
+COPY /app /app2
+COPY app /app3
+COPY ./app app
 
 RUN apt-get update && \
     apt-get install -y locales && \
