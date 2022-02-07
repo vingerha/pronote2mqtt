@@ -24,4 +24,4 @@ ENV TZ=Europe/Paris
 RUN pip3 install --upgrade pip && \
     pip3 install --no-cache-dir -r /app/requirement.txt
 
-CMD ["python3", "bash"]
+CMD ["python3", "/bin/bash"]
