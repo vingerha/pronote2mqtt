@@ -1,9 +1,6 @@
 FROM python:3.9.7-slim
 
 COPY ./app /app
-COPY /app /app2
-COPY app /app3
-COPY ./app app4
 
 RUN apt-get update && \
     apt-get install -y locales && \
@@ -24,4 +21,4 @@ ENV TZ=Europe/Paris
 RUN pip3 install --upgrade pip && \
     pip3 install --no-cache-dir -r /app/requirement.txt
 
-CMD ["echo", "Hello World! This is Arjan!"]
+CMD ["python3", "/app/pronote2mqtt.py"]
