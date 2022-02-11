@@ -6,19 +6,27 @@
 
 import sys
 import datetime
-import schedule
+#import schedule
 import time
 from dateutil.relativedelta import relativedelta
 import logging
 
-import mqtt
-import standalone
-import hass
+#import mqtt
+#import standalone
+#import hass
 import param
 import database
-import influxdb # outcommented as throwing error if not using influx (missing influxclient)
+#import influxdb # outcommented as throwing error if not using influx (missing influxclient)
 import traceback
 
+#imports fro pronotepy
+import pronotepy
+import os
+from datetime import date
+from datetime import timedelta
+import json
+import pronote_eveline_cas
+import pronote_florian_cas
 
 # gazpar2mqtt constants
 P2M_VERSION = '0.1.0'
@@ -92,11 +100,11 @@ def run(myParams):
 
             # Display current database statistics
             logging.info("Retrieve database statistics...")
-            #dbStats = myDb.getPeriodsCount(pronote.TYPE)
-            logging.info("%s informatives periods stored", dbStats["rows"])
-            logging.info("%s Periods(s)", dbStats["pid"])
-            logging.info("First period : %s", dbStats["minDate"])
-            logging.info("Last period : %s", dbStats["maxDate"])
+            dbStats = myDb.getGradesCount()
+            logging.info("%s informatives grades stored", dbStats["rows"])
+            logging.info("%s Grade(s)", dbStats["gid"])
+            logging.info("First grade : %s", dbStats["minDate"])
+            logging.info("Last grade : %s", dbStats["maxDate"])
 
         else:
             logging.warning("Your database (version %s) is not up to date.",dbVersion)
@@ -104,9 +112,51 @@ def run(myParams):
             myDb.reInit(P2M_VERSION,P2M_DB_VERSION,P2M_INFLUXDB_VERSION)
             dbVersion = myDb.getConfig(database.DB_KEY)
             logging.info("Database reinitialized to version %s !",dbVersion)
-   
-    
 
+    ####################################################################################################################
+    # STEP xxx : Collect data from pronote
+    ####################################################################################################################
+    logging.info("-----------------------------------------------------------")
+    logging.info("#          Collection from Pronote                         #")
+    logging.info("-----------------------------------------------------------")
+    logging.info("Grades-----------------------------------------------------")
+#    myPronote = pronote_eveline_cas.Pronote()
+    myPronote = pronote_florian_cas.Pronote()
+
+#    myPronote.getGradeList()
+#    for myGrade in myPronote.gradeList:
+#        myGrade.store(myDb)
+#    myDb.commit()
+
+#    logging.info("Averages---------------------------------------------------")
+#    myPronote.getAverageList()
+#    for myAverage in myPronote.averageList:
+#        myAverage.store(myDb)
+#    myDb.commit()
+
+#    logging.info("Periods---------------------------------------------------")
+#    myPronote.getPeriodList()
+#    for myPeriod in myPronote.periodList:
+#        myPeriod.store(myDb)
+#    myDb.commit()
+
+    logging.info("Evaluations------------------------------------------------")
+    myPronote.getEvalList()
+    for myEval in myPronote.evalList:
+        myEval.store(myDb)
+    myDb.commit()
+
+#    logging.info("Lessons---------------------------------------------------")
+#    myPronote.getLessonList()
+#    for myLesson in myPronote.lessonList:
+#        myLesson.store(myDb)
+#    myDb.commit()
+
+#    logging.info("Homework--------------------------------------------------")
+#    myPronote.getHomeworkList()
+#    for myHomework in myPronote.homeworkList:
+#        myHomework.store(myDb)
+#    myDb.commit()
 
 
     ####################################################################################################################
@@ -158,11 +208,11 @@ if __name__ == "__main__":
     
     # Say welcome and be nice
     logging.info("-----------------------------------------------------------")
-    logging.info("#               Welcome to gazpar2mqtt                    #")
+    logging.info("#               Welcome to pronote2mqtt                    #")
     logging.info("-----------------------------------------------------------")
-    logging.info("Program version : %s",G2M_VERSION)
-    logging.info("Database version : %s", G2M_DB_VERSION)
-    logging.info("Influxdb version : %s", G2M_INFLUXDB_VERSION)
+    logging.info("Program version : %s",P2M_VERSION)
+    logging.info("Database version : %s", P2M_DB_VERSION)
+    logging.info("Influxdb version : %s", P2M_INFLUXDB_VERSION)
     logging.info("Please note that the the tool is still under development, various functions may disappear or be modified.")
     logging.debug("If you can read this line, you are in DEBUG mode.")
     
@@ -197,4 +247,4 @@ if __name__ == "__main__":
         
         # Run once
         run(myParams)
-        logging.info("End of gazpar2mqtt. See u...")
+        logging.info("End of pronote2mqtt.")

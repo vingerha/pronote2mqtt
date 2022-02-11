@@ -53,21 +53,115 @@ class Database:
     # Create table for configuration
     logging.debug("Creation of config table")
     self.cur.execute('''CREATE TABLE IF NOT EXISTS config (
-                                key TEXT NOT NULL 
+                                key TEXT NOT NULL
                                 , value TEXT NOT NULL)''')
     self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_config_key
                             ON config (key)''')
 
-    ## Create table of PCEs
+    ## Create table of  Periods
     logging.debug("Creation of Period table")
     self.cur.execute('''CREATE TABLE IF NOT EXISTS periods (
                         pid TEXT PRIMARY KEY
                         , name TEXT
-                        , start TYPE TEXT
-                        , end TYPE TEXT
-                        , state TYPE TEXT''')
+                        , start TEXT
+                        , end TEXT)''')
     self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_periods_pid
                     ON periods (pid)''')
+
+    ## Create table of grades
+    logging.debug("Creation of Grade table")
+    self.cur.execute('''CREATE TABLE IF NOT EXISTS grades (
+                        pid TEXT NOT NULL
+                        , period_name TEXT
+                        , period_start TEXT
+                        , period_end TEXT
+                        , gid TEXT
+                        , studentname TEXT
+                        , date TEXT
+                        , subject TYPE TEXT
+                        , grade TYPE TEXT
+                        , out_of TYPE TEXT
+                        , default_out_of TYPE TEXT
+                        , coefficient TYPE TEXT
+                        , average TYPE TEXT
+                        , max TYPE TEXT
+                        , min_of TYPE TEXT
+                        , PRIMARY KEY (pid,gid,subject))''')
+    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_grades_gid
+                    ON grades (pid,gid)''')
+
+    ## Create table of averages
+    ## pronote does not supply an id used period-id
+    logging.debug("Creation of Averages table")
+    self.cur.execute('''CREATE TABLE IF NOT EXISTS averages (
+                        pid TEXT NOT NULL
+                        , period_name TEXT
+                        , period_start TEXT
+                        , period_end TEXT
+                        , studentname TEXT NOT NULL
+                        , student TEXT
+                        , class_average TEXT
+                        , max TYPE TEXT
+                        , min TYPE TEXT
+                        , out_of TYPE TEXT
+                        , default_out_of TYPE TEXT
+                        , subject TYPE TEXT NOT NULL
+			, PRIMARY KEY(pid,studentname,subject))''')
+    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_averages_pid
+                    ON averages (pid,studentname,subject)''')
+
+    # using key on period id and evalid
+    logging.debug("Creation of Evaluations table")
+    self.cur.execute('''CREATE TABLE IF NOT EXISTS evaluations (
+                        pid TEXT NOT NULL
+                        , period_name TEXT
+                        , period_start TEXT
+                        , period_end TEXT
+                        , studentname TEXT
+                        , eid TEXT NOT NULL
+                        , name TEXT
+                        , domain TEXT
+                        , teacher TEXT
+                        , coefficient TXT
+                        , description TEXT
+                        , subject TEXT
+                        , date TEXT
+                        , aid TEXT
+                        , acquisition_name TEXT
+                        , acquisition_level TEXT
+                        , acquisition_coefficient TEXT
+                        , PRIMARY KEY(pid,eid,aid))''')
+    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_evaluations_pideid
+                    ON evaluations (pid,eid,aid)''')
+   
+    # using key on period id and evalid
+    logging.debug("Creation of Lessons table")
+    self.cur.execute('''CREATE TABLE IF NOT EXISTS lessons (
+                        lid TEXT NOT NULL
+                        , studentname TEXT NOT NULL
+                        , lessonDateTime TEXT
+                        , lessonStart TEXT
+                        , lessonEnd TEXT
+                        , lessonSubject TEXT
+                        , lessonRoom TEXT
+                        , lessonCanceled TEXT
+                        , lessonStatus TEXT
+                        , PRIMARY KEY(lid,studentname))''')
+    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_lessons_lid
+                    ON lessons (lid,studentname)''')
+
+    # using key on period id and evalid
+    logging.debug("Creation of Homework table")
+    self.cur.execute('''CREATE TABLE IF NOT EXISTS homework (
+                        hid TEXT NOT NULL
+                        , studentname TEXT NOT NULL
+                        , homeworkSubject TEXT
+                        , homeworkDescription TEXT
+                        , homeworkDone TEXT
+                        , homeworkDate TEXT
+                        , PRIMARY KEY(hid,studentname))''')
+    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_homework_hid
+                    ON homework (hid,studentname)''')
 
 
     # Commit
@@ -79,6 +173,7 @@ class Database:
     self.updateVersion(DB_KEY, dbVersion)
     self.updateVersion(INFLUX_KEY, influxVersion)
     self.updateVersion(LAST_EXEC_KEY, datetime.datetime.now())
+
 
     # Commit
     self.commit()
@@ -149,10 +244,10 @@ class Database:
         self.cur = self.con.cursor()
         
   # Get measures statistics
-  def getPeriodsCount(self,type):
+  def getGradesCount(self):
 
     valueResult = {}
-    query = f"SELECT count(*), count(distinct period_start), count(distinct pid), min(period_start), max(period_start) FROM periods'"
+    query = f"SELECT count(*), count(distinct period_start), count(distinct gid), min(period_start), max(period_start) FROM grades"
     #  to add to distinguish between students.....e.g. WHERE student = '{sid}'"
     self.cur.execute(query)
     queryResult = self.cur.fetchone()
@@ -160,7 +255,7 @@ class Database:
             if queryResult[0] is not None:
                 valueResult["rows"] = int(queryResult[0])
                 valueResult["dates"] = int(queryResult[1])
-                valueResult["pid"] = int(queryResult[2])
+                valueResult["gid"] = int(queryResult[2])
                 valueResult["minDate"] = queryResult[3]
                 valueResult["maxDate"] = queryResult[4]
                 return valueResult
@@ -176,6 +271,22 @@ class Database:
     
     logging.debug("Drop Periods table")
     self.cur.execute('''DROP TABLE IF EXISTS periods''')
+
+    logging.debug("Drop Grades table")
+    self.cur.execute('''DROP TABLE IF EXISTS grades''')
+
+    logging.debug("Drop Averages table")
+    self.cur.execute('''DROP TABLE IF EXISTS averages''')
+
+    logging.debug("Drop Evaluations table")
+    self.cur.execute('''DROP TABLE IF EXISTS evaluations''')
+
+    logging.debug("Drop Lessons table")
+    self.cur.execute('''DROP TABLE IF EXISTS lessons''')
+
+    logging.debug("Drop Homework table")
+    self.cur.execute('''DROP TABLE IF EXISTS homework''')
+
        
     # Commit work
     self.commit()
@@ -213,40 +324,92 @@ class Database:
     for myPce in self.pceList:
       self._loadThresolds(myPce)
 
-  # Load Students
-  def _loadStudents(self):
-
-    query = "SELECT * FROM students"
-    self.cur.execute(query)
-    queryResult = self.cur.fetchall()
-
-    # Create object Student
-    for result in queryResult:
-      myStudent = Student(result)
-      self.studentList.append(myStudent)
-
-# Class Student
-class Student():
+# class Grades...probably not needed as defined in separate pronote_eveline....py
+class Grades():
 
   def __init__(self,result):
 
-    self.studentId = result[0]
-    self.alias = result[1]
-    self.activationDate = _convertDateTime(result[2])
-    self.frequenceReleve = result[3]
-    self.state = result[4]
-    self.ownerName = result[5]
-    self.postalCode = result[6]
-    self.measureList = []
-    self.thresoldList = []
+    self.pid = result[0]
+    self.period_name = result[1]
+    self.period_start = result[2]
+    self.period_end = result[3]
+    self.gid = result[4]
+    self.student = result[5]
+    self.date = result[6]
+    self.subject = _convertDateTime(result[7])
+    self.grade = result[8]
+    self.outOf = result[9]
+    self.defaultOutOf = result[10]
+    self.coefficient = result[11]
+    self.average = result[12]
+    self.max = result[13]
+    self.min - result[14]
 
-# Class Period
-class Period():
+class Averages():
+
+  def __init__(self,result):
+    self.pid = result[0]
+    self.period_name = result[1]
+    self.period_start = result[2]
+    self.period_end = result[3]
+    self.studentname = result[4]
+    self.student = result[5]
+    self.classAverage = result[6]
+    self.max = _convertDateTime(result[7])
+    self.min = result[8]
+    self.outOf = result[9]
+    self.defaultOutOf = result[10]
+    self.subject = result[11]
+
+class Periods():
 
   def __init__(self,result):
 
-    self.periodId = result[0]
+    self.pid = result[0]
     self.periodName = result[1]
-    self.periodStart = _convertDateTime(result[2])
+    self.periodStart = result[2]
     self.periodEnd = result[3]
-  
+
+class Evaluations():
+
+  def __init__(self,result):
+    self.pid = result[0]
+    self.period_name = result[1]
+    self.period_start = result[2]
+    self.period_end = result[3]
+    self.studentname = result[4]
+    self.eid = result[5]
+    self.evalName = result[6]
+    self.evalDomain = result[7]
+    self.evalTeacher = result[8]
+    self.evalCoefficient = result[9]
+    self.evalDescription = result[10]
+    self.evalSubject = result[11]
+    self.evalDate = result[12]
+    self.acqId = result[13]
+    self.acqName = result[14]
+    self.acqLevel = result[15]
+    self.acqCoefficient = result[16]
+
+class Lessons():
+
+  def __init__(self,result):
+    self.lid = result[0]
+    self.studentname = result[1]
+    self.lessonDateTime = result[2]
+    self.lessonStart = result[3]
+    self.lessonEnd = result[4]
+    self.lessonSubject = result[5]
+    self.lessonRoom = result[6]
+    self.lessonCanceled = result[7]
+    self.lessonStatus = result[8]
+
+class Homework():
+
+  def __init__(self,result):
+    self.hid = result[0]
+    self.studentname = result[1]
+    self.homeworkSubject = result[2]
+    self.homeworkDescription = result[3]
+    self.homeworkDone = result[4]
+    self.homeworkDate = result[5]
