@@ -6,7 +6,7 @@
 <h3 align="center">--------------------------------------------------------</h3>
 
 
-BELOW still the 'old' stuff from the bain implementation of pronotepy.
+BELOW the parts of the work by Bain on my baiss 'pronotepy'
 
 <br />
 <p align="center">
