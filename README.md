@@ -6,7 +6,7 @@
 <h3 align="center">--------------------------------------------------------</h3>
 
 
-BELOW the parts of the work by Bain on my baiss 'pronotepy'
+<h3 align="center">BELOW the parts of the work by Bain which I am using as basis ( 'pronotepy' )</h3>
 
 <br />
 <p align="center">
