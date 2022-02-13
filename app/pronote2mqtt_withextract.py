@@ -9,9 +9,9 @@ import time
 from dateutil.relativedelta import relativedelta
 import logging
 
-import mqtt
+#import mqtt
 #import standalone
-import hass
+#import hass
 import param
 import database
 import traceback
@@ -121,6 +121,57 @@ def run(myParams):
     myPronote = pronote.Pronote()
     # in order: prefixurl, username, pwd,ent, studentname,gradeaverage)
     
+#Kick off for Student 1
+    myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteStudent_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1)
+    if myParams.pronoteGradesAverages_1:
+        for myAverage in myPronote.averageList:
+            myAverage.store(myDb)
+        for myGrade in myPronote.gradeList:
+            myGrade.store(myDb)
+ 
+    for myPeriod in myPronote.periodList:
+        myPeriod.store(myDb)
+    
+    if not myParams.pronoteGradesAverages_1:    
+        for myEval in myPronote.evalList:
+            myEval.store(myDb)
+
+    for myLesson in myPronote.lessonList:
+        myLesson.store(myDb)
+
+    for myHomework in myPronote.homeworkList:
+        myHomework.store(myDb)
+
+    for myStudent in myPronote.studentList:
+        myStudent.store(myDb)
+    
+    myDb.commit()
+
+#Kick off for Student 2
+    myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteStudent_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2)
+    if myParams.pronoteGradesAverages_2:
+        for myAverage in myPronote.averageList:
+            myAverage.store(myDb)
+        for myGrade in myPronote.gradeList:
+            myGrade.store(myDb)
+ 
+    for myPeriod in myPronote.periodList:
+        myPeriod.store(myDb)
+    
+    if not myParams.pronoteGradesAverages_2:    
+        for myEval in myPronote.evalList:
+            myEval.store(myDb)
+
+    for myLesson in myPronote.lessonList:
+        myLesson.store(myDb)
+
+    for myHomework in myPronote.homeworkList:
+        myHomework.store(myDb)
+        
+    for myStudent in myPronote.studentList:
+        myStudent.store(myDb)
+    
+    myDb.commit()
     
     ####################################################################################################################
     # STEP 2 : Connect to MQTT
@@ -184,76 +235,12 @@ def run(myParams):
                 myEntity.addAttribute("school",myStudent.studentSchool)
                 myEntity.addAttribute("current_class",myStudent.studentClass)
                 
-                # create homework sensor
-                logging.info("Creation of the HOMEWORK entity")
-                myEntity = hass.Entity(myDevice,hass.SENSOR,'homework','homework',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)
-                myEntity.addAttribute("current_class",myStudent.studentClass)
-                myEntity.addAttribute("load_time",datetime.date.today().strftime("%Y/%m/%d"))                    
-                
-                attributes = {}
-                if myStudent.homeworkList:
-                    logging.info("Collecting and Publishing values Homework...")
-                    logging.info("---------------------------------")
-                    attributes[f'date'] = []
-                    attributes[f'title'] = []
-                    attributes[f'description'] = []
-                    attributes[f'done'] = []
-                    for myHomework in myStudent.homeworkList:
-                        # Store homework into sensor
-                        attributes[f'date'].append(myHomework.homeworkDate.split("/",1)[1])
-                        attributes[f'title'].append(myHomework.homeworkSubject)
-                        attributes[f'description'].append(myHomework.homeworkDescription)
-                        attributes[f'done'].append(myHomework.homeworkDone)
-                        
-                       
-                    myEntity.addAttribute("date",attributes[f'date'])
-                    myEntity.addAttribute("title",attributes[f'title'])
-                    myEntity.addAttribute("description",attributes[f'description'])
-                    myEntity.addAttribute("done",attributes[f'done'])
-                                  
-                    logging.info("Homework added to HA sensor !")
-
-                # create evaluation sensor
-                logging.info("Creation of the EVALUATION/Acquisitions entity")
-                myEntity = hass.Entity(myDevice,hass.SENSOR,'evaluation','evaluation',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)
-                myEntity.addAttribute("current_class",myStudent.studentClass)
-                myEntity.addAttribute("load_time",datetime.date.today().strftime("%Y/%m/%d"))                    
-                
-                attributes = {}
-                if myStudent.evaluationShortList:
-                    logging.info("Collecting and Publishing values Evaluation from shortlist (last x days)...")
-                    logging.info("---------------------------------")
-                    attributes[f'date'] = []
-                    attributes[f'subject'] = []
-                    attributes[f'acquisition_name'] = []
-                    attributes[f'acquisition_level'] = []
-                    for myEvaluation in myStudent.evaluationShortList:
-                        # Store homework into sensor
-                        attributes[f'date'].append(myEvaluation.evalDate.split("/",1)[1])
-                        attributes[f'subject'].append(myEvaluation.evalSubject)
-                        attributes[f'acquisition_name'].append(myEvaluation.acqName)
-                        attributes[f'acquisition_level'].append(myEvaluation.acqLevel)
-                        
-                       
-                    myEntity.addAttribute("date",attributes[f'date'])
-                    myEntity.addAttribute("subject",attributes[f'subject'])
-                    myEntity.addAttribute("acquisition_name",attributes[f'acquisition_name'])
-                    myEntity.addAttribute("acquisition_level",attributes[f'acquisition_level'])
-                                  
-                    logging.info("Evaluation added to HA sensor !")                    
-                
-  
-                
                 # Publish config, state (when value not none), attributes (when not none)
                 logging.info("Publishing period devices...")
                 logging.info("You can retrieve published values subscribing topic %s",myDevice.hass.prefix + "/+/" + myDevice.id + "/#")
                 for topic,payload in myDevice.getStatePayload().items():
                     myMqtt.publish(topic,payload)
                 logging.info("Devices published !")
-                
-                
 
         except:
             logging.error("Home Assistant discovery mode : unable to publish period value to mqtt broker")
@@ -280,7 +267,7 @@ def run(myParams):
     logging.info("#                Next run                                 #")
     logging.info("-----------------------------------------------------------")
     if myParams.scheduleTime is not None:
-        logging.info("The pronote2mqtt next run is scheduled at %s",myParams.scheduleTime)
+        logging.info("pronote2mqtt next run scheduled at %s",myParams.scheduleTime)
     else:
         logging.info("No schedule defined.")
 

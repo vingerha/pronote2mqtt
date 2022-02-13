@@ -38,11 +38,11 @@ class Params:
     self.pronoteGradesAverages_2 = False
     
     # Mqtt params
-    self.mqttHost = ''
+    self.mqttHost = '192.168.1.20'
     self.mqttPort = 1883
     self.mqttClientId = 'pronote2mqtt'
     self.mqttUsername = 'iotlink_user'
-    self.mqttPassword = ''
+    self.mqttPassword = 'Sanyo_123'
     self.mqttQos = 1
     self.mqttTopic = 'pronote'
     self.mqttRetain = True
@@ -61,7 +61,7 @@ class Params:
     self.hassPeriodSensorCount = 10
     
     # Database params
-    self.dbInit = True
+    self.dbInit = False
     self.dbPath = './data'
     
     # Debug params

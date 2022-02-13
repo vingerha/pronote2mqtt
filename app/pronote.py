@@ -31,6 +31,7 @@ class Pronote:
         self.evalList = []
         self.lessonList = []
         self.homeworkList = []
+        self.studentList = []
         self.whoiam = None
         self.isConnected = False
         
@@ -219,7 +220,6 @@ class Pronote:
             index += 1
             dateHomework = dateHomework + timedelta(days = 1)
         homeworkList = jsondata
-        print('Homeworklist: ', homeworkList)
         if homeworkList:
 
            for homework in homeworkList["homework"]:
@@ -228,6 +228,24 @@ class Pronote:
 
         else:
             logging.error("Homework list is empty")
+
+#Student
+        logging.info("Collecting Student---------------------------------------------------")
+        jsondata['students'] = []
+        identity = client.parametres_utilisateur
+        jsondata['students'].append({
+            'sid': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["N"],
+            'studentFullname': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["L"],
+            'studentSchool': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["Etablissement"]["V"]["L"],
+            'studentClass': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["classeDEleve"]["L"],
+        })
+        studentList = jsondata
+        if studentList:
+           for student in studentList["students"]:
+               myStudent = Student(student)
+               self.addStudent(myStudent)
+        else:
+            logging.error("Student list is empty")
 
     
     def addPeriod(self,period):
@@ -248,6 +266,8 @@ class Pronote:
     def addHomework(self,homework):
         self.homeworkList.append(homework)
 
+    def addStudent(self,student):
+        self.studentList.append(student)
 
 class Grade:
     
@@ -488,5 +508,31 @@ class Homework:
 
         if dbTable:
             logging.debug("Store homework %s, %s, %s, %s, %s, %s",self.hid,self.studentname,self.homeworkSubject,self.homeworkDescription,self.homeworkDone,self.homeworkDate)
-            period_query = f"INSERT OR REPLACE INTO homework VALUES (?, ?, ?, ?, ?, ?)"
-            db.cur.execute(period_query, [self.hid,self.studentname,self.homeworkSubject,self.homeworkDescription,self.homeworkDone,self.homeworkDate])
+            homework_query = f"INSERT OR REPLACE INTO homework VALUES (?, ?, ?, ?, ?, ?)"
+            db.cur.execute(homework_query, [self.hid,self.studentname,self.homeworkSubject,self.homeworkDescription,self.homeworkDone,self.homeworkDate])
+
+class Student:
+
+    # Constructor
+    def __init__(self,student):
+
+        # Init attributes
+        self.sid = None
+        self.studentFullname = None
+        self.studentSchool = None
+        self.studentClass = None
+
+        self.sid = student["sid"]
+        self.studentFullname = student["studentFullname"]
+        self.studentSchool = student["studentSchool"]
+        self.studentClass = student["studentClass"]
+
+    # Store measure to database
+    def store(self,db):
+
+        dbTable = "students"
+
+        if dbTable:
+            logging.debug("Store student %s, %s, %s, %s",self.sid,self.studentFullname,self.studentSchool,self.studentClass)
+            student_query = f"INSERT OR REPLACE INTO students VALUES (?, ?, ?, ?)"
+            db.cur.execute(student_query, [self.sid,self.studentFullname,self.studentSchool,self.studentClass])

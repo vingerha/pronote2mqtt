@@ -4,6 +4,7 @@ import os
 import logging
 import datetime
 import json
+from dateutil.relativedelta import *
 
 # Constants
 DATABASE_NAME = "pronote2mqtt.db"
@@ -54,6 +55,14 @@ class Database:
                                 , value TEXT NOT NULL)''')
     self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_config_key
                             ON config (key)''')
+                            
+    ## Create table of  Periods
+    logging.debug("Creation of Students table")
+    self.cur.execute('''CREATE TABLE IF NOT EXISTS students (
+                        sid TEXT PRIMARY KEY
+                        , fullname TEXT
+                        , school TEXT
+                        , class TEXT)''')                          
 
     ## Create table of  Periods
     logging.debug("Creation of Period table")
@@ -284,6 +293,8 @@ class Database:
     logging.debug("Drop Homework table")
     self.cur.execute('''DROP TABLE IF EXISTS homework''')
 
+    logging.debug("Drop Student table")
+    self.cur.execute('''DROP TABLE IF EXISTS students''')
        
     # Commit work
     self.commit()
@@ -310,16 +321,58 @@ class Database:
   # Load
   def load(self):
 
-    # Load PCEs
-    self._loadPce()
+    # Load Students
+    self._loadStudents()
+    
+    #load Homework
+    for myStudent in self.studentList:
+        self._loadHomework(myStudent)
 
-    # Load measures
-    for myPce in self.pceList:
-      self._loadMeasures(myPce)
+    #load Evaluation
+    for myStudent in self.studentList:
+        self._loadEvaluationsShort(myStudent)
+     
+  # Load students
+  def _loadStudents(self):
 
-    # Load thresolds
-    for myPce in self.pceList:
-      self._loadThresolds(myPce)
+    query = "SELECT * FROM students"
+    self.cur.execute(query)
+    queryResult = self.cur.fetchall()
+
+    # Create object Student
+    for result in queryResult:
+      myStudent = Student(result)
+      self.studentList.append(myStudent)
+      
+  # Load homework
+  def _loadHomework(self,student):
+    # use the firstname to query the database
+    # to improve: make name-format same across tables
+    studentfirst=student.studentFullname.split(" ",1)[1]
+    query = f"SELECT * FROM homework WHERE studentname like '{studentfirst}'"
+    self.cur.execute(query)
+    queryResult = self.cur.fetchall()
+    # Create object Homework
+    for result in queryResult:
+      myHomework = Homework(result)
+      student.homeworkList.append(myHomework)
+
+  def _loadEvaluationsShort(self,student):
+    # use the firstname to query the database
+    # to improve: make name-format same across tables
+    studentfirst=student.studentFullname.split(" ",1)[1]
+    # not collecting all 
+    datestart = datetime.date.today() - relativedelta(days=20)
+    datestart = datestart.strftime("%Y/%m/%d")
+    query = f"SELECT * FROM evaluations WHERE studentname like '{studentfirst}' and date >= '{datestart}' ORDER by date"
+    self.cur.execute(query)
+    queryResult = self.cur.fetchall()
+    # Create object Homework
+    for result in queryResult:
+      myEvaluation = Evaluations(result)
+      student.evaluationShortList.append(myEvaluation)
+
+
 
 # class Grades...probably not needed as defined in separate pronote_eveline....py
 class Grades():
@@ -411,3 +464,14 @@ class Homework():
     self.homeworkDescription = result[3]
     self.homeworkDone = result[4]
     self.homeworkDate = result[5]
+
+class Student():
+
+  def __init__(self,result):
+    self.sid = result[0]
+    self.studentFullname = result[1]
+    self.studentSchool = result[2]
+    self.studentClass = result[3]
+    self.homeworkList = []
+    self.evaluationShortList = []
+   
