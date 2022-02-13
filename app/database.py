@@ -4,7 +4,6 @@ import os
 import logging
 import datetime
 import json
-#from gazpar import TYPE_I,TYPE_P
 
 # Constants
 DATABASE_NAME = "pronote2mqtt.db"
@@ -15,7 +14,6 @@ DATABASE_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 # Config constants
 P2M_KEY = "p2m"
 DB_KEY = "db"
-INFLUX_KEY = "influx"
 LAST_EXEC_KEY = "last_exec_datetime"
 
 # Convert datetime string to datetime
@@ -43,12 +41,11 @@ class Database:
     self.date = datetime.datetime.now().strftime('%Y-%m-%d')
     self.p2mVersion = None
     self.dbVersion = None
-    self.influxVersion = None
     self.path = path
     self.studentList = []
   
   # Database initialization
-  def init(self,p2mVersion,dbVersion,influxVersion):
+  def init(self,p2mVersion,dbVersion):
 
     # Create table for configuration
     logging.debug("Creation of config table")
@@ -172,7 +169,6 @@ class Database:
     logging.debug("Store configuration")
     self.updateVersion(P2M_KEY, p2mVersion)
     self.updateVersion(DB_KEY, dbVersion)
-    self.updateVersion(INFLUX_KEY, influxVersion)
     self.updateVersion(LAST_EXEC_KEY, datetime.datetime.now())
 
 
@@ -226,7 +222,7 @@ class Database:
 
 
   # Connexion to database
-  def connect(self,g2mVersion,dbVersion,influxVersion):
+  def connect(self,g2mVersion,dbVersion):
     
     # Create directory if not exists
     if not os.path.exists(self.path):
@@ -238,7 +234,7 @@ class Database:
         logging.debug("Initialization of the SQLite database...")
         self.con = sqlite3.connect(self.path + "/" + DATABASE_NAME, timeout=DATABASE_TIMEOUT)
         self.cur = self.con.cursor()
-        self.init(g2mVersion,dbVersion,influxVersion)
+        self.init(g2mVersion,dbVersion)
     else:
         logging.debug("Connexion to database")
         self.con = sqlite3.connect(self.path + "/" + DATABASE_NAME, timeout=DATABASE_TIMEOUT)
@@ -263,7 +259,7 @@ class Database:
 
 
   # Re-initialize the database
-  def reInit(self,p2mVersion,dbVersion,influxVersion):
+  def reInit(self,p2mVersion,dbVersion):
     
     logging.debug("Reinitialization of the database.")
     
@@ -293,7 +289,7 @@ class Database:
     self.commit()
     
     # Initialize tables
-    self.init(p2mVersion,dbVersion,influxVersion)
+    self.init(p2mVersion,dbVersion)
       
         
   # Check if connected

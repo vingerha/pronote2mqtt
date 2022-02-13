@@ -29,7 +29,6 @@ import pronote
 # gazpar2mqtt constants
 P2M_VERSION = '0.1.0'
 P2M_DB_VERSION = '0.1.0'
-P2M_INFLUXDB_VERSION = '0.1.0'
 
 #######################################################################
 #### Functions
@@ -67,7 +66,7 @@ def run(myParams):
 
 
     # Connect to database
-    myDb.connect(P2M_VERSION,P2M_DB_VERSION,P2M_INFLUXDB_VERSION)
+    myDb.connect(P2M_VERSION,P2M_DB_VERSION)
     if myDb.isConnected() :
         logging.info("SQLite database connected !")
     else:
@@ -87,7 +86,7 @@ def run(myParams):
     # Reinit database when required :
     if myParams.dbInit:
         logging.info("Reinitialization of the database...")
-        myDb.reInit(P2M_VERSION,P2M_DB_VERSION,P2M_INFLUXDB_VERSION)
+        myDb.reInit(P2M_VERSION,P2M_DB_VERSION)
         logging.info("Database reinitialized to version %s",P2M_DB_VERSION)
     else:
         # Compare dabase version
@@ -107,7 +106,7 @@ def run(myParams):
         else:
             logging.warning("Your database (version %s) is not up to date.",dbVersion)
             logging.info("Reinitialization of your database to version %s...",P2M_DB_VERSION)
-            myDb.reInit(P2M_VERSION,P2M_DB_VERSION,P2M_INFLUXDB_VERSION)
+            myDb.reInit(P2M_VERSION,P2M_DB_VERSION)
             dbVersion = myDb.getConfig(database.DB_KEY)
             logging.info("Database reinitialized to version %s !",dbVersion)
 
@@ -221,7 +220,6 @@ if __name__ == "__main__":
     logging.info("-----------------------------------------------------------")
     logging.info("Program version : %s",P2M_VERSION)
     logging.info("Database version : %s", P2M_DB_VERSION)
-    logging.info("Influxdb version : %s", P2M_INFLUXDB_VERSION)
     logging.info("Please note that the the tool is still under development, various functions may disappear or be modified.")
     logging.debug("If you can read this line, you are in DEBUG mode.")
     
