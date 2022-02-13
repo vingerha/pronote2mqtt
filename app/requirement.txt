@@ -5,4 +5,3 @@ argparse
 envparse
 schedule
 paho-mqtt
-influxdb-client
