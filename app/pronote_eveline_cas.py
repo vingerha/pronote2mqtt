@@ -4,7 +4,8 @@ from datetime import date
 from datetime import timedelta 
 import json
 import logging
-from pronotepy.ent import atrium_sud
+#from pronotepy.ent import atrium_sud
+from ent import atrium_sud
 
 #Variables a remplacer (ou laisser comme ça pour tester la démo)
 studentname="eveline" #nom de votre enfant - ne sert que pour le nom du fichier json

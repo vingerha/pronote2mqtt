@@ -16,7 +16,6 @@ import logging
 #import hass
 import param
 import database
-#import influxdb # outcommented as throwing error if not using influx (missing influxclient)
 import traceback
 
 #imports fro pronotepy
