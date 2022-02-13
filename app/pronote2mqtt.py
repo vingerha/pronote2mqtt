@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 # Work in progress...
-
-
 import sys
 import datetime
-#import schedule
+import schedule
 import time
 from dateutil.relativedelta import relativedelta
 import logging
@@ -24,8 +22,9 @@ import os
 from datetime import date
 from datetime import timedelta
 import json
-import pronote_eveline_cas
-import pronote_florian_cas
+#import pronote_eveline_cas
+import pronote
+#import pronote_florian_cas
 
 # gazpar2mqtt constants
 P2M_VERSION = '0.1.0'
@@ -120,43 +119,54 @@ def run(myParams):
     logging.info("-----------------------------------------------------------")
     logging.info("Grades-----------------------------------------------------")
 #    myPronote = pronote_eveline_cas.Pronote()
-    myPronote = pronote_florian_cas.Pronote()
+    myPronote = pronote.Pronote()
+    # in order: prefixurl, username, pwd,ent, studentname,gradeaverage)
+    
+#Kick off for Student 1
+    myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteStudent_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1)
+    if myParams.pronoteGradesAverages_1:
+        for myAverage in myPronote.averageList:
+            myAverage.store(myDb)
+        for myGrade in myPronote.gradeList:
+            myGrade.store(myDb)
+ 
+    for myPeriod in myPronote.periodList:
+        myPeriod.store(myDb)
+    
+    if not myParams.pronoteGradesAverages_1:    
+        for myEval in myPronote.evalList:
+            myEval.store(myDb)
 
-#    myPronote.getGradeList()
-#    for myGrade in myPronote.gradeList:
-#        myGrade.store(myDb)
-#    myDb.commit()
+    for myLesson in myPronote.lessonList:
+        myLesson.store(myDb)
 
-#    logging.info("Averages---------------------------------------------------")
-#    myPronote.getAverageList()
-#    for myAverage in myPronote.averageList:
-#        myAverage.store(myDb)
-#    myDb.commit()
-
-#    logging.info("Periods---------------------------------------------------")
-#    myPronote.getPeriodList()
-#    for myPeriod in myPronote.periodList:
-#        myPeriod.store(myDb)
-#    myDb.commit()
-
-    logging.info("Evaluations------------------------------------------------")
-    myPronote.getEvalList()
-    for myEval in myPronote.evalList:
-        myEval.store(myDb)
+    for myHomework in myPronote.homeworkList:
+        myHomework.store(myDb)
+    
     myDb.commit()
 
-#    logging.info("Lessons---------------------------------------------------")
-#    myPronote.getLessonList()
-#    for myLesson in myPronote.lessonList:
-#        myLesson.store(myDb)
-#    myDb.commit()
+#Kick off for Student 2
+    myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteStudent_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2)
+    if myParams.pronoteGradesAverages_2:
+        for myAverage in myPronote.averageList:
+            myAverage.store(myDb)
+        for myGrade in myPronote.gradeList:
+            myGrade.store(myDb)
+ 
+    for myPeriod in myPronote.periodList:
+        myPeriod.store(myDb)
+    
+    if not myParams.pronoteGradesAverages_2:    
+        for myEval in myPronote.evalList:
+            myEval.store(myDb)
 
-#    logging.info("Homework--------------------------------------------------")
-#    myPronote.getHomeworkList()
-#    for myHomework in myPronote.homeworkList:
-#        myHomework.store(myDb)
-#    myDb.commit()
+    for myLesson in myPronote.lessonList:
+        myLesson.store(myDb)
 
+    for myHomework in myPronote.homeworkList:
+        myHomework.store(myDb)
+    
+    myDb.commit()
 
     ####################################################################################################################
     # STEP 7 : Disconnect from database

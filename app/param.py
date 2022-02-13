@@ -20,13 +20,22 @@ class Params:
     
     # Step 1 : set default params
     
-    # Pronote params, note: CAS without quotes
-    self.pronoteStudent = 'eveline'
-    self.pronoteUsername = 'eveline.vingerhoeds2'
-    self.pronotePassword = 'sanyo123'
-    self.pronotePrefixUrl = '0061642c'
-    self.pronoteEnt = True
-    self.pronoteCas = 'atrium_sud'
+    # Pronote params child 1 (setup to support 2 children, see pronote2mqtt.py)
+    self.pronoteStudent_1 = 'eveline'
+    self.pronoteUsername_1 = 'eveline.vingerhoeds2'
+    self.pronotePassword_1 = 'sanyo123'
+    self.pronotePrefixUrl_1 = '0061642c'
+    self.pronoteEnt_1 = True
+    self.pronoteCas_1 = "atrium_sud"
+    self.pronoteGradesAverages_1 = True
+    
+    self.pronoteStudent_2 = 'florian'
+    self.pronoteUsername_2 = 'florian.vingerhoeds'
+    self.pronotePassword_2 = 'Sanyo_123'
+    self.pronotePrefixUrl_2 = '0061670h'
+    self.pronoteEnt_2 = True
+    self.pronoteCas_2 = 'agora06'
+    self.pronoteGradesAverages_2 = False
     
     # Mqtt params
     self.mqttHost = ''
@@ -41,7 +50,7 @@ class Params:
     
     
     # Run params
-    self.scheduleTime = 3600
+    self.scheduleTime = '10:00'
     
     # Publication params
     self.standalone = False
@@ -60,11 +69,8 @@ class Params:
     
     # Step 2 : Init arguments for command line
     self.args = self.initArg()
-    
-    # Step 3 : Get params from env variables
-    self.getFromOs()
-    
-    # Step 4 : Get args from command line and overwrite env if needed
+     
+    # Step 3 : Get args from command line and overwrite env if needed
     self.getFromArgs()
     
     
@@ -72,17 +78,32 @@ class Params:
   def initArg(self):
     
     self.parser = argparse.ArgumentParser()
+    self.parser.add_argument(
+        "--pronote_student_1",    help="PRONOTE student name, ex : 'name'")
+    self.parser.add_argument(
+        "--pronote_username_1",    help="PRONOTE user name, ex : 'first.last'")
+    self.parser.add_argument(
+        "--pronote_password_1",    help="PRONOTE password")
+    self.parser.add_argument(
+        "--pronote_prefixurl_1",    help="PRONOTE prefix url")
+    self.parser.add_argument(
+        "--pronote_ent_1",    help="PRONOTE ent")
+    self.parser.add_argument(
+        "--pronote_cas_1",    help="PRONOTE case")
     
     self.parser.add_argument(
-        "--pronote_username",    help="PRONOTE user name, ex : myemail@email.com")
+        "--pronote_student_2",    help="PRONOTE student name, ex : 'name'")
     self.parser.add_argument(
-        "--pronote_password",    help="PRONOTE password")
+        "--pronote_username_2",    help="PRONOTE user name, ex : myemail@email.com")
     self.parser.add_argument(
-        "--pronote_prefixurl",    help="PRONOTE prefix url")
+        "--pronote_password_2",    help="PRONOTE password")
     self.parser.add_argument(
-        "--pronote_ent",    help="PRONOTE ent")
+        "--pronote_prefixurl_2",    help="PRONOTE prefix url")
     self.parser.add_argument(
-        "--pronote_cas",    help="PRONOTE case")
+        "--pronote_ent_2",    help="PRONOTE ent")
+    self.parser.add_argument(
+        "--pronote_cas_2",    help="PRONOTE case")    
+        
     self.parser.add_argument(
         "-s", "--schedule",   help="Schedule the launch of the script at hh:mm everyday")
     self.parser.add_argument(
@@ -116,54 +137,29 @@ class Params:
     self.parser.add_argument(
         "--db_path", help="Database path (default : /data")
 
-     self.parser.add_argument(
+    self.parser.add_argument(
         "--debug",            help="Enable debug mode")
     
-    return self.parser.parse_args()
-  
-  
-      
-  # Load params from Os environment variables 
-  def getFromOs(self):
-    
-    if "PRONOTE_USERNAME" in os.environ: self.pronoteUsername = os.environ["PRONOTE_USERNAME"]
-    if "PRONOTE_PASSWORD" in os.environ: self.pronotePassword = os.environ["PRONOTE_PASSWORD"]
-    if "PRONOTE_PREFIXURL" in os.environ: self.pronotePrefixUrl = os.environ["PRONOTE_PREFIXURL"]
-    if "PRONOTE_ENT" in os.environ: self.pronoteEnt = os.environ["PRONOTE_ENT"]
-    if "PRONOTE_CAS" in os.environ: self.pronoteCas = os.environ["PRONOTE_CAS"]
-      
-    if "MQTT_HOST" in os.environ: self.mqttHost = os.environ["MQTT_HOST"]
-    if "MQTT_PORT" in os.environ: self.mqttPort = int(os.environ["MQTT_PORT"])
-    if "MQTT_CLIENTID" in os.environ: self.mqttClientId = os.environ["MQTT_CLIENTID"]
-    if "MQTT_USERNAME" in os.environ: self.mqttUsername = os.environ["MQTT_USERNAME"]
-    if "MQTT_PASSWORD" in os.environ: self.mqttPassword = os.environ["MQTT_PASSWORD"]
-    if "MQTT_QOS" in os.environ: self.mqttQos = int(os.environ["MQTT_QOS"])
-    if "MQTT_TOPIC" in os.environ: self.mqttTopic = os.environ["MQTT_TOPIC"]
-    if "MQTT_RETAIN" in os.environ: self.mqttRetain = _isItTrue(os.environ["MQTT_RETAIN"])
-    if "MQTT_SSL" in os.environ: self.mqttSsl = _isItTrue(os.environ["MQTT_SSL"])
-      
-    if "SCHEDULE_TIME" in os.environ: self.scheduleTime = os.environ["SCHEDULE_TIME"]
-      
-    if "STANDALONE_MODE" in os.environ: self.standalone = _isItTrue(os.environ["STANDALONE_MODE"])
-    if "HASS_DISCOVERY" in os.environ: self.hassDiscovery = _isItTrue(os.environ["HASS_DISCOVERY"])
-    if "HASS_PREFIX" in os.environ: self.hassPrefix = os.environ["HASS_PREFIX"]
-    if "HASS_DEVICE_NAME" in os.environ: self.hassDeviceName = os.environ["HASS_DEVICE_NAME"]
-        
-    if "DB_INIT" in os.environ: self.dbInit = _isItTrue(os.environ["DB_INIT"])
-    if "DB_PATH" in os.environ: self.dbPath = os.environ["DB_PATH"]
-
-    if "DEBUG" in os.environ: self.debug = _isItTrue(os.environ["DEBUG"])
-  
+    return self.parser.parse_args() 
   
   # Get params from arguments in command line
   def getFromArgs(self):
     
-    if self.args.pronote_username is not None: self.pronoteUsername = self.args.pronote_username
-    if self.args.pronote_password is not None: self.pronotePassword = self.args.pronote_password
-    if self.args.pronote_prefixurl is not None: self.pronotePrefixUrl = self.args.pronote_prefixurl
-    if self.args.pronote_ent is not None: self.pronoteEnt = self.args.pronote_end
-    if self.args.pronote_cas is not None: self.pronotePassword = self.args.pronote_cas
-      
+    if self.args.pronote_student_1 is not None: self.pronoteStudent_1 = self.args.pronote_student_1
+    if self.args.pronote_username_1 is not None: self.pronoteUsername_1 = self.args.pronote_username_1
+    if self.args.pronote_password_1 is not None: self.pronotePassword_1 = self.args.pronote_password_1
+    if self.args.pronote_prefixurl_1 is not None: self.pronotePrefixUrl_1 = self.args.pronote_prefixurl_1
+    if self.args.pronote_ent_1 is not None: self.pronoteEnt_1 = self.args.pronote_end_1
+    if self.args.pronote_cas_1 is not None: self.pronotePassword_1 = self.args.pronote_cas_1
+    
+    if self.args.pronote_student_2 is not None: self.pronoteStudent_2 = self.args.pronote_student_2
+    if self.args.pronote_username_2 is not None: self.pronoteUsername_2 = self.args.pronote_username_2
+    if self.args.pronote_password_2 is not None: self.pronotePassword_2 = self.args.pronote_password_2
+    if self.args.pronote_prefixurl_2 is not None: self.pronotePrefixUrl_2 = self.args.pronote_prefixurl_2
+    if self.args.pronote_ent_2 is not None: self.pronoteEnt_2 = self.args.pronote_end_2
+    if self.args.pronote_cas_2 is not None: self.pronotePassword_2 = self.args.pronote_cas_2
+
+    
     if self.args.mqtt_host is not None: self.mqttHost = self.args.mqtt_host
     if self.args.mqtt_port is not None: self.mqttPort = int(self.args.mqtt_port)
     if self.args.mqtt_clientId is not None: self.mqttClientId = self.args.mqtt_clientId
@@ -189,14 +185,16 @@ class Params:
     
   # Check parameters
   def checkParams(self):
-    
-    if self.pronoteUsername is None:
+    if self.pronoteStudent_1 is None:
       logging.error("Parameter PRONOTE username is mandatory.")
       return False
-    elif self.pronotePassword is None:
+    elif self.pronoteUsername_1 is None:
+      logging.error("Parameter PRONOTE username is mandatory.")
+      return False
+    elif self.pronotePassword_1 is None:
       logging.error("Parameter PRONOTE password is mandatory.")
       return False
-    elif self.pronotePrefixUrl is None:
+    elif self.pronotePrefixUrl_1 is None:
       logging.error("Parameter PRONOTE prefixurl is mandatory.")
       return False
     elif self.mqttHost is None:
@@ -206,12 +204,6 @@ class Params:
       if self.standalone == False and self.hassDiscovery == False:
         logging.warning("Both Standalone mode and Home assistant discovery are disable. No value will be published to MQTT ! Please check your parameters.")
         return True
-      elif self.influxEnable:
-        if self.influxHost == None or self.influxOrg == None or self.influxBucket == None or self.influxToken == None:
-          logging.error("At least one parameters of Influxdb is missing (host, org, bucket or token)")
-          return False
-        else:
-          return True
       else:
         return True
   
@@ -219,7 +211,7 @@ class Params:
   def logParams(self):
     
     logging.info("PRONOTE config : username = %s, password = %s", "******@****.**", "******")
-    logging.debug("PRONOTE config : username = %s, password = %s, prefixurl = %s", self.pronoteUsername, self.pronotePassword, self.pronotePrefixUrl)
+    logging.debug("PRONOTE config : username = %s, password = %s, prefixurl = %s", self.pronoteUsername_1, self.pronotePassword_1, self.pronotePrefixUrl_1)
     logging.info("MQTT broker config : host = %s, port = %s, clientId = %s, qos = %s, topic = %s, retain = %s, ssl = %s",
                  self.mqttHost, self.mqttPort, self.mqttClientId,
                  self.mqttQos,self.mqttTopic,self.mqttRetain,

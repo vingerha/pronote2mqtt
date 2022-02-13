@@ -62,6 +62,7 @@ class Database:
     logging.debug("Creation of Period table")
     self.cur.execute('''CREATE TABLE IF NOT EXISTS periods (
                         pid TEXT PRIMARY KEY
+                        , studentname TEXT
                         , name TEXT
                         , start TEXT
                         , end TEXT)''')
@@ -366,9 +367,10 @@ class Periods():
   def __init__(self,result):
 
     self.pid = result[0]
-    self.periodName = result[1]
-    self.periodStart = result[2]
-    self.periodEnd = result[3]
+    self.student = result[1]
+    self.periodName = result[2]
+    self.periodStart = result[3]
+    self.periodEnd = result[4]
 
 class Evaluations():
 

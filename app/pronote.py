@@ -4,28 +4,25 @@ from datetime import date
 from datetime import timedelta 
 import json
 import logging
-from pronotepy.ent import agora06
+import math
+#from pronotepy.ent import atrium_sud
+#from ent import atrium_sud
+import ent
 
-#Variables a remplacer (ou laisser comme ça pour tester la démo)
-studentname="florian" #nom de votre enfant - ne sert que pour le nom du fichier json
-prefix_url = "0061670h" # sert au prefix de l'url https://PREFIX.index-education.net/pronote/
-username="florian.vingerhoeds" #utlisateur pronote  - a remplacer par le nom d'utilisateur pronote de l'élève
-password="Sanyo_123" # mot de passe pronote - a remplacer par le mot de passe du compte de l'élève
-ent=agora06
+#Variables 
+#studentname="demo" #nom de votre enfant - ne sert que pour le nom du fichier json
+#prefix_url = "....." # sert au prefix de l'url https://PREFIX.index-education.net/pronote/
+#username="demonstration" #utlisateur pronote  - a remplacer par le nom d'utilisateur pronote de l'élève
+#password="pronotevs" # mot de passe pronote - a remplacer par le mot de passe du compte de l'élève
+
+#Hardcoded (to be improved)
 lessonDays=10
 homeworkDays=10
-
-index_note=0
-limit_note=11 #nombre max de note à afficher + 1 
-longmax_devoir = 125 #nombre de caractère max dans la description des devoirs
-
-
 
 class Pronote:
     def __init__(self):
         
         # Initialize instance variables
-        
         self.session = None
         self.auth_nonce = None
         self.gradeList = []
@@ -36,125 +33,91 @@ class Pronote:
         self.homeworkList = []
         self.whoiam = None
         self.isConnected = False
-
-    def getGradeList(self):
-        logging.error("No grades for Florian")
-        return
+        
+    def getData(self,prefix_url,username,password,studentname,cas,GradeAverage):
+#    def getData(self,prefix_url,GradeAverage):
         self.isConnected = False
-        index_note=0
-        limit_note=11
-        client = pronotepy.Client('https://'+prefix_url+'.index-education.net/pronote/eleve.html', username, password, ent)
+        _ent = getattr(ent, cas)
+        client = pronotepy.Client('https://'+prefix_url+'.index-education.net/pronote/eleve.html', username, password, _ent)
         if client.logged_in:
            self.isConnected = True
         else:
            logging.error("Error while authenticating when calling")
            return
-
+        
         jsondata = {}
-
-        #Récupération des notes 
+        
+        #get grades/averages, this does not apply to all children (new system > evaluations)
         periods = client.periods
-        #Transformation des notes en Json
-        jsondata['grades'] = []
-        for period in periods:
-            for grade in period.grades:
-        #data in order: id, date, subject(course),grade,out_of,default_out_of,coefficient,average(class),max,min 
-                jsondata['grades'].append({
-                    'pid': period.id,
-                    'periodName': period.name,
-                    'periodStart': period.start.strftime("%Y/%m/%d"),
-                    'periodEnd': period.end.strftime("%Y/%m/%d"),
-                    'gid': grade.id,
-                    'date': grade.date.strftime("%Y/%m/%d"),
-                    'subject': grade.subject.name,
-                    'grade': grade.grade,            
-                    'outOf': grade.out_of,
-                    'defaultOutOf': grade.grade+'\u00A0/\u00A0'+grade.out_of,
-                    'coefficient': grade.coefficient,
-                    'average': grade.average,           
-                    'max': grade.max,
-                    'min': grade.min,
-            })
-        gradeList = jsondata
-        if gradeList:
+        if GradeAverage:
+            logging.info("Collecting Grades ---------------------------------------------------")
+#grades     
+            periods = client.periods               
+            jsondata['grades'] = []
+            for period in periods:
+                for grade in period.grades:
+            #data in order: id, date, subject(course),grade,out_of,default_out_of,coefficient,average(class),max,min 
+                    jsondata['grades'].append({
+                        'pid': period.id,
+                        'periodName': period.name,
+                        'periodStart': period.start.strftime("%Y/%m/%d"),
+                        'periodEnd': period.end.strftime("%Y/%m/%d"),
+                        'gid': grade.id,
+                        'date': grade.date.strftime("%Y/%m/%d"),
+                        'subject': grade.subject.name,
+                        'grade': grade.grade,            
+                        'outOf': grade.out_of,
+                        'defaultOutOf': grade.grade+'\u00A0/\u00A0'+grade.out_of,
+                        'coefficient': grade.coefficient,
+                        'average': grade.average,           
+                        'max': grade.max,
+                        'min': grade.min,
+                })
+            gradeList = jsondata
 
-           for grade in gradeList["grades"]:
-               myGrade = Grade(studentname,grade) 
-               self.addGrade(myGrade)
-#               print('Gade: ', grade)
-
+            if gradeList:
+               for grade in gradeList["grades"]:
+                   myGrade = Grade(studentname,grade) 
+                   self.addGrade(myGrade)
+            else:
+               logging.error("Grade list is empty")
+#averages
+            logging.info("Collecting Averages---------------------------------------------------")
+            periods = client.periods
+            jsondata['averages'] = []
+            for period in periods:
+                for average in period.averages:
+            #data in order: id, date, subject(course),grade,out_of,default_out_of,coefficient,average(class),max,min
+                    jsondata['averages'].append({
+                        'pid': period.id,
+                        'periodName': period.name,
+                        'periodStart': period.start.strftime("%Y/%m/%d"),
+                        'periodEnd': period.end.strftime("%Y/%m/%d"),
+                        'student': average.student,
+                        'classAverage': average.class_average,
+                        'max': average.max,
+                        'min': average.min,
+                        'outOf': average.out_of,
+                        'defaultOutOf': average.student+' / '+average.out_of,
+                        'subject': average.subject.name,
+                })
+            averageList = jsondata
+            print('AVGList: ', averageList)
+            if averageList:
+               for average in averageList["averages"]:
+                   myAverage = Average(studentname,average)
+                   self.addAverage(myAverage)
+            else:
+               logging.error("Average list is empty")
+  
         else:
-            logging.error("Grade list is empty")
+            logging.info("Skipping Grades and Averages---------------------------------------------------")
 
-    def addGrade(self,grade):
-        self.gradeList.append(grade)
-
-    def getAverageList(self):
-        logging.error("No averages for Florian")
-        return
-        self.isConnected = False
-        client = pronotepy.Client('https://'+prefix_url+'.index-education.net/pronote/eleve.html', username, password, ent)
-        if client.logged_in:
-           self.isConnected = True
-        else:
-           logging.error("Error while authenticating when calling")
-           return
-
-        jsondata = {}
-
-        #Récupération des notes
+#periods
+        logging.info("Collecting Periods---------------------------------------------------")
         periods = client.periods
-#        averages = client.current_period.averages
-        #Transformation des notes en Json
-        jsondata['averages'] = []
-        for period in periods:
-            for average in period.averages:
-        #data in order: id, date, subject(course),grade,out_of,default_out_of,coefficient,average(class),max,min
-                jsondata['averages'].append({
-                    'pid': period.id,
-                    'periodName': period.name,
-                    'periodStart': period.start.strftime("%Y/%m/%d"),
-                    'periodEnd': period.end.strftime("%Y/%m/%d"),
-                    'student': average.student,
-                    'classAverage': average.class_average,
-                    'max': average.max,
-                    'min': average.min,
-                    'outOf': average.out_of,
-                    'defaultOutOf': average.student+' / '+average.out_of,
-                    'subject': average.subject.name,
-            })
-        averageList = jsondata
-#        print('averagejsondata: ', averageList)
-        if averageList:
-
-           for average in averageList["averages"]:
-               myAverage = Average(studentname,average)
-               self.addAverage(myAverage)
-#               print('Avg: ',average)
-
-        else:
-            logging.error("Average list is empty")
-
-    def addAverage(self,average):
-        self.averageList.append(average)
-
-    def getPeriodList(self):
-        self.isConnected = False
-        client = pronotepy.Client('https://'+prefix_url+'.index-education.net/pronote/eleve.html', username, password, ent)
-        if client.logged_in:
-           self.isConnected = True
-        else:
-           logging.error("Error while authenticating when calling")
-           return
-
-        jsondata = {}
-
-        #Récupération des notes
-        periods = client.periods
-        #Transformation des notes en Json
         jsondata['periods'] = []
         for period in periods:
-        #data in order: id, date, subject(course),grade,out_of,default_out_of,coefficient,average(class),max,min
             jsondata['periods'].append({
                 'pid': period.id,
                 'periodName': period.name,
@@ -162,35 +125,16 @@ class Pronote:
                 'periodEnd': period.end.strftime("%Y/%m/%d"),
         })
         periodList = jsondata
-#        print('periodjsondata: ', periodList)
         if periodList:
-
            for period in periodList["periods"]:
-               myPeriod = Period(period)
+               myPeriod = Period(studentname,period)
                self.addPeriod(myPeriod)
-#               print('Per: ',period)
-
         else:
-            logging.error("Period list is empty")
+            logging.error("Period list is empty") 
 
-    def addPeriod(self,period):
-        self.periodList.append(period)
-
-    def getEvalList(self):
-        self.isConnected = False
-        client = pronotepy.Client('https://'+prefix_url+'.index-education.net/pronote/eleve.html', username, password, ent)
-        if client.logged_in:
-           self.isConnected = True
-        else:
-           logging.error("Error while authenticating when calling")
-           return
-
-        jsondata = {}
-
-        #Récupération des notes
+#evaluations
+        logging.info("Collecting Evaluations---------------------------------------------------")
         periods = client.periods
-#        averages = client.current_period.averages
-        #Transformation des notes en Json
         jsondata['evaluations'] = []
         for period in periods:
             for eval in period.evaluations:
@@ -214,30 +158,15 @@ class Pronote:
                         'acqCoefficient': acq.coefficient,
             })
         evalList = jsondata
-        print('EVALdata: ', evalList)
         if evalList:
-
            for eval in evalList["evaluations"]:
                myEval = Evaluation(studentname,eval)
                self.addEval(myEval)
-#               print('Avg: ',average)
-
         else:
             logging.error("Average list is empty")
 
-    def addEval(self,eval):
-        self.evalList.append(eval)
-
-    def getLessonList(self):
-        self.isConnected = False
-        client = pronotepy.Client('https://'+prefix_url+'.index-education.net/pronote/eleve.html', username, password, ent)
-        if client.logged_in:
-           self.isConnected = True
-        else:
-           logging.error("Error while authenticating when calling")
-           return
-
-        jsondata = {}
+#Lessons
+        logging.info("Collecting Lessons---------------------------------------------------")
 
         jsondata['lessons'] = []
         index = 0
@@ -262,29 +191,15 @@ class Pronote:
             dateLesson = dateLesson + timedelta(days = 1)
         lessonList = jsondata
         if lessonList:
-
            for lesson in lessonList["lessons"]:
                myLesson = Lesson(studentname,lesson)
                self.addLesson(myLesson)
-#               print('Avg: ',average)
-
         else:
             logging.error("Average list is empty")
-
-    def addLesson(self,lesson):
-        self.lessonList.append(lesson)
-
-    def getHomeworkList(self):
-        self.isConnected = False
-        client = pronotepy.Client('https://'+prefix_url+'.index-education.net/pronote/eleve.html', username, password, ent)
-        if client.logged_in:
-           self.isConnected = True
-        else:
-           logging.error("Error while authenticating when calling")
-           return
-
-        jsondata = {}
-
+            
+            
+#Homework
+        logging.info("Collecting Homework---------------------------------------------------")
         jsondata['homework'] = []
         index = 0
         dateHomework = date.today() + timedelta(days = 10)
@@ -304,6 +219,7 @@ class Pronote:
             index += 1
             dateHomework = dateHomework + timedelta(days = 1)
         homeworkList = jsondata
+        print('Homeworklist: ', homeworkList)
         if homeworkList:
 
            for homework in homeworkList["homework"]:
@@ -313,6 +229,22 @@ class Pronote:
         else:
             logging.error("Homework list is empty")
 
+    
+    def addPeriod(self,period):
+        self.periodList.append(period)
+        
+    def addGrade(self,grade):
+        self.gradeList.append(grade)
+
+    def addAverage(self,average):
+        self.averageList.append(average)    
+
+    def addLesson(self,lesson):
+        self.lessonList.append(lesson)
+        
+    def addEval(self,eval):
+        self.evalList.append(eval)    
+
     def addHomework(self,homework):
         self.homeworkList.append(homework)
 
@@ -320,7 +252,7 @@ class Pronote:
 class Grade:
     
     # Constructor
-    def __init__(self, student, grade):
+    def __init__(self, studentname, grade):
         
         # Init attributes
         self.pid = None
@@ -504,15 +436,17 @@ class Lesson:
 class Period:
 
     # Constructor
-    def __init__(self, period):
+    def __init__(self, studentname, period):
 
         # Init attributes
         self.pid = None
+        self.student = None
         self.periodName = None
         self.periodStart = None
         self.periodEnd = None
 
         self.pid = period["pid"]
+        self.student = studentname
         self.periodName = period["periodName"]
         self.periodStart = period["periodStart"]
         self.periodEnd = period["periodEnd"]
@@ -523,9 +457,9 @@ class Period:
         dbTable = "periods"
 
         if dbTable:
-            logging.debug("Store periods %s, %s, %s, %s",self.pid,self.periodName,self.periodStart,self.periodEnd)
-            period_query = f"INSERT OR REPLACE INTO periods VALUES (?, ?, ?, ?)"
-            db.cur.execute(period_query, [self.pid,self.periodName,self.periodStart,self.periodEnd])
+            logging.debug("Store periods %s, %s, %s, %s, %s",self.pid,self.student,self.periodName,self.periodStart,self.periodEnd)
+            period_query = f"INSERT OR REPLACE INTO periods VALUES (?, ?, ?, ?, ?)"
+            db.cur.execute(period_query, [self.pid,self.student,self.periodName,self.periodStart,self.periodEnd])
 
 class Homework:
 
