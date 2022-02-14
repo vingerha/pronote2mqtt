@@ -117,9 +117,65 @@ def run(myParams):
     logging.info("#          Collection from Pronote                         #")
     logging.info("-----------------------------------------------------------")
     logging.info("Grades-----------------------------------------------------")
-#    myPronote = pronote_eveline_cas.Pronote()
     myPronote = pronote.Pronote()
-    # in order: prefixurl, username, pwd,ent, studentname,gradeaverage)
+    
+#Kick off for Student 1
+    myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteStudent_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1)
+    if myParams.pronoteGradesAverages_1:
+        for myAverage in myPronote.averageList:
+            myAverage.store(myDb)
+        for myGrade in myPronote.gradeList:
+            myGrade.store(myDb)
+ 
+    for myPeriod in myPronote.periodList:
+        myPeriod.store(myDb)
+    
+    if not myParams.pronoteGradesAverages_1:    
+        for myEval in myPronote.evalList:
+            myEval.store(myDb)
+
+    for myLesson in myPronote.lessonList:
+        myLesson.store(myDb)
+
+    for myHomework in myPronote.homeworkList:
+        myHomework.store(myDb)
+
+    for myStudent in myPronote.studentList:
+        myStudent.store(myDb)
+        
+    for myAbsence in myPronote.absenceList:
+        myAbsence.store(myDb)
+    
+    myDb.commit()
+
+#Kick off for Student 2
+    myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteStudent_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2)
+    if myParams.pronoteGradesAverages_2:
+        for myAverage in myPronote.averageList:
+            myAverage.store(myDb)
+        for myGrade in myPronote.gradeList:
+            myGrade.store(myDb)
+ 
+    for myPeriod in myPronote.periodList:
+        myPeriod.store(myDb)
+    
+    if not myParams.pronoteGradesAverages_2:    
+        for myEval in myPronote.evalList:
+            myEval.store(myDb)
+
+    for myLesson in myPronote.lessonList:
+        myLesson.store(myDb)
+
+    for myHomework in myPronote.homeworkList:
+        myHomework.store(myDb)
+        
+    for myStudent in myPronote.studentList:
+        myStudent.store(myDb)
+        
+    for myAbsence in myPronote.absenceList:
+        myAbsence.store(myDb)        
+    
+    myDb.commit()
     
     
     ####################################################################################################################

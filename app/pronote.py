@@ -32,6 +32,7 @@ class Pronote:
         self.lessonList = []
         self.homeworkList = []
         self.studentList = []
+        self.absenceList = []
         self.whoiam = None
         self.isConnected = False
         
@@ -164,8 +165,34 @@ class Pronote:
                myEval = Evaluation(studentname,eval)
                self.addEval(myEval)
         else:
-            logging.error("Average list is empty")
+            logging.error("Evaluations list is empty")
 
+#absences
+        logging.info("Collecting Absences---------------------------------------------------")
+        periods = client.periods
+        jsondata['absences'] = []
+        for period in periods:
+            for abssence in period.absences:
+                jsondata['absences'].append({
+                    'pid': period.id,
+                    'periodName': period.name,
+                    'periodStart': period.start.strftime("%Y/%m/%d"),
+                    'periodEnd': period.end.strftime("%Y/%m/%d"),
+                    'abid': absence.id,
+                    'absenceFrom': absence.from_date,
+                    'absenceTo': absence.to_date,
+                    'absenceHours': absence.hours,
+                    'absenceDays': absence.days,
+                    'absenceReasons': absence.reasons,
+                })
+        absenceList = jsondata
+        if absenceList:
+           for absence in absenceList["absences"]:
+               myAbsence = Absence(studentname,absence)
+               self.addAbsence(myAbsence)
+        else:
+            logging.error("Abesence list is empty")
+            
 #Lessons
         logging.info("Collecting Lessons---------------------------------------------------")
 
@@ -268,6 +295,9 @@ class Pronote:
 
     def addStudent(self,student):
         self.studentList.append(student)
+        
+    def addAbsence(self,absence):
+        self.absenceList.append(absence)        
 
 class Grade:
     
@@ -536,3 +566,45 @@ class Student:
             logging.debug("Store student %s, %s, %s, %s",self.sid,self.studentFullname,self.studentSchool,self.studentClass)
             student_query = f"INSERT OR REPLACE INTO students VALUES (?, ?, ?, ?)"
             db.cur.execute(student_query, [self.sid,self.studentFullname,self.studentSchool,self.studentClass])
+            
+class Absence:
+
+    # Constructor
+    def __init__(self, studentname, eval):
+
+        # Init attributes
+        self.pid = None
+        self.periodName = None
+        self.periodStart = None
+        self.periodEnd = None
+        self.studentname = None
+        self.abid = None
+        self.absenceFrom = None
+        self.absenceTo = None
+        self.absenceJustified = None
+        self.absenceHours = None
+        self.absenceDays = None
+        self.absenceReasons = None
+
+        self.pid = absence["pid"]
+        self.periodName = absence["periodName"]
+        self.periodStart = absence["periodStart"]
+        self.periodEnd = absence["periodEnd"]
+        self.studentname= studentname
+        self.abid = absence["abid"]
+        self.absenceFrom = absence["absenceFrom"]
+        self.absenceTo = absence["absenceTo"]
+        self.absenceHours = absence["absenceHours"]
+        self.absenceDays = absence["absenceDays"]
+        self.absenceReasons = absence["absenceReasons"]
+
+
+    # Store measure to database
+    def store(self,db):
+
+        dbTable = "absences"
+
+        if dbTable:
+            logging.debug("Store absences %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.abid,self.absenceFrom,self.absenceTo,self.absenceJustified,self.absenceHours,self.absenceDays,self.absenceReasons)
+            absence_query = f"INSERT OR REPLACE INTO absences VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            db.cur.execute(absence_query, [self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.abid,self.absenceFrom,self.absenceTo,self.absenceJustified,self.absenceHours,self.absenceDays,self.absenceReasons])            

@@ -129,7 +129,7 @@ class Database:
                         , name TEXT
                         , domain TEXT
                         , teacher TEXT
-                        , coefficient TXT
+                        , coefficient TEXT
                         , description TEXT
                         , subject TEXT
                         , date TEXT
@@ -140,6 +140,25 @@ class Database:
                         , PRIMARY KEY(pid,eid,aid))''')
     self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_evaluations_pideid
                     ON evaluations (pid,eid,aid)''')
+   
+    # using key on period id and evalid
+    logging.debug("Creation of Absences table")
+    self.cur.execute('''CREATE TABLE IF NOT EXISTS absences (
+                        pid TEXT NOT NULL
+                        , period_name TEXT
+                        , period_start TEXT
+                        , period_end TEXT
+                        , studentname TEXT
+                        , abid TEXT NOT NULL
+                        , from_date TEXT
+                        , to_date TEXT
+                        , justified TEXT
+                        , hours TEXT
+                        , days TEXT
+                        , reasons TEXT
+                        , PRIMARY KEY(pid,abid))''')
+    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_absences_pidabid
+                    ON absences (pid,abid)''')   
    
     # using key on period id and evalid
     logging.debug("Creation of Lessons table")
@@ -295,6 +314,9 @@ class Database:
 
     logging.debug("Drop Student table")
     self.cur.execute('''DROP TABLE IF EXISTS students''')
+
+    logging.debug("Drop Absences table")
+    self.cur.execute('''DROP TABLE IF EXISTS absences''')
        
     # Commit work
     self.commit()
@@ -441,6 +463,22 @@ class Evaluations():
     self.acqName = result[14]
     self.acqLevel = result[15]
     self.acqCoefficient = result[16]
+
+class Evaluations():
+
+  def __init__(self,result):
+    self.pid = result[0]
+    self.period_name = result[1]
+    self.period_start = result[2]
+    self.period_end = result[3]
+    self.studentname = result[4]
+    self.abid = result[5]
+    self.absenceFrom = result[6]
+    self.absenceTo = result[7]
+    self.absenceJustified = result[8]
+    self.absenceHours = result[9]
+    self.absenceDays = result[10]
+    self.absenceReasons = result[11]
 
 class Lessons():
 
