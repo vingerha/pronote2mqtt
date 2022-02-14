@@ -181,6 +181,7 @@ class Pronote:
                     'abid': absence.id,
                     'absenceFrom': absence.from_date,
                     'absenceTo': absence.to_date,
+                    'absenceJustified': absence.justified,
                     'absenceHours': absence.hours,
                     'absenceDays': absence.days,
                     'absenceReasons': absence.reasons,
@@ -191,7 +192,7 @@ class Pronote:
                myAbsence = Absence(studentname,absence)
                self.addAbsence(myAbsence)
         else:
-            logging.error("Abesence list is empty")
+            logging.error("Absence list is empty")
             
 #Lessons
         logging.info("Collecting Lessons---------------------------------------------------")
@@ -570,7 +571,7 @@ class Student:
 class Absence:
 
     # Constructor
-    def __init__(self, studentname, eval):
+    def __init__(self, studentname, absence):
 
         # Init attributes
         self.pid = None
@@ -594,9 +595,11 @@ class Absence:
         self.abid = absence["abid"]
         self.absenceFrom = absence["absenceFrom"]
         self.absenceTo = absence["absenceTo"]
+        self.absenceJustified = absence["absenceJustified"]
         self.absenceHours = absence["absenceHours"]
         self.absenceDays = absence["absenceDays"]
-        self.absenceReasons = absence["absenceReasons"]
+        # make string form 'reasons' (as it is a list)
+        self.absenceReasons = ' '.join(absence["absenceReasons"])
 
 
     # Store measure to database
@@ -605,6 +608,6 @@ class Absence:
         dbTable = "absences"
 
         if dbTable:
-            logging.debug("Store absences %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.abid,self.absenceFrom,self.absenceTo,self.absenceJustified,self.absenceHours,self.absenceDays,self.absenceReasons)
-            absence_query = f"INSERT OR REPLACE INTO absences VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            logging.debug("Store absences %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.abid,self.absenceFrom,self.absenceTo,self.absenceJustified,self.absenceHours,self.absenceDays,self.absenceReasons)
+            absence_query = f"INSERT OR REPLACE INTO absences VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             db.cur.execute(absence_query, [self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.abid,self.absenceFrom,self.absenceTo,self.absenceJustified,self.absenceHours,self.absenceDays,self.absenceReasons])            

@@ -352,7 +352,15 @@ class Database:
 
     #load Evaluation
     for myStudent in self.studentList:
-        self._loadEvaluationsShort(myStudent)
+        self._loadEvaluationsShortList(myStudent)
+
+    #load Absence
+    for myStudent in self.studentList:
+        self._loadAbsenceShortList(myStudent)
+
+    #load Averages
+    for myStudent in self.studentList:
+        self._loadAverage(myStudent)
      
   # Load students
   def _loadStudents(self):
@@ -379,7 +387,7 @@ class Database:
       myHomework = Homework(result)
       student.homeworkList.append(myHomework)
 
-  def _loadEvaluationsShort(self,student):
+  def _loadEvaluationsShortList(self,student):
     # use the firstname to query the database
     # to improve: make name-format same across tables
     studentfirst=student.studentFullname.split(" ",1)[1]
@@ -389,12 +397,41 @@ class Database:
     query = f"SELECT * FROM evaluations WHERE studentname like '{studentfirst}' and date >= '{datestart}' ORDER by date"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
-    # Create object Homework
+    # Create object Eval
     for result in queryResult:
       myEvaluation = Evaluations(result)
       student.evaluationShortList.append(myEvaluation)
 
+  def _loadAbsenceShortList(self,student):
+    # use the firstname to query the database
+    # to improve: make name-format same across tables
+    studentfirst=student.studentFullname.split(" ",1)[1]
+    # not collecting all 
+    datestart = datetime.date.today() - relativedelta(days=30)
+    datestart = datestart.strftime("%Y-%m-%d %H:%M:%S")
+    query = f"SELECT * FROM absences WHERE studentname like '{studentfirst}' and from_date >= '{datestart}'  ORDER by from_date"
+    print('QRY: ', query)
+    self.cur.execute(query)
+    queryResult = self.cur.fetchall()
+    print('QR: ', queryResult)
+    # Create object Absence
+    for result in queryResult:
+      myAbsence = Absences(result)
+      student.absenceShortList.append(myAbsence)    
 
+  # Load homework
+  def _loadAverage(self,student):
+    # use the firstname to query the database
+    # to improve: make name-format same across tables
+    studentfirst=student.studentFullname.split(" ",1)[1]
+    # averages have been loaded for all periods but are the same for all periods, extracting only Yeardata
+    query = f"SELECT * FROM averages WHERE studentname like '{studentfirst}' and period_name like 'Année continue'"
+    self.cur.execute(query)
+    queryResult = self.cur.fetchall()
+    # Create object Homework
+    for result in queryResult:
+      myAverage = Averages(result)
+      student.averageList.append(myAverage)
 
 # class Grades...probably not needed as defined in separate pronote_eveline....py
 class Grades():
@@ -408,7 +445,7 @@ class Grades():
     self.gid = result[4]
     self.student = result[5]
     self.date = result[6]
-    self.subject = _convertDateTime(result[7])
+    self.subject = result[7]
     self.grade = result[8]
     self.outOf = result[9]
     self.defaultOutOf = result[10]
@@ -427,7 +464,7 @@ class Averages():
     self.studentname = result[4]
     self.student = result[5]
     self.classAverage = result[6]
-    self.max = _convertDateTime(result[7])
+    self.max = result[7]
     self.min = result[8]
     self.outOf = result[9]
     self.defaultOutOf = result[10]
@@ -464,7 +501,7 @@ class Evaluations():
     self.acqLevel = result[15]
     self.acqCoefficient = result[16]
 
-class Evaluations():
+class Absences():
 
   def __init__(self,result):
     self.pid = result[0]
@@ -512,4 +549,6 @@ class Student():
     self.studentClass = result[3]
     self.homeworkList = []
     self.evaluationShortList = []
+    self.absenceShortList = []
+    self.averageList = []    
    

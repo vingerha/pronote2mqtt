@@ -118,8 +118,64 @@ def run(myParams):
     logging.info("-----------------------------------------------------------")
     logging.info("Grades-----------------------------------------------------")
     myPronote = pronote.Pronote()
-
     
+#Kick off for Student 1
+    myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteStudent_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1)
+    if myParams.pronoteGradesAverages_1:
+        for myAverage in myPronote.averageList:
+            myAverage.store(myDb)
+        for myGrade in myPronote.gradeList:
+            myGrade.store(myDb)
+ 
+    for myPeriod in myPronote.periodList:
+        myPeriod.store(myDb)
+    
+    if not myParams.pronoteGradesAverages_1:    
+        for myEval in myPronote.evalList:
+            myEval.store(myDb)
+
+    for myLesson in myPronote.lessonList:
+        myLesson.store(myDb)
+
+    for myHomework in myPronote.homeworkList:
+        myHomework.store(myDb)
+
+    for myStudent in myPronote.studentList:
+        myStudent.store(myDb)
+        
+    for myAbsence in myPronote.absenceList:
+        myAbsence.store(myDb)
+    
+    myDb.commit()
+
+#Kick off for Student 2
+    myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteStudent_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2)
+    if myParams.pronoteGradesAverages_2:
+        for myAverage in myPronote.averageList:
+            myAverage.store(myDb)
+        for myGrade in myPronote.gradeList:
+            myGrade.store(myDb)
+ 
+    for myPeriod in myPronote.periodList:
+        myPeriod.store(myDb)
+    
+    if not myParams.pronoteGradesAverages_2:    
+        for myEval in myPronote.evalList:
+            myEval.store(myDb)
+
+    for myLesson in myPronote.lessonList:
+        myLesson.store(myDb)
+
+    for myHomework in myPronote.homeworkList:
+        myHomework.store(myDb)
+        
+    for myStudent in myPronote.studentList:
+        myStudent.store(myDb)
+        
+    for myAbsence in myPronote.absenceList:
+        myAbsence.store(myDb)        
+    
+    myDb.commit()
     
     
     ####################################################################################################################
@@ -220,7 +276,7 @@ def run(myParams):
                 myEntity.setValue(myStudent.studentFullname)
                 myEntity.addAttribute("current_class",myStudent.studentClass)
                 myEntity.addAttribute("load_time",datetime.date.today().strftime("%Y/%m/%d"))                    
-                logging.info("Collecting and Publishing values Evaluation from shortlist (last x days)...")
+                
                 attributes = {}
                 if myStudent.evaluationShortList:
                     logging.info("Collecting and Publishing values Evaluation from shortlist (last x days)...")
@@ -230,7 +286,8 @@ def run(myParams):
                     attributes[f'acquisition_name'] = []
                     attributes[f'acquisition_level'] = []
                     for myEvaluation in myStudent.evaluationShortList:
-                        # Store evaluation into sensor
+                        # Store homework into sensor
+                        print('evaldate: ', myEvaluation.evalDate)
                         attributes[f'date'].append(myEvaluation.evalDate.split("/",1)[1])
                         attributes[f'subject'].append(myEvaluation.evalSubject)
                         attributes[f'acquisition_name'].append(myEvaluation.acqName)
@@ -242,69 +299,7 @@ def run(myParams):
                     myEntity.addAttribute("acquisition_name",attributes[f'acquisition_name'])
                     myEntity.addAttribute("acquisition_level",attributes[f'acquisition_level'])
                                   
-                    logging.info("Evaluation added to HA sensor !")
-                
-                # create absences sensor
-                logging.info("Creation of the Absences entity")
-                myEntity = hass.Entity(myDevice,hass.SENSOR,'absence','absence',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)
-                myEntity.addAttribute("current_class",myStudent.studentClass)
-                myEntity.addAttribute("load_time",datetime.date.today().strftime("%Y/%m/%d"))                    
-                logging.info("Collecting and Publishing values Absences from shortlist (last x days)...")
-                attributes = {}
-                if myStudent.absenceShortList:
-                    logging.info("Collecting and Publishing values Absence from shortlist (last x days)...")
-                    logging.info("---------------------------------")
-                    attributes[f'from_date'] = []
-                    attributes[f'hours'] = []
-                    attributes[f'justified'] = []
-                    attributes[f'reasons'] = []
-                    for myAbsence in myStudent.absenceShortList:
-                        # Store evaluation into sensor
-                        attributes[f'from_date'].append(myAbsence.absenceFrom.split("-",1)[1].replace('-','/'))
-                        attributes[f'hours'].append(myAbsence.absenceHours)
-                        attributes[f'justified'].append(myAbsence.absenceJustified)
-                        attributes[f'reasons'].append(myAbsence.absenceReasons)
-                        
-                       
-                    myEntity.addAttribute("date",attributes[f'from_date'])
-                    myEntity.addAttribute("hours",attributes[f'hours'])
-                    myEntity.addAttribute("justified",attributes[f'justified'])
-                    myEntity.addAttribute("reason",attributes[f'reasons'])
-                                  
-                    logging.info("Absence added to HA sensor !")  
-
-                # create averages sensor
-                logging.info("Creation of the Averages entity")
-                myEntity = hass.Entity(myDevice,hass.SENSOR,'average','average',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)
-                myEntity.addAttribute("current_class",myStudent.studentClass)
-                myEntity.addAttribute("load_time",datetime.date.today().strftime("%Y/%m/%d"))                    
-                logging.info("Collecting and Publishing values Averages from shortlist (last x days)...")
-                attributes = {}
-                if myStudent.averageList:
-                    logging.info("Collecting and Publishing values Average from shortlist (last x days)...")
-                    logging.info("---------------------------------")
-                    attributes[f'subject'] = []
-                    attributes[f'student_average'] = []
-                    attributes[f'class_average'] = []
-                    attributes[f'max'] = []
-                    attributes[f'min'] = []
-                    for myAverage in myStudent.averageList:
-                        # Store evaluation into sensor
-                        attributes[f'subject'].append(myAverage.subject)
-                        attributes[f'student_average'].append(myAverage.defaultOutOf)
-                        attributes[f'class_average'].append(myAverage.classAverage)
-                        attributes[f'max'].append(myAverage.max)
-                        attributes[f'min'].append(myAverage.min)
-                        
-                    myEntity.addAttribute("subject",attributes[f'subject'])   
-                    myEntity.addAttribute("student_average",attributes[f'student_average'])
-                    myEntity.addAttribute("class_average",attributes[f'class_average'])
-                    myEntity.addAttribute("max",attributes[f'max'])
-                    myEntity.addAttribute("min",attributes[f'min'])
-                                  
-                    logging.info("Average added to HA sensor !")                         
+                    logging.info("Evaluation added to HA sensor !")                    
                 
   
                 

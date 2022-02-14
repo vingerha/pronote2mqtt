@@ -61,7 +61,7 @@ class Params:
     self.hassPeriodSensorCount = 10
     
     # Database params
-    self.dbInit = True
+    self.dbInit = False
     self.dbPath = './data'
     
     # Debug params
