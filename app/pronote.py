@@ -172,7 +172,7 @@ class Pronote:
         periods = client.periods
         jsondata['absences'] = []
         for period in periods:
-            for abssence in period.absences:
+            for absence in period.absences:
                 jsondata['absences'].append({
                     'pid': period.id,
                     'periodName': period.name,
