@@ -1,6 +1,6 @@
 FROM python:3.9.7-slim
 
-COPY ./app /app
+COPY ./app /appbase
 
 RUN apt-get update && \
     apt-get install -y locales && \
@@ -25,5 +25,8 @@ RUN pip3 install --upgrade pip && \
 #COPY ./app/ent.py /usr/local/lib/python3.9/site-packages/pronotepy/ent.py
 COPY ./app/__init__.py /usr/local/lib/python3.9/site-packages/pronotepy/__init__.py
 COPY ./app/dataClasses.py /usr/local/lib/python3.9/site-packages/pronotepy/dataClasses.py
+
+#assuming docker moutn contains a volume mappes to app
+COPY ./appbase /app
 
 CMD ["python3", "/app/pronote2mqtt.py"]

@@ -10,7 +10,6 @@ from dateutil.relativedelta import relativedelta
 import logging
 
 import mqtt
-#import standalone
 import hass
 import param
 import database
@@ -95,7 +94,7 @@ def run(myParams):
         if dbVersion == P2M_DB_VERSION:
             logging.info("Your database is already up to date : version %s.",P2M_DB_VERSION)
 
-            # Display current database statistics
+            # Display some (!) current database statistics
             logging.info("Retrieve database statistics...")
             dbStats = myDb.getGradesCount()
             logging.info("%s informatives grades stored", dbStats["rows"])
@@ -119,6 +118,63 @@ def run(myParams):
     logging.info("Grades-----------------------------------------------------")
     myPronote = pronote.Pronote()
 
+#Kick off for Student 1
+    myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteStudent_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1)
+    if myParams.pronoteGradesAverages_1:
+        for myAverage in myPronote.averageList:
+            myAverage.store(myDb)
+        for myGrade in myPronote.gradeList:
+            myGrade.store(myDb)
+ 
+    for myPeriod in myPronote.periodList:
+        myPeriod.store(myDb)
+    
+    if not myParams.pronoteGradesAverages_1:    
+        for myEval in myPronote.evalList:
+            myEval.store(myDb)
+
+    for myLesson in myPronote.lessonList:
+        myLesson.store(myDb)
+
+    for myHomework in myPronote.homeworkList:
+        myHomework.store(myDb)
+
+    for myStudent in myPronote.studentList:
+        myStudent.store(myDb)
+        
+    for myAbsence in myPronote.absenceList:
+        myAbsence.store(myDb)
+    
+    myDb.commit()
+
+#Kick off for Student 2
+    myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteStudent_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2)
+    if myParams.pronoteGradesAverages_2:
+        for myAverage in myPronote.averageList:
+            myAverage.store(myDb)
+        for myGrade in myPronote.gradeList:
+            myGrade.store(myDb)
+ 
+    for myPeriod in myPronote.periodList:
+        myPeriod.store(myDb)
+    
+    if not myParams.pronoteGradesAverages_2:    
+        for myEval in myPronote.evalList:
+            myEval.store(myDb)
+
+    for myLesson in myPronote.lessonList:
+        myLesson.store(myDb)
+
+    for myHomework in myPronote.homeworkList:
+        myHomework.store(myDb)
+        
+    for myStudent in myPronote.studentList:
+        myStudent.store(myDb)
+        
+    for myAbsence in myPronote.absenceList:
+        myAbsence.store(myDb)        
+    
+    myDb.commit()
     
     
     
@@ -173,7 +229,7 @@ def run(myParams):
                 logging.info("---------------------------------")
                 
                 # Create the device corresponding to the user
-                deviceId = myParams.hassDeviceName.replace(" ","_") + "_" +  myStudent.sid
+                deviceId = myParams.hassDeviceName.replace(" ","_") + "_" +  myStudent.studentFullname.replace(" ","_")
                 deviceName = myParams.hassDeviceName + " " +  myStudent.studentFullname
                 myDevice = hass.Device(myHass,myStudent.sid,deviceId,deviceName)
                 
@@ -187,9 +243,7 @@ def run(myParams):
                 # create homework sensor
                 logging.info("Creation of the HOMEWORK entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'homework','homework',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)
-                myEntity.addAttribute("current_class",myStudent.studentClass)
-                myEntity.addAttribute("load_time",datetime.date.today().strftime("%Y/%m/%d"))                    
+                myEntity.setValue(myStudent.studentFullname)                 
                 
                 attributes = {}
                 if myStudent.homeworkList:
@@ -217,9 +271,7 @@ def run(myParams):
                 # create evaluation sensor
                 logging.info("Creation of the EVALUATION/Acquisitions entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'evaluation','evaluation',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)
-                myEntity.addAttribute("current_class",myStudent.studentClass)
-                myEntity.addAttribute("load_time",datetime.date.today().strftime("%Y/%m/%d"))                    
+                myEntity.setValue(myStudent.studentFullname)                 
                 logging.info("Collecting and Publishing values Evaluation from shortlist (last x days)...")
                 attributes = {}
                 if myStudent.evaluationShortList:
@@ -247,9 +299,7 @@ def run(myParams):
                 # create absences sensor
                 logging.info("Creation of the Absences entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'absence','absence',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)
-                myEntity.addAttribute("current_class",myStudent.studentClass)
-                myEntity.addAttribute("load_time",datetime.date.today().strftime("%Y/%m/%d"))                    
+                myEntity.setValue(myStudent.studentFullname)                  
                 logging.info("Collecting and Publishing values Absences from shortlist (last x days)...")
                 attributes = {}
                 if myStudent.absenceShortList:
@@ -261,7 +311,7 @@ def run(myParams):
                     attributes[f'reasons'] = []
                     for myAbsence in myStudent.absenceShortList:
                         # Store evaluation into sensor
-                        attributes[f'from_date'].append(myAbsence.absenceFrom.split("-",1)[1].replace('-','/'))
+                        attributes[f'from_date'].append(myAbsence.absenceFrom.split("/",1)[1])
                         attributes[f'hours'].append(myAbsence.absenceHours)
                         attributes[f'justified'].append(myAbsence.absenceJustified)
                         attributes[f'reasons'].append(myAbsence.absenceReasons)
@@ -277,9 +327,7 @@ def run(myParams):
                 # create averages sensor
                 logging.info("Creation of the Averages entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'average','average',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)
-                myEntity.addAttribute("current_class",myStudent.studentClass)
-                myEntity.addAttribute("load_time",datetime.date.today().strftime("%Y/%m/%d"))                    
+                myEntity.setValue(myStudent.studentFullname)                
                 logging.info("Collecting and Publishing values Averages from shortlist (last x days)...")
                 attributes = {}
                 if myStudent.averageList:
@@ -306,7 +354,41 @@ def run(myParams):
                                   
                     logging.info("Average added to HA sensor !")                         
                 
-  
+                # create grades sensor
+                logging.info("Creation of the Grades entity")
+                myEntity = hass.Entity(myDevice,hass.SENSOR,'grade','grade',hass.NONE_TYPE,None,None)
+                myEntity.setValue(myStudent.studentFullname)                  
+                logging.info("Collecting and Publishing values Grades from shortlist (last x days)...")
+                attributes = {}
+                if myStudent.gradeList:
+                    logging.info("Collecting and Publishing values Grades from shortlist (last x days)...")
+                    logging.info("---------------------------------")
+                    attributes[f'date'] = []
+                    attributes[f'subject'] = []
+                    attributes[f'student_grade'] = []
+                    attributes[f'class_average'] = []
+                    attributes[f'coefficient'] = []
+                    attributes[f'max'] = []
+                    attributes[f'min'] = []
+                    for myGrade in myStudent.gradeList:
+                        # Store evaluation into sensor
+                        attributes[f'date'].append(myGrade.date.split("/",1)[1])
+                        attributes[f'subject'].append(myGrade.subject)
+                        attributes[f'student_grade'].append(myGrade.defaultOutOf)
+                        attributes[f'class_average'].append(myGrade.average)
+                        attributes[f'coefficient'].append(myGrade.average)
+                        attributes[f'max'].append(myGrade.max)
+                        attributes[f'min'].append(myGrade.min)
+                    
+                    myEntity.addAttribute("date",attributes[f'date'])                    
+                    myEntity.addAttribute("subject",attributes[f'subject'])   
+                    myEntity.addAttribute("student_grade",attributes[f'student_grade'])
+                    myEntity.addAttribute("class_average",attributes[f'class_average'])
+                    myEntity.addAttribute("coefficient",attributes[f'coefficient'])
+                    myEntity.addAttribute("max",attributes[f'max'])
+                    myEntity.addAttribute("min",attributes[f'min'])
+                                  
+                    logging.info("Grade added to HA sensor !")   
                 
                 # Publish config, state (when value not none), attributes (when not none)
                 logging.info("Publishing period devices...")

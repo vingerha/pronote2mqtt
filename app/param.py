@@ -21,28 +21,28 @@ class Params:
     # Step 1 : set default params
     
     # Pronote params child 1 (setup to support 2 children, see pronote2mqtt.py)
-    self.pronoteStudent_1 = 'eveline'
-    self.pronoteUsername_1 = 'eveline.vingerhoeds2'
-    self.pronotePassword_1 = 'sanyo123'
-    self.pronotePrefixUrl_1 = '0061642c'
+    self.pronoteStudent_1 = ''
+    self.pronoteUsername_1 = ''
+    self.pronotePassword_1 = ''
+    self.pronotePrefixUrl_1 = ''
     self.pronoteEnt_1 = True
-    self.pronoteCas_1 = "atrium_sud"
+    self.pronoteCas_1 = ""
     self.pronoteGradesAverages_1 = True
     
-    self.pronoteStudent_2 = 'florian'
-    self.pronoteUsername_2 = 'florian.vingerhoeds'
-    self.pronotePassword_2 = 'Sanyo_123'
-    self.pronotePrefixUrl_2 = '0061670h'
+    self.pronoteStudent_2 = ''
+    self.pronoteUsername_2 = ''
+    self.pronotePassword_2 = ''
+    self.pronotePrefixUrl_2 = ''
     self.pronoteEnt_2 = True
-    self.pronoteCas_2 = 'agora06'
-    self.pronoteGradesAverages_2 = False
+    self.pronoteCas_2 = ''
+    self.pronoteGradesAverages_2 = False # if your child does not have grades ('colors')
     
     # Mqtt params
-    self.mqttHost = '192.168.1.20'
+    self.mqttHost = ''
     self.mqttPort = 1883
-    self.mqttClientId = 'pronote2mqtt'
-    self.mqttUsername = 'iotlink_user'
-    self.mqttPassword = 'Sanyo_123'
+    self.mqttClientId = ''
+    self.mqttUsername = ''
+    self.mqttPassword = ''
     self.mqttQos = 1
     self.mqttTopic = 'pronote'
     self.mqttRetain = True
