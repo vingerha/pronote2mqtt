@@ -7,8 +7,6 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
     
 RUN mkdir -p /data
-RUN mkdir -p /appbase
-COPY ./app /appbase
     
 ENV LANG fr_FR.UTF-8
 ENV LC_ALL fr_FR.UTF-8
@@ -27,6 +25,6 @@ COPY ./app/__init__.py /usr/local/lib/python3.9/site-packages/pronotepy/__init__
 COPY ./app/dataClasses.py /usr/local/lib/python3.9/site-packages/pronotepy/dataClasses.py
 
 #assuming docker moutn contains a volume mappes to app
-COPY ./appbase /app
+COPY ./app /app
 
 CMD ["python3", "/app/pronote2mqtt.py"]
