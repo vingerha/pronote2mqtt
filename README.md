@@ -44,8 +44,7 @@ The 'data' folder will contain the sqlite3 database: pronote2mqtt.db
 This is a package undergoing development.
 
 #### Testing the package
-To self test pronote2mqtt, run the docker container 
-'docker run --name pronote2mqtt_test --tty vingerha/pronote2mqtt:latest'
+To self test pronote2mqtt, run the docker container: `docker run --name pronote2mqtt_test --tty vingerha/pronote2mqtt:latest`
 after the run, in the container you will find a pronote2mqtt.db in /data (which is also a parmetered value)
 
 Or from commandline, in the folder where you stored the files form /app, using this command:
