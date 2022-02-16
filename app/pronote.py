@@ -37,7 +37,10 @@ class Pronote:
     def getData(self,prefix_url,username,password,studentname,cas,GradeAverage):
 #    def getData(self,prefix_url,GradeAverage):
         self.isConnected = False
-        _ent = getattr(ent, cas)
+        if cas:
+            _ent = getattr(ent, cas)
+        else
+            _ent = ''
         client = pronotepy.Client('https://'+prefix_url+'.index-education.net/pronote/eleve.html', username, password, _ent)
         if client.logged_in:
            self.isConnected = True
