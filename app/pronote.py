@@ -14,8 +14,8 @@ import ent
 #password="pronotevs" # mot de passe pronote - a remplacer par le mot de passe du compte de l'élève
 
 #Hardcoded (to be improved)
-lessonDays=10
-homeworkDays=10
+lessonDays=15
+homeworkDays=15
 
 class Pronote:
     def __init__(self):
@@ -75,6 +75,7 @@ class Pronote:
                         'average': grade.average,           
                         'max': grade.max,
                         'min': grade.min,
+                        'comment': grade.comment,
                 })
             gradeList = jsondata
 
@@ -199,14 +200,14 @@ class Pronote:
 
         jsondata['lessons'] = []
         index = 0
-        dateLesson = date.today() + timedelta(days = 10)
+        dateLesson = date.today()
         #Get lessons over X period
         while index <= lessonDays:
             lessons = client.lessons(dateLesson)
             for lesson in lessons:
                 jsondata['lessons'].append({
                     'lid': lesson.id,
-                    'lessonDateTime': lesson.start.strftime("%Y/%m/%d, %H:%M"),
+                    'lessonDateTime': lesson.start.strftime("%Y/%m/%d %H:%M"),
                     'lessonStart': lesson.start.strftime("%H:%M"),
                     'lessonEnd': lesson.end.strftime("%H:%M"),
                     'lessonSubject': lesson.subject.name,
@@ -229,7 +230,7 @@ class Pronote:
         logging.info("Collecting Homework---------------------------------------------------")
         jsondata['homework'] = []
         index = 0
-        dateHomework = date.today() + timedelta(days = 10)
+        dateHomework = date.today()
         #Get lessons over X period
         while index <= homeworkDays:
             homework = client.homework(dateHomework)
@@ -317,6 +318,7 @@ class Grade:
         self.average = None
         self.max = None
         self.min = None
+        self.comment = None
 
         self.pid = grade["pid"]
         self.periodName = grade["periodName"]
@@ -333,6 +335,7 @@ class Grade:
         self.average = grade["average"]
         self.max = grade["max"]
         self.min =  grade["min"]
+        self.comment =  grade["comment"]
 
 
     # Store measure to database
@@ -341,10 +344,10 @@ class Grade:
         dbTable = "grades"
 
         if dbTable:
-            logging.debug("Store grades %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",self.pid,self.periodName,self.periodStart,self.periodEnd, \
-                          self.gid,self.student,str(self.date),self.subject,self.grade,self.outOf,self.defaultOutOf,self.coefficient,self.average,self.max,self.min)
-            grade_query = f"INSERT OR REPLACE INTO grades VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-            db.cur.execute(grade_query, [self.pid,self.periodName,self.periodStart,self.periodEnd,self.gid,self.student,self.date,self.subject,self.grade,self.outOf,self.defaultOutOf,self.coefficient,self.average,self.max,self.min])
+            logging.debug("Store grades %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",self.pid,self.periodName,self.periodStart,self.periodEnd, \
+                          self.gid,self.student,str(self.date),self.subject,self.grade,self.outOf,self.defaultOutOf,self.coefficient,self.average,self.max,self.min, self.comment)
+            grade_query = f"INSERT OR REPLACE INTO grades VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            db.cur.execute(grade_query, [self.pid,self.periodName,self.periodStart,self.periodEnd,self.gid,self.student,self.date,self.subject,self.grade,self.outOf,self.defaultOutOf,self.coefficient,self.average,self.max,self.min,self.comment])
 
 class Average:
 

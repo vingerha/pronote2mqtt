@@ -370,6 +370,7 @@ def run(myParams):
                     attributes[f'coefficient'] = []
                     attributes[f'max'] = []
                     attributes[f'min'] = []
+                    attributes[f'comment'] = []
                     for myGrade in myStudent.gradeList:
                         # Store evaluation into sensor
                         attributes[f'date'].append(myGrade.date.split("/",1)[1])
@@ -379,6 +380,7 @@ def run(myParams):
                         attributes[f'coefficient'].append(myGrade.coefficient)
                         attributes[f'max'].append(myGrade.max)
                         attributes[f'min'].append(myGrade.min)
+                        attributes[f'comment'].append(myGrade.comment)
                     
                     myEntity.addAttribute("date",attributes[f'date'])                    
                     myEntity.addAttribute("subject",attributes[f'subject'])   
@@ -387,8 +389,41 @@ def run(myParams):
                     myEntity.addAttribute("coefficient",attributes[f'coefficient'])
                     myEntity.addAttribute("max",attributes[f'max'])
                     myEntity.addAttribute("min",attributes[f'min'])
+                    myEntity.addAttribute("comment",attributes[f'comment'])
                                   
-                    logging.info("Grade added to HA sensor !")   
+                    logging.info("Grade added to HA sensor !")
+
+                # create lessons sensor
+                logging.info("Creation of the Lesson entity")
+                myEntity = hass.Entity(myDevice,hass.SENSOR,'lesson','lesson',hass.NONE_TYPE,None,None)
+                myEntity.setValue(myStudent.studentFullname)                  
+                attributes = {}
+                if myStudent.lessonShortList:
+                    logging.info("Collecting and Publishing values Lessons from shortlist (last x days)...")
+                    logging.info("---------------------------------")
+                    attributes[f'date'] = []
+                    attributes[f'start'] = []
+                    attributes[f'end'] = []
+                    attributes[f'subject'] = []
+                    attributes[f'canceled'] = []
+                    attributes[f'status'] = []
+                    for myLesson in myStudent.lessonShortList:
+                        # Store evaluation into sensor
+                        attributes[f'date'].append(myLesson.lessonDateTime.split("/",1)[1])
+                        attributes[f'start'].append(myLesson.lessonStart)
+                        attributes[f'end'].append(myLesson.lessonEnd)
+                        attributes[f'subject'].append(myLesson.lessonSubject)
+                        attributes[f'canceled'].append(myLesson.lessonCanceled)
+                        attributes[f'status'].append(myLesson.lessonStatus)
+                    
+                    myEntity.addAttribute("date",attributes[f'date'])                    
+                    myEntity.addAttribute("start",attributes[f'start'])   
+                    myEntity.addAttribute("end",attributes[f'end'])
+                    myEntity.addAttribute("subject",attributes[f'subject'])
+                    myEntity.addAttribute("canceled",attributes[f'canceled'])
+                    myEntity.addAttribute("status",attributes[f'status'])
+                                  
+                    logging.info("Lesson added to HA sensor !")                      
                 
                 # Publish config, state (when value not none), attributes (when not none)
                 logging.info("Publishing period devices...")

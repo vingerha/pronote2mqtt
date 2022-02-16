@@ -56,26 +56,23 @@ class Database:
     self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_config_key
                             ON config (key)''')
                             
-    ## Create table of  Periods
+    ## Create table of  Students
     logging.debug("Creation of Students table")
     self.cur.execute('''CREATE TABLE IF NOT EXISTS students (
                         sid TEXT
                         , fullname TEXT
                         , school TEXT
                         , class TEXT
-                        , PRIMARY KEY (sid,fullname))''')
-
+                        , PRIMARY KEY (fullname))''')
     ## Create table of  Periods
     logging.debug("Creation of Period table")
     self.cur.execute('''CREATE TABLE IF NOT EXISTS periods (
-                        pid TEXT PRIMARY KEY
+                        pid TEXT
                         , studentname TEXT
                         , name TEXT
                         , start TEXT
-                        , end TEXT)''')
-    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_periods_pid
-                    ON periods (pid)''')
-
+                        , end TEXT
+                        , PRIMARY KEY (studentname,name,start))''')
     ## Create table of grades
     logging.debug("Creation of Grade table")
     self.cur.execute('''CREATE TABLE IF NOT EXISTS grades (
@@ -92,11 +89,12 @@ class Database:
                         , default_out_of TYPE TEXT
                         , coefficient TYPE TEXT
                         , average TYPE TEXT
-                        , max TYPE TEXT
-                        , min TYPE TEXT
-                        , PRIMARY KEY (pid,gid,subject))''')
-    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_grades_gid
-                    ON grades (pid,gid)''')
+                        , max TEXT
+                        , min TEXT
+                        , comment TYPE TEXT
+                        , PRIMARY KEY (period_name,date,subject,comment))''')
+    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_grades_date
+                    ON grades (period_name,date,subject,comment)''')
 
     ## Create table of averages
     ## pronote does not supply an id used period-id
@@ -114,9 +112,7 @@ class Database:
                         , out_of TYPE TEXT
                         , default_out_of TYPE TEXT
                         , subject TYPE TEXT NOT NULL
-			, PRIMARY KEY(pid,studentname,subject))''')
-    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_averages_pid
-                    ON averages (pid,studentname,subject)''')
+			, PRIMARY KEY(period_name,studentname,subject))''')
 
     # using key on period id and evalid
     logging.debug("Creation of Evaluations table")
@@ -138,9 +134,9 @@ class Database:
                         , acquisition_name TEXT
                         , acquisition_level TEXT
                         , acquisition_coefficient TEXT
-                        , PRIMARY KEY(pid,eid,aid))''')
-    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_evaluations_pideid
-                    ON evaluations (pid,eid,aid)''')
+                        , PRIMARY KEY(period_name,studentname,subject,date,aid))''')
+    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_evaluations_aid
+                    ON evaluations (period_name,studentname,subject,date,aid)''')
    
     # using key on period id and evalid
     logging.debug("Creation of Absences table")
@@ -157,9 +153,9 @@ class Database:
                         , hours TEXT
                         , days TEXT
                         , reasons TEXT
-                        , PRIMARY KEY(pid,abid))''')
+                        , PRIMARY KEY(period_name,studentname,from_date,reasons))''')
     self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_absences_pidabid
-                    ON absences (pid,abid)''')   
+                    ON absences (period_name,studentname,from_date,reasons)''')   
    
     # using key on period id and evalid
     logging.debug("Creation of Lessons table")
@@ -173,9 +169,9 @@ class Database:
                         , lessonRoom TEXT
                         , lessonCanceled TEXT
                         , lessonStatus TEXT
-                        , PRIMARY KEY(lid,studentname))''')
+                        , PRIMARY KEY(studentname,lessonDateTime,lessonSubject))''')
     self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_lessons_lid
-                    ON lessons (lid,studentname)''')
+                    ON lessons (studentname,lessonDateTime,LessonSubject)''')
 
     # using key on period id and evalid
     logging.debug("Creation of Homework table")
@@ -186,9 +182,9 @@ class Database:
                         , homeworkDescription TEXT
                         , homeworkDone TEXT
                         , homeworkDate TEXT
-                        , PRIMARY KEY(hid,studentname))''')
+                        , PRIMARY KEY(studentname,homeworkDate,homeworkSubject,homeworkDescription))''')
     self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_homework_hid
-                    ON homework (hid,studentname)''')
+                    ON homework (studentname,homeworkDate,homeworkSubject)''')
 
 
     # Commit
@@ -366,6 +362,10 @@ class Database:
     #load Grade
     for myStudent in self.studentList:
         self._loadGradesShortList(myStudent)        
+
+    #load Lessons
+    for myStudent in self.studentList:
+        self._loadLessonsShortList(myStudent)
      
   # Load students
   def _loadStudents(self):
@@ -384,7 +384,7 @@ class Database:
     # use the firstname to query the database
     # to improve: make name-format same across tables
     studentfirst=student.studentFullname.split(" ",1)[1]
-    query = f"SELECT * FROM homework WHERE studentname like '{studentfirst}'"
+    query = f"SELECT * FROM homework WHERE studentname like '{studentfirst}' order by homeworkDate"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Homework
@@ -414,7 +414,7 @@ class Database:
     # not collecting all 
     datestart = datetime.date.today() - relativedelta(days=30)
     datestart = datestart.strftime("%Y/%m/%d %H:%M")
-    query = f"SELECT * FROM absences WHERE studentname like '{studentfirst}' and from_date >= '{datestart}' and period_name like 'Année continue' ORDER by from_date"
+    query = f"SELECT * FROM absences WHERE studentname like '{studentfirst}' and from_date >= '{datestart}' and period_name like 'Année continue'"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Absence
@@ -449,7 +449,23 @@ class Database:
     # Create object Homework
     for result in queryResult:
       myGrade = Grades(result)
-      student.gradeList.append(myGrade)      
+      student.gradeList.append(myGrade)  
+   # load lessons
+  def _loadLessonsShortList(self,student):
+    # use the firstname to query the database
+    # to improve: make name-format same across tables
+    studentfirst=student.studentFullname.split(" ",1)[1]
+    # not collecting all 
+    datestart = datetime.date.today().strftime("%Y/%m/%d %H:%M")
+    dateend = datetime.date.today() + relativedelta(days=7)
+    dateend = dateend.strftime("%Y/%m/%d %H:%M")
+    query = f"SELECT * FROM lessons WHERE studentname like '{studentfirst}' and lessonDateTime between '{datestart}' and '{dateend}' ORDER by lessonDateTime"
+    self.cur.execute(query)
+    queryResult = self.cur.fetchall()
+    # Create object Eval
+    for result in queryResult:
+      myLesson = Lessons(result)
+      student.lessonShortList.append(myLesson)      
 
 # classes
 class Grades():
@@ -471,6 +487,7 @@ class Grades():
     self.average = result[12]
     self.max = result[13]
     self.min = result[14]
+    self.comment = result[15]
 
 class Averages():
 
@@ -570,4 +587,4 @@ class Student():
     self.absenceShortList = []
     self.averageList = []    
     self.gradeList = []    
-   
+    self.lessonShortList = []
