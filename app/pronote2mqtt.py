@@ -8,6 +8,7 @@ import schedule
 import time
 from dateutil.relativedelta import relativedelta
 import logging
+import collections
 
 import mqtt
 import hass
@@ -115,10 +116,10 @@ def run(myParams):
     logging.info("-----------------------------------------------------------")
     logging.info("#          Collection from Pronote                         #")
     logging.info("-----------------------------------------------------------")
-    logging.info("Grades-----------------------------------------------------")
     myPronote = pronote.Pronote()
 
 #Kick off for Student 1
+    logging.info("Student 1-----------------------------------------------------")
     myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteStudent_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1)
     if myParams.pronoteGradesAverages_1:
         for myAverage in myPronote.averageList:
@@ -148,36 +149,36 @@ def run(myParams):
     myDb.commit()
 
 #Kick off for Student 2
-    myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteStudent_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2)
-    if myParams.pronoteGradesAverages_2:
-        for myAverage in myPronote.averageList:
-            myAverage.store(myDb)
-        for myGrade in myPronote.gradeList:
-            myGrade.store(myDb)
- 
-    for myPeriod in myPronote.periodList:
-        myPeriod.store(myDb)
-    
-    if not myParams.pronoteGradesAverages_2:    
-        for myEval in myPronote.evalList:
-            myEval.store(myDb)
-
-    for myLesson in myPronote.lessonList:
-        myLesson.store(myDb)
-
-    for myHomework in myPronote.homeworkList:
-        myHomework.store(myDb)
+    if myParams.pronoteUsername_2:
+        logging.info("Student 2-----------------------------------------------------")
+        myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteStudent_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2)
+        if myParams.pronoteGradesAverages_2:
+            for myAverage in myPronote.averageList:
+                myAverage.store(myDb)
+            for myGrade in myPronote.gradeList:
+                myGrade.store(myDb)
+     
+        for myPeriod in myPronote.periodList:
+            myPeriod.store(myDb)
         
-    for myStudent in myPronote.studentList:
-        myStudent.store(myDb)
+        if not myParams.pronoteGradesAverages_2:    
+            for myEval in myPronote.evalList:
+                myEval.store(myDb)
+
+        for myLesson in myPronote.lessonList:
+            myLesson.store(myDb)
+
+        for myHomework in myPronote.homeworkList:
+            myHomework.store(myDb)
+            
+        for myStudent in myPronote.studentList:
+            myStudent.store(myDb)
+            
+        for myAbsence in myPronote.absenceList:
+            myAbsence.store(myDb)        
         
-    for myAbsence in myPronote.absenceList:
-        myAbsence.store(myDb)        
-    
-    myDb.commit()
-    
-    
-    
+        myDb.commit()
+   
     ####################################################################################################################
     # STEP 2 : Connect to MQTT
     ####################################################################################################################
@@ -258,8 +259,7 @@ def run(myParams):
                         attributes[f'date'].append(myHomework.homeworkDate.split("/",1)[1])
                         attributes[f'title'].append(myHomework.homeworkSubject)
                         attributes[f'description'].append(myHomework.homeworkDescription)
-                        attributes[f'done'].append(myHomework.homeworkDone)
-                        
+                        attributes[f'done'].append(myHomework.homeworkDone)                       
                        
                     myEntity.addAttribute("date",attributes[f'date'])
                     myEntity.addAttribute("title",attributes[f'title'])
@@ -376,7 +376,7 @@ def run(myParams):
                         attributes[f'subject'].append(myGrade.subject)
                         attributes[f'student_grade'].append(myGrade.defaultOutOf)
                         attributes[f'class_average'].append(myGrade.average)
-                        attributes[f'coefficient'].append(myGrade.average)
+                        attributes[f'coefficient'].append(myGrade.coefficient)
                         attributes[f'max'].append(myGrade.max)
                         attributes[f'min'].append(myGrade.min)
                     

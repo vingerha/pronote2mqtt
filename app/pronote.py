@@ -5,8 +5,6 @@ from datetime import timedelta
 import json
 import logging
 import math
-#from pronotepy.ent import atrium_sud
-#from ent import atrium_sud
 import ent
 
 #Variables 
@@ -104,7 +102,6 @@ class Pronote:
                         'subject': average.subject.name,
                 })
             averageList = jsondata
-            print('AVGList: ', averageList)
             if averageList:
                for average in averageList["averages"]:
                    myAverage = Average(studentname,average)
@@ -202,8 +199,6 @@ class Pronote:
         dateLesson = date.today() + timedelta(days = 10)
         #Get lessons over X period
         while index <= lessonDays:
-            print('index:', index)
-            print('dateLesson', dateLesson)
             lessons = client.lessons(dateLesson)
             for lesson in lessons:
                 jsondata['lessons'].append({
@@ -234,8 +229,6 @@ class Pronote:
         dateHomework = date.today() + timedelta(days = 10)
         #Get lessons over X period
         while index <= homeworkDays:
-            print('index:', index)
-            print('dateHW', dateHomework)
             homework = client.homework(dateHomework)
             for hw in homework:
                 jsondata['homework'].append({

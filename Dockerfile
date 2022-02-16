@@ -21,12 +21,8 @@ ENV TZ=Europe/Paris
 RUN pip3 install --upgrade pip && \
     pip3 install --no-cache-dir -r /app/requirement.txt
 
-#copy ent.py updated with a.o. agora06
-#COPY ./app/ent.py /usr/local/lib/python3.9/site-packages/pronotepy/ent.py
-COPY ./app/__init__.py /usr/local/lib/python3.9/site-packages/pronotepy/__init__.py
-COPY ./app/dataClasses.py /usr/local/lib/python3.9/site-packages/pronotepy/dataClasses.py
-
-#assuming docker moutn contains a volume mappes to app
-COPY ./app /app
+#Fixes on pronotepy awaiting their integration in the main-app
+#COPY ./app/__init__.py /usr/local/lib/python3.9/site-packages/pronotepy/__init__.py
+#COPY ./app/dataClasses.py /usr/local/lib/python3.9/site-packages/pronotepy/dataClasses.py
 
 CMD ["python3", "/app/pronote2mqtt.py"]

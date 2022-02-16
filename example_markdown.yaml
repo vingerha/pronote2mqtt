@@ -1,0 +1,88 @@
+type: markdown
+content: |
+  <div>Homework florian</div>
+	<table>
+	{% set dates = state_attr('sensor.[SENSORNAME}','date')%}
+	{% for i in range(0, dates | count, 1) %}
+	<tr>
+	{%- if state_attr('sensor.[SENSORNAME}','done')[i] == '1' -%}
+	<td>  
+	<mark>
+	{{ dates[i] }}</mark></td>
+	{% else %}
+	<td>  
+	<span>
+	{{ dates[i] }}</span></td>
+	{%- endif -%}
+	
+	<td>{{ state_attr('sensor.[SENSORNAME}','title')[i] }}</td>
+	<td>{{ state_attr('sensor.[SENSORNAME}','description')[i] }}</td>
+  {% endfor %}
+card_mod:
+  style:
+	.: |
+	  ha-card ha-markdown {
+		padding:0px
+	  }
+	  ha-card ha-markdown.no-header {
+		padding:0px
+	  }
+	ha-markdown:
+	  $:
+		ha-markdown-element: |
+		  h1 {
+			  font-weight: normal;
+			  font-size: 24px;
+		  }
+		  div {
+			  background-color:rgb(100, 100, 100);
+			  padding: 12px 12px;
+			  color:white;
+			  font-weight:normal;
+			  font-size:1.2em;
+				border-top-left-radius: 5px; 
+				border-top-right-radius: 5px; 
+		  }
+		  table{
+			border-collapse: collapse;
+			font-size: 0.9em;
+			font-family: Roboto;
+			width: auto;
+			outline: 0px solid #393c3d;
+			margin-top: 10px;
+		  } caption {
+			  text-align: center;
+			  font-weight: bold;
+			  font-size: 1.2em;
+		  } td {
+			  padding: 5px 5px 5px 5px;
+			  text-align: left;
+			  border-bottom: 0px solid #1c2020;
+		  }
+		  tr {
+			  border-bottom: 0px solid #1c2020;
+		  }
+		  tr:nth-of-type(even) {
+			  background-color: rgb(54, 54, 54, 0.3);
+		  }
+		  tr:last-of-type {
+			  border-bottom: transparent;
+		  }
+		  mark {
+			  background: green;
+			  color: #222627;
+			  border-radius: 5px;
+			  padding: 5px;
+		  }
+		  span {
+			  background: orange;
+			  color: #222627;
+			  border-radius: 5px;
+			  padding: 5px;
+		  }
+		  span {
+			  padding: 5px;
+		  }
+		  tr:nth-child(n+2) > td:nth-child(2) {
+			text-align: left;
+		  }

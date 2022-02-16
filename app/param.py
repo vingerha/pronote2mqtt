@@ -35,12 +35,12 @@ class Params:
     self.pronotePrefixUrl_2 = ''
     self.pronoteEnt_2 = True
     self.pronoteCas_2 = ''
-    self.pronoteGradesAverages_2 = False # if your child does not have grades ('colors')
+    self.pronoteGradesAverages_2 = False
     
     # Mqtt params
     self.mqttHost = ''
     self.mqttPort = 1883
-    self.mqttClientId = ''
+    self.mqttClientId = 'pronote2mqtt'
     self.mqttUsername = ''
     self.mqttPassword = ''
     self.mqttQos = 1
@@ -53,7 +53,6 @@ class Params:
     self.scheduleTime = '10:00'
     
     # Publication params
-    self.standalone = False
     self.hassDiscovery = True
     self.hassPrefix = 'homeassistant'
     self.hassDeviceName = 'pronote'
@@ -65,7 +64,7 @@ class Params:
     self.dbPath = './data'
     
     # Debug params
-    self.debug = True
+    self.debug = False
     
     # Step 2 : Init arguments for command line
     self.args = self.initArg()
@@ -124,8 +123,7 @@ class Params:
         "--mqtt_retain",      help="Retain flag of the messages to be published to the Mqtt broker, possible values : True or False")
     self.parser.add_argument(
         "--mqtt_ssl",         help="Enable MQTT SSL connexion, possible values : True or False")
-    self.parser.add_argument(
-        "--standalone_mode",  help="Enable standalone publication mode, possible values : True or False")
+    
     self.parser.add_argument(
         "--hass_discovery",   help="Enable Home Assistant discovery, possible values : True or False")
     self.parser.add_argument(
@@ -172,7 +170,7 @@ class Params:
       
     if self.args.schedule is not None: self.scheduleTime = self.args.schedule
       
-    if self.args.standalone_mode is not None: self.standalone = _isItTrue(self.args.standalone_mode)
+    
     if self.args.hass_discovery is not None: self.hassDiscovery = _isItTrue(self.args.hass_discovery)
     if self.args.hass_prefix is not None: self.hassPrefix = self.args.hass_prefix
     if self.args.hass_device_name is not None: self.hassDeviceName = self.args.hass_device_name
@@ -201,8 +199,8 @@ class Params:
       logging.error("Parameter MQTT host is mandatory.")
       return False
     else:
-      if self.standalone == False and self.hassDiscovery == False:
-        logging.warning("Both Standalone mode and Home assistant discovery are disable. No value will be published to MQTT ! Please check your parameters.")
+      if self.hassDiscovery == False:
+        logging.warning("Home assistant discovery disabled. No value will be published to MQTT ! Please check your parameters.")
         return True
       else:
         return True
@@ -216,7 +214,6 @@ class Params:
                  self.mqttHost, self.mqttPort, self.mqttClientId,
                  self.mqttQos,self.mqttTopic,self.mqttRetain,
                  self.mqttSsl),
-    logging.info("Standalone mode : Enable = %s", self.standalone)
     if self.hassDiscovery:
       logging.info("Home Assistant discovery : Enable = %s, Topic prefix = %s, Device name = %s",
                    self.hassDiscovery, self.hassPrefix, self.hassDeviceName)

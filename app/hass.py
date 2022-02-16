@@ -131,6 +131,10 @@ class Entity:
     # Add attributes
     def addAttribute(self,key,value):
         self.attributes[key] = value
+
+    # Add attributes
+    def addAttributej(self,value):
+        self.attributes = value
         
     # Get attributes payload
     def getAttribute(self):

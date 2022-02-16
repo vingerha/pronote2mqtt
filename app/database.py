@@ -415,7 +415,6 @@ class Database:
     datestart = datetime.date.today() - relativedelta(days=30)
     datestart = datestart.strftime("%Y/%m/%d %H:%M")
     query = f"SELECT * FROM absences WHERE studentname like '{studentfirst}' and from_date >= '{datestart}' and period_name like 'Année continue' ORDER by from_date"
-    print('QRY: ', query)
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Absence

@@ -1,126 +1,60 @@
-<h2 align="center">In Development</h2>
+<h2 align="center">Undergoing Development</h2>
 
-<h3 align="center">I have started to work on a MQTT integration of pronotepy... not sure how long this will take.</h3>
+<h3 align="center">MQTT integration for HomeAssistant using data from pronotepy.</h3>
 
 
 <h3 align="center">--------------------------------------------------------</h3>
 
 
-<h3 align="center">BELOW the parts of the work by Bain which I am using as basis ( 'pronotepy' )</h3>
-
-<br />
-<p align="center">
-  <a href="https://github.com/bain3/pronotepy">
-    <img src="https://pronotepy.readthedocs.io/en/latest/_images/icon.png" alt="Logo" width="80" height="80">
-  </a>
-
-  <h3 align="center">pronotepy</h3>
-
-  <p align="center">
-    An API wrapper for PRONOTE
-    <br />
-    <a href="https://pronotepy.readthedocs.io/en/stable"><strong>Explore the docs »</strong></a>
-  </p>
-</p>
-
-[![pypi version](https://img.shields.io/pypi/v/pronotepy.svg)](https://pypi.org/project/pronotepy/)
-[![python version](https://img.shields.io/pypi/pyversions/pronotepy.svg)](https://pypi.org/project/pronotepy/)
-[![license](https://img.shields.io/pypi/l/pronotepy.svg)](https://pypi.org/project/pronotepy/)
-[![Documentation Status](https://readthedocs.org/projects/pronotepy/badge/?version=latest)](https://pronotepy.readthedocs.io/en/latest/?badge=latest)
-[![Run Unit Tests](https://github.com/bain3/pronotepy/actions/workflows/rununittests.yml/badge.svg)](https://github.com/bain3/pronotepy/actions/workflows/rununittests.yml)
-[![Mypy Check](https://github.com/bain3/pronotepy/actions/workflows/mypy.yml/badge.svg)](https://github.com/bain3/pronotepy/actions/workflows/mypy.yml)
-
 ## Introduction
+This is a Python wrapper on top of pronotepy. Every function was tested assuming a family with two students (eleves). 
+The package is provided as a docker image which also installs pronotepy as part of it. 
+One can choose to separately install pronotepy (see: github bainf3/pronotepy) and separately use the files in 'app', making sure that elements as specified in '/app/requirements.txt' are installed too.
 
-This is a Python API wrapper for the PRONOTE student administration service. Every function was tested on a student account, but the API should support parent accounts, too. This project does **not** use the HYPERPLANNING API provided by PRONOTE, because its main goal is to make programming with PRONOTE a lot easier for students who are still learning.
+The integration will create a device per student/user and sensors for 
+- Student
+- Grade
+- Average
+- Absence
+- Homework
+- Evaluation (Note: Evaluation is replacing Grade over time, i.e. 'mentions' instead of grade-values)
+The sensors can be made visible in Home Assistant using the markdown-card, an example is included. (https://github.com/vingerha/pronote2mqtt/example_markdown.yaml)
 
 ## About
 
 ### Dependencies
 
- - pycryptodome
- - beautifulsoup4
- - requests
+ - pronotepy
+ - MQTT
+
 
 ### Installation
-**Stable**
+**Initial version**
 
-Install directly from pypi using pip: `pip install pronotepy` (If you are on windows and have trouble with this command, use this one assuming you are using python 3.x.x installed on your computer: `py -3 -m pip install pronotepy`)
+1. Install directly from docker : `docker pull vingerha/pronote2mqtt:latest`
+It is recommended to map the volumes 'app' and 'data' so one can access these easier. 
+The python files must be copied into the 'app' folder. 
+The 'data' folder will contain the sqlite3 database: pronote2mqtt.db
+2. Update the params.py with your values to connect to MQTT and pronote.
+3. Update ent.py. I have added an ent.py based on the one by pronotepy. The package currently assumes that you are accessing over CAS (as do most students), so make sure that ent.py has your specific CAS properly setup...for details check pronotepy on how to update your CAS in ent.py.
+
 
 **Latest**
 
-You can install the latest version by installing directly from the repository zip: 
-
-`pip install https://github.com/bain3/pronotepy/archive/refs/heads/master.zip`
-
-I cannot assure that the latest version will be working.
+This is a package undergoing development.
 
 #### Testing the package
-To self test pronotepy run this command:
+To self test pronotepy run the docker container or from commandline, using this command:
 
-`python -m pronotepy.test_pronotepy`
+`python3 pronote2mqtt`
 
-*Please keep in mind that this uses the demo version of pronote
-and so it can't test every function.*
-### Usage
+*Please keep in mind that you need to add username/pwd/ent/cas in param.py*
 
-```diff
-- The usage part of this readme is for the latest version, 
-- if you're installing from pypi, please see the documentation. 
-- It is linked right on the top of this readme.
-```
 
-Here is an example script (example.py):
-```python
-import pronotepy
-
-# initialise the client
-# Note: the address should be a direct one (like the one below) usually the address shown by your school just redirects
-# you to the real one.
-# Ex.: https://your-school.com/pronote/students <-- BAD
-#      https://0000000a.index-education.net/pronote/eleve.html <-- GOOD
-#      https://0000000a.index-education.net/pronote/eleve.html?login=true <-- ONLY IF YOU HAVE AN ENT AND YOU KNOW YOUR IDS, ELSE REFER TO ENT PART OF README
-
-client = pronotepy.Client('https://demo.index-education.net/pronote/eleve.html',
-                          username='demonstration',
-                          password='pronotevs')
-
-if client.logged_in:
-    # get the all the periods (may return multiple types like trimesters and semesters but it doesn't really matter
-    # the api will get it anyway)
-    periods = client.periods
-
-    for period in periods:
-        for grade in period.grades:  # iterate over all the grades
-            print(f'{grade.grade}/{grade.out_of}')  # print out the grade in this style: 20/20
-```
-
-For any extra details, please see the documentation linked above.
-
-### ENT
-
-Pronotepy has builtin functions for getting cookies from some ENTs (if you want your ENT to be added make a new issue). 
-You can pass those functions to the client like this:
-```python
-import pronotepy
-from pronotepy.ent import occitanie_montpellier
-
-# creating the client and passing the occitanie_montpellier function to automatically get cookies from ENT
-client = pronotepy.Client('https://0000000a.index-education.net/pronote/eleve.html',
-                          username='demonstration',
-                          password='pronotevs',
-                          ent=occitanie_montpellier)
-# check if sucessfully logged in
-if client.logged_in:
-    print(len(client.messages())) # printing number of messages that the user has
-else:
-    print('no login')
-```
-All the functions return cookies needed to connect to pronote (use docs to see if your ENT is supported).
 
 ### Long Term Usage
 
-Pronotepy will try and reconnect when the old session expires, but it cannot assure that the old objects will still be working. To prevent having problems with expired objects, please make sure that you're requesting new ones when you have long pauses in between requests to pronote.
+Pronote2mqtt will try and reconnect at fixed times (param.py default: 10:00). It depends on pronotepy so cannot assure that the old objects will still be working. 
 
 ## Contributing
 
@@ -131,11 +65,11 @@ running pip with the requirements.txt file.
 
 ## Adding content
 
-Pronotepy has most of the essential features covered, but if you need anything that is not yet implemented, you can [create an issue](https://github.com/bain3/pronotepy/issues/new) with your request. (or you can contribute by adding it yourself)
+Most parts are covered but if you need anything that is not yet implemented, you can [create an issue](https://github.com/vingerha/pronote2mqtt/issues/new) with your request. (or you can contribute by adding it yourself)
 
 ## License
 
-Copyright (c) 2020-2021 bain, Xiloe
+Copyright (c) 2022 vingerha
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
