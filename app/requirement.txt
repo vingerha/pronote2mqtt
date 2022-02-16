@@ -1,7 +1,7 @@
 requests
-pronotepy
 python-dateutil
 argparse
 envparse
 schedule
 paho-mqtt
+https://github.com/bain3/pronotepy/archive/refs/heads/master.zip
