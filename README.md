@@ -18,7 +18,7 @@ The integration will create a device per student/user and sensors for
 - Absence
 - Homework
 - Evaluation (Note: Evaluation is replacing Grade over time, i.e. 'mentions' instead of grade-values)
-The sensors can be made visible in Home Assistant using the markdown-card, an example is included. (https://github.com/vingerha/pronote2mqtt/example_markdown.yaml)
+The sensors can be made visible in Home Assistant using the markdown-card, an example is included. (https://github.com/vingerha/pronote2mqtt/blob/main/example_markdown.yaml)
 
 ## About
 
@@ -54,18 +54,15 @@ To self test pronotepy run the docker container or from commandline, using this 
 
 ### Long Term Usage
 
-Pronote2mqtt will try and reconnect at fixed times (param.py default: 10:00). It depends on pronotepy so cannot assure that the old objects will still be working. 
+Pronote2mqtt will try and reconnect at fixed times (param.py default: 10:00). It depends on pronotepy so cannot assure that it will continue to be working. 
 
 ## Contributing
 
 Feel free to contribute anything. Any help is appreciated. To contribute, please create a pull request with your changes.
 
-Setting up the development environment is just cloning the repository and making sure you have all the dependencies by
-running pip with the requirements.txt file.
-
 ## Adding content
 
-Most parts are covered but if you need anything that is not yet implemented, you can [create an issue](https://github.com/vingerha/pronote2mqtt/issues/new) with your request. (or you can contribute by adding it yourself)
+Most parts are covered but if you need anything that is not yet implemented, you can [create an issue] (https://github.com/vingerha/pronote2mqtt/issues/new) with your request. (or you can contribute by adding it yourself)
 
 ## License
 
