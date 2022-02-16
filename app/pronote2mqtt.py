@@ -9,6 +9,7 @@ import time
 from dateutil.relativedelta import relativedelta
 import logging
 import collections
+import re
 
 import mqtt
 import hass
@@ -258,7 +259,7 @@ def run(myParams):
                         # Store homework into sensor
                         attributes[f'date'].append(myHomework.homeworkDate.split("/",1)[1])
                         attributes[f'title'].append(myHomework.homeworkSubject)
-                        attributes[f'description'].append(myHomework.homeworkDescription)
+                        attributes[f'description'].append(re.sub(r'http\S+', '<URL REMOVED, see PRONOTE-APP>', myHomework.homeworkDescription))
                         attributes[f'done'].append(myHomework.homeworkDone)                       
                        
                     myEntity.addAttribute("date",attributes[f'date'])

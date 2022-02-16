@@ -397,9 +397,9 @@ class Database:
     # to improve: make name-format same across tables
     studentfirst=student.studentFullname.split(" ",1)[1]
     # not collecting all 
-    datestart = datetime.date.today() - relativedelta(days=20)
+    datestart = datetime.date.today() - relativedelta(days=30)
     datestart = datestart.strftime("%Y/%m/%d")
-    query = f"SELECT * FROM evaluations WHERE studentname like '{studentfirst}' and date >= '{datestart}' ORDER by date"
+    query = f"SELECT * FROM evaluations WHERE studentname like '{studentfirst}' and date >= '{datestart}' ORDER by date desc"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Eval
@@ -443,7 +443,7 @@ class Database:
     studentfirst=student.studentFullname.split(" ",1)[1]
     datestart = datetime.date.today() - relativedelta(days=30)
     datestart = datestart.strftime("%Y/%m/%d")
-    query = f"SELECT * FROM grades WHERE studentname like '{studentfirst}' and date >= '{datestart}' and period_name like 'Année continue' ORDER by date"
+    query = f"SELECT * FROM grades WHERE studentname like '{studentfirst}' and date >= '{datestart}' and period_name like 'Année continue' ORDER by date desc"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Homework
