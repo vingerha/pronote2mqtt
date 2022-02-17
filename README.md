@@ -1,6 +1,5 @@
-<h2 align="center">Undergoing Development</h2>
-
-<h3 align="center">MQTT integration for HomeAssistant using data from pronotepy.</h3>
+<h2 align="center">MQTT integration for HomeAssistant using data from pronotepy.</h2>
+<h3 align="center" color=red>Initial release, finetuning ongoing</h3>
 
 
 <h3 align="center">--------------------------------------------------------</h3>
