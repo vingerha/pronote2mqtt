@@ -342,7 +342,7 @@ def run(myParams):
                     for myAverage in myStudent.averageList:
                         # Store evaluation into sensor
                         attributes[f'subject'].append(myAverage.subject)
-                        attributes[f'student_average'].append(myAverage.defaultOutOf)
+                        attributes[f'student_average'].append(myAverage.studentAverage)
                         attributes[f'class_average'].append(myAverage.classAverage)
                         attributes[f'max'].append(myAverage.max)
                         attributes[f'min'].append(myAverage.min)

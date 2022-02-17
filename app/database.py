@@ -184,7 +184,7 @@ class Database:
                         , homeworkDate TEXT
                         , PRIMARY KEY(studentname,homeworkDate,homeworkSubject,homeworkDescription))''')
     self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_homework_hid
-                    ON homework (studentname,homeworkDate,homeworkSubject)''')
+                    ON homework (studentname,homeworkDate,homeworkSubject,homeworkDescription)''')
 
 
     # Commit
@@ -497,7 +497,7 @@ class Averages():
     self.period_start = result[2]
     self.period_end = result[3]
     self.studentname = result[4]
-    self.student = result[5]
+    self.studentAverage = result[5]
     self.classAverage = result[6]
     self.max = result[7]
     self.min = result[8]

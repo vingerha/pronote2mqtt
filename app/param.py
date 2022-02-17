@@ -50,7 +50,7 @@ class Params:
     
     
     # Run params
-    self.scheduleTime = '10:00'
+    self.scheduleTime = '06:00'
     
     # Publication params
     self.hassDiscovery = True
