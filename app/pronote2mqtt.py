@@ -408,6 +408,7 @@ def run(myParams):
                     attributes[f'subject'] = []
                     attributes[f'canceled'] = []
                     attributes[f'status'] = []
+                    attributes[f'room'] = []
                     for myLesson in myStudent.lessonShortList:
                         # Store evaluation into sensor
                         attributes[f'date'].append(myLesson.lessonDateTime.split("/",1)[1])
@@ -416,6 +417,7 @@ def run(myParams):
                         attributes[f'subject'].append(myLesson.lessonSubject)
                         attributes[f'canceled'].append(myLesson.lessonCanceled)
                         attributes[f'status'].append(myLesson.lessonStatus)
+                        attributes[f'room'].append(myLesson.lessonRoom)
                     
                     myEntity.addAttribute("date",attributes[f'date'])                    
                     myEntity.addAttribute("start",attributes[f'start'])   
@@ -423,6 +425,7 @@ def run(myParams):
                     myEntity.addAttribute("subject",attributes[f'subject'])
                     myEntity.addAttribute("canceled",attributes[f'canceled'])
                     myEntity.addAttribute("status",attributes[f'status'])
+                    myEntity.addAttribute("room",attributes[f'room'])
                                   
                     logging.info("Lesson added to HA sensor !")                      
                 
