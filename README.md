@@ -1,6 +1,5 @@
-<h2 align="center">Undergoing Development</h2>
-
-<h3 align="center">MQTT integration for HomeAssistant using data from pronotepy.</h3>
+<h2 align="center">MQTT integration for HomeAssistant using data from pronotepy.</h2>
+<h3 align="center" color="red">Initial release, finetuning ongoing</h3>
 
 
 <h3 align="center">--------------------------------------------------------</h3>
@@ -19,6 +18,8 @@ The integration will create a device per student/user and sensors for
 - Homework
 - Evaluation (Note: Evaluation is replacing Grade over time, i.e. 'mentions' instead of grade-values)
 The sensors can be made visible in Home Assistant using the markdown-card, an example is included. (https://github.com/vingerha/pronote2mqtt/blob/main/example_markdown.yaml)
+![image](https://user-images.githubusercontent.com/44190435/154455905-e54fbb8a-6ac9-4d85-91c9-6d4c1f556524.png)
+
 
 ## About
 
