@@ -10,6 +10,6 @@ fi
 echo "Using '$APP' as APP directory"
 
 echo "Copying files to app..."
-cp -r /app_temp/* "$APP"
+cp /app_temp/* "$APP"
 
 exec "$@"
