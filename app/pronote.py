@@ -21,6 +21,7 @@ class Pronote:
     def __init__(self):
         
         # Initialize instance variables
+        self.studentname = None
         self.session = None
         self.auth_nonce = None
         self.gradeList = []
@@ -34,7 +35,7 @@ class Pronote:
         self.whoiam = None
         self.isConnected = False
         
-    def getData(self,prefix_url,username,password,studentname,cas,GradeAverage):
+    def getData(self,prefix_url,username,password,cas,GradeAverage):
 #    def getData(self,prefix_url,GradeAverage):
         self.isConnected = False
         if cas:
@@ -49,6 +50,30 @@ class Pronote:
            return
         
         jsondata = {}
+        
+        #Student
+        logging.info("Collecting Student---------------------------------------------------")
+        jsondata['students'] = []
+        identity = client.parametres_utilisateur
+        
+        # setting studentname, used for further actions
+        self.studentname = client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["L"]
+        self.studentname = self.studentname.replace(' ', '_')
+        
+        jsondata['students'].append({
+            'sid': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["N"],
+            'studentFullname': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["L"],
+            'studentSchool': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["Etablissement"]["V"]["L"],
+            'studentClass': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["classeDEleve"]["L"],
+        })
+        studentList = jsondata
+
+        if studentList:
+           for student in studentList["students"]:
+               myStudent = Student(self.studentname, student)
+               self.addStudent(myStudent)
+        else:
+            logging.error("Student list is empty")
         
         #get grades/averages, this does not apply to all children (new system > evaluations)
         periods = client.periods
@@ -81,7 +106,7 @@ class Pronote:
 
             if gradeList:
                for grade in gradeList["grades"]:
-                   myGrade = Grade(studentname,grade) 
+                   myGrade = Grade(self.studentname, grade) 
                    self.addGrade(myGrade)
             else:
                logging.error("Grade list is empty")
@@ -108,7 +133,7 @@ class Pronote:
             averageList = jsondata
             if averageList:
                for average in averageList["averages"]:
-                   myAverage = Average(studentname,average)
+                   myAverage = Average(self.studentname,average)
                    self.addAverage(myAverage)
             else:
                logging.error("Average list is empty")
@@ -130,7 +155,7 @@ class Pronote:
         periodList = jsondata
         if periodList:
            for period in periodList["periods"]:
-               myPeriod = Period(studentname,period)
+               myPeriod = Period(self.studentname,period)
                self.addPeriod(myPeriod)
         else:
             logging.error("Period list is empty") 
@@ -163,7 +188,7 @@ class Pronote:
         evalList = jsondata
         if evalList:
            for eval in evalList["evaluations"]:
-               myEval = Evaluation(studentname,eval)
+               myEval = Evaluation(self.studentname,eval)
                self.addEval(myEval)
         else:
             logging.error("Evaluations list is empty")
@@ -190,7 +215,7 @@ class Pronote:
         absenceList = jsondata
         if absenceList:
            for absence in absenceList["absences"]:
-               myAbsence = Absence(studentname,absence)
+               myAbsence = Absence(self.studentname,absence)
                self.addAbsence(myAbsence)
         else:
             logging.error("Absence list is empty")
@@ -220,7 +245,7 @@ class Pronote:
         lessonList = jsondata
         if lessonList:
            for lesson in lessonList["lessons"]:
-               myLesson = Lesson(studentname,lesson)
+               myLesson = Lesson(self.studentname,lesson)
                self.addLesson(myLesson)
         else:
             logging.error("Average list is empty")
@@ -248,29 +273,11 @@ class Pronote:
         if homeworkList:
 
            for homework in homeworkList["homework"]:
-               myHomework = Homework(studentname,homework)
+               myHomework = Homework(self.studentname,homework)
                self.addHomework(myHomework)
 
         else:
             logging.error("Homework list is empty")
-
-#Student
-        logging.info("Collecting Student---------------------------------------------------")
-        jsondata['students'] = []
-        identity = client.parametres_utilisateur
-        jsondata['students'].append({
-            'sid': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["N"],
-            'studentFullname': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["L"],
-            'studentSchool': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["Etablissement"]["V"]["L"],
-            'studentClass': client.parametres_utilisateur["donneesSec"]["donnees"]["ressource"]["classeDEleve"]["L"],
-        })
-        studentList = jsondata
-        if studentList:
-           for student in studentList["students"]:
-               myStudent = Student(student)
-               self.addStudent(myStudent)
-        else:
-            logging.error("Student list is empty")
 
     
     def addPeriod(self,period):
@@ -544,7 +551,7 @@ class Homework:
 class Student:
 
     # Constructor
-    def __init__(self,student):
+    def __init__(self,studentname, student):
 
         # Init attributes
         self.sid = None
@@ -553,7 +560,7 @@ class Student:
         self.studentClass = None
 
         self.sid = student["sid"]
-        self.studentFullname = student["studentFullname"]
+        self.studentFullname = studentname
         self.studentSchool = student["studentSchool"]
         self.studentClass = student["studentClass"]
 

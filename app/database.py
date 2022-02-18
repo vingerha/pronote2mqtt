@@ -381,10 +381,8 @@ class Database:
       
   # Load homework
   def _loadHomework(self,student):
-    # use the firstname to query the database
-    # to improve: make name-format same across tables
-    studentfirst=student.studentFullname.split(" ",1)[1]
-    query = f"SELECT * FROM homework WHERE studentname like '{studentfirst}' order by homeworkDate"
+    studentname=student.studentFullname
+    query = f"SELECT * FROM homework WHERE studentname = '{studentname}' order by homeworkDate"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Homework
@@ -393,13 +391,11 @@ class Database:
       student.homeworkList.append(myHomework)
 
   def _loadEvaluationsShortList(self,student):
-    # use the firstname to query the database
-    # to improve: make name-format same across tables
-    studentfirst=student.studentFullname.split(" ",1)[1]
+    studentname=student.studentFullname
     # not collecting all 
     datestart = datetime.date.today() - relativedelta(days=30)
     datestart = datestart.strftime("%Y/%m/%d")
-    query = f"SELECT * FROM evaluations WHERE studentname like '{studentfirst}' and date >= '{datestart}' ORDER by date desc"
+    query = f"SELECT * FROM evaluations WHERE studentname like '{studentname}' and date >= '{datestart}' ORDER by date desc"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Eval
@@ -408,13 +404,11 @@ class Database:
       student.evaluationShortList.append(myEvaluation)
 
   def _loadAbsenceShortList(self,student):
-    # use the firstname to query the database
-    # to improve: make name-format same across tables
-    studentfirst=student.studentFullname.split(" ",1)[1]
+    studentname=student.studentFullname
     # not collecting all 
     datestart = datetime.date.today() - relativedelta(days=30)
     datestart = datestart.strftime("%Y/%m/%d %H:%M")
-    query = f"SELECT * FROM absences WHERE studentname like '{studentfirst}' and from_date >= '{datestart}' and period_name like 'Année continue'"
+    query = f"SELECT * FROM absences WHERE studentname like '{studentname}' and from_date >= '{datestart}' and period_name like 'Année continue'"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Absence
@@ -424,11 +418,9 @@ class Database:
 
   # Load averages
   def _loadAverage(self,student):
-    # use the firstname to query the database
-    # to improve: make name-format same across tables
-    studentfirst=student.studentFullname.split(" ",1)[1]
+    studentname=student.studentFullname
     # averages have been loaded for all periods but are the same for all periods, extracting only Yeardata
-    query = f"SELECT * FROM averages WHERE studentname like '{studentfirst}' and period_name like 'Année continue'"
+    query = f"SELECT * FROM averages WHERE studentname like '{studentname}' and period_name like 'Année continue'"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Homework
@@ -438,12 +430,10 @@ class Database:
       
   # Load grades
   def _loadGradesShortList(self,student):
-    # use the firstname to query the database
-    # to improve: make name-format same across tables
-    studentfirst=student.studentFullname.split(" ",1)[1]
+    studentname=student.studentFullname
     datestart = datetime.date.today() - relativedelta(days=30)
     datestart = datestart.strftime("%Y/%m/%d")
-    query = f"SELECT * FROM grades WHERE studentname like '{studentfirst}' and date >= '{datestart}' and period_name like 'Année continue' ORDER by date desc"
+    query = f"SELECT * FROM grades WHERE studentname like '{studentname}' and date >= '{datestart}' and period_name like 'Année continue' ORDER by date desc"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Homework
@@ -452,14 +442,12 @@ class Database:
       student.gradeList.append(myGrade)  
    # load lessons
   def _loadLessonsShortList(self,student):
-    # use the firstname to query the database
-    # to improve: make name-format same across tables
-    studentfirst=student.studentFullname.split(" ",1)[1]
+    studentname=student.studentFullname
     # not collecting all 
     datestart = datetime.date.today().strftime("%Y/%m/%d %H:%M")
     dateend = datetime.date.today() + relativedelta(days=7)
     dateend = dateend.strftime("%Y/%m/%d %H:%M")
-    query = f"SELECT * FROM lessons WHERE studentname like '{studentfirst}' and lessonDateTime between '{datestart}' and '{dateend}' ORDER by lessonDateTime"
+    query = f"SELECT * FROM lessons WHERE studentname like '{studentname}' and lessonDateTime between '{datestart}' and '{dateend}' ORDER by lessonDateTime"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Eval

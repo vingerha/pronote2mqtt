@@ -21,7 +21,6 @@ class Params:
     # Step 1 : set default params
     
     # Pronote params child 1 (setup to support 2 children, see pronote2mqtt.py)
-    self.pronoteStudent_1 = 'demo'
     self.pronoteUsername_1 = 'demonstration'
     self.pronotePassword_1 = 'pronotevs'
     self.pronotePrefixUrl_1 = 'demo'
@@ -29,7 +28,6 @@ class Params:
     self.pronoteCas_1 = ""
     self.pronoteGradesAverages_1 = True
     
-    self.pronoteStudent_2 = ''
     self.pronoteUsername_2 = ''
     self.pronotePassword_2 = ''
     self.pronotePrefixUrl_2 = ''

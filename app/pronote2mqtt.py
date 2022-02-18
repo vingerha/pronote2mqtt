@@ -121,7 +121,7 @@ def run(myParams):
 
 #Kick off for Student 1
     logging.info("Student 1-----------------------------------------------------")
-    myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteStudent_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1)
+    myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1)
     if myParams.pronoteGradesAverages_1:
         for myAverage in myPronote.averageList:
             myAverage.store(myDb)
@@ -152,7 +152,7 @@ def run(myParams):
 #Kick off for Student 2
     if myParams.pronoteUsername_2:
         logging.info("Student 2-----------------------------------------------------")
-        myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteStudent_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2)
+        myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2)
         if myParams.pronoteGradesAverages_2:
             for myAverage in myPronote.averageList:
                 myAverage.store(myDb)
@@ -208,7 +208,7 @@ def run(myParams):
         logging.error("Unable to connect to Mqtt broker. Please check that broker is running, or check broker configuration.")
 
     ####################################################################################################################
-    # STEP 5C : Home Assistant period sensor load from dB
+    # STEP 3 : Home Assistant sensors load/create from dB
     ####################################################################################################################
     if myMqtt.isConnected \
         and myParams.hassDiscovery :
@@ -441,11 +441,31 @@ def run(myParams):
         except:
             logging.error("Home Assistant discovery mode : unable to publish period value to mqtt broker")
             logging.error(traceback.format_exc())
+            
+    ####################################################################################################################
+    # STEP 4 : Disconnect mqtt broker
+    ####################################################################################################################
+    if myMqtt.isConnected:
+
+        logging.info("-----------------------------------------------------------")
+        logging.info("#               Disconnexion from MQTT                    #")
+        logging.info("-----------------------------------------------------------")
+
+        try:
+            myMqtt.disconnect()
+            logging.info("Mqtt broker disconnected")
+        except:
+            logging.error("Unable to disconnect mqtt broker")
+            sys.exit(1)
+
+    # Release memory
+    del myMqtt
+    del myPronote
 
 
 
     ####################################################################################################################
-    # STEP 7 : Disconnect from database
+    # STEP 5 : Disconnect from database
     ####################################################################################################################
     logging.info("-----------------------------------------------------------")
     logging.info("#          Disconnexion from SQLite database              #")
@@ -457,7 +477,7 @@ def run(myParams):
     del myDb
 
     ####################################################################################################################
-    # STEP 8 : Display next run info and end of program
+    # STEP 6 : Display next run info and end of program
     ####################################################################################################################
     logging.info("-----------------------------------------------------------")
     logging.info("#                Next run                                 #")
