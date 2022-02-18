@@ -18,7 +18,8 @@ The integration will create a device per student/user and sensors for
 - Homework
 - Evaluation (Note: Evaluation is replacing Grade over time, i.e. 'mentions' instead of grade-values)
 The sensors can be made visible in Home Assistant using the markdown-card, an example is included. (https://github.com/vingerha/pronote2mqtt/blob/main/example_markdown.yaml)
-![image](https://user-images.githubusercontent.com/44190435/154455905-e54fbb8a-6ac9-4d85-91c9-6d4c1f556524.png)
+![image](https://user-images.githubusercontent.com/44190435/154719453-895ee43e-2f27-41e5-8000-76c346ca0579.png)
+
 
 
 ## About
