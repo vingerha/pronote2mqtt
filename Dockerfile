@@ -1,6 +1,7 @@
 FROM python:3.9.7-slim
 
 COPY ./app /app
+COPY ./app /app_temp
 
 RUN apt-get update && \
     apt-get install -y locales && \
@@ -24,5 +25,8 @@ RUN pip3 install --upgrade pip && \
 #Fixes on pronotepy awaiting their integration in the main-app
 #COPY ./app/__init__.py /usr/local/lib/python3.9/site-packages/pronotepy/__init__.py
 #COPY ./app/dataClasses.py /usr/local/lib/python3.9/site-packages/pronotepy/dataClasses.py
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["python3", "/app/pronote2mqtt.py"]
