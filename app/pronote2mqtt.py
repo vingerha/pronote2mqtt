@@ -443,20 +443,20 @@ def run(myParams):
             logging.error(traceback.format_exc())
             
     ####################################################################################################################
-    # STEP 4 : Disconnect mqtt broker
+    # STEP 4 : Disconnect mqtt broker (throws errors....to fix in future)
     ####################################################################################################################
-    if myMqtt.isConnected:
-
-        logging.info("-----------------------------------------------------------")
-        logging.info("#               Disconnexion from MQTT                    #")
-        logging.info("-----------------------------------------------------------")
-
-        try:
-            myMqtt.disconnect()
-            logging.info("Mqtt broker disconnected")
-        except:
-            logging.error("Unable to disconnect mqtt broker")
-            sys.exit(1)
+#    if myMqtt.isConnected:
+#
+#        logging.info("-----------------------------------------------------------")
+#        logging.info("#               Disconnexion from MQTT                    #")
+#        logging.info("-----------------------------------------------------------")
+#
+#        try:
+#            myMqtt.disconnect()
+#            logging.info("Mqtt broker disconnected")
+#        except:
+#            logging.error("Unable to disconnect mqtt broker")
+#            sys.exit(1)
 
     # Release memory
     del myMqtt
