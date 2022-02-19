@@ -1,88 +1,402 @@
-type: markdown
-content: |
-  <div>Homework florian</div>
-	<table>
-	{% set dates = state_attr('sensor.[SENSORNAME}','date')%}
-	{% for i in range(0, dates | count, 1) %}
-	<tr>
-	{%- if state_attr('sensor.[SENSORNAME}','done')[i] == '1' -%}
-	<td>  
-	<mark>
-	{{ dates[i] }}</mark></td>
-	{% else %}
-	<td>  
-	<span>
-	{{ dates[i] }}</span></td>
-	{%- endif -%}
-	
-	<td>{{ state_attr('sensor.[SENSORNAME}','title')[i] }}</td>
-	<td>{{ state_attr('sensor.[SENSORNAME}','description')[i] }}</td>
-  {% endfor %}
-card_mod:
-  style:
-	.: |
-	  ha-card ha-markdown {
-		padding:0px
-	  }
-	  ha-card ha-markdown.no-header {
-		padding:0px
-	  }
-	ha-markdown:
-	  $:
-		ha-markdown-element: |
-		  h1 {
-			  font-weight: normal;
-			  font-size: 24px;
-		  }
-		  div {
-			  background-color:rgb(100, 100, 100);
-			  padding: 12px 12px;
-			  color:white;
-			  font-weight:normal;
-			  font-size:1.2em;
-				border-top-left-radius: 5px; 
-				border-top-right-radius: 5px; 
-		  }
-		  table{
-			border-collapse: collapse;
-			font-size: 0.9em;
-			font-family: Roboto;
-			width: auto;
-			outline: 0px solid #393c3d;
-			margin-top: 10px;
-		  } caption {
-			  text-align: center;
-			  font-weight: bold;
-			  font-size: 1.2em;
-		  } td {
-			  padding: 5px 5px 5px 5px;
-			  text-align: left;
-			  border-bottom: 0px solid #1c2020;
-		  }
-		  tr {
-			  border-bottom: 0px solid #1c2020;
-		  }
-		  tr:nth-of-type(even) {
-			  background-color: rgb(54, 54, 54, 0.3);
-		  }
-		  tr:last-of-type {
-			  border-bottom: transparent;
-		  }
-		  mark {
-			  background: green;
-			  color: #222627;
-			  border-radius: 5px;
-			  padding: 5px;
-		  }
-		  span {
-			  background: orange;
-			  color: #222627;
-			  border-radius: 5px;
-			  padding: 5px;
-		  }
-		  span {
-			  padding: 5px;
-		  }
-		  tr:nth-child(n+2) > td:nth-child(2) {
-			text-align: left;
-		  }
+  - title: Demo
+    path: demo
+    type: custom:masonry-layout
+    layout:
+      max_cols: 3
+    badges: []
+    cards:
+      - type: markdown
+        content: >
+          <div>Lessons</div>
+            <table>
+            {% set dates = state_attr('sensor.pronote_parent_fanny_lesson','date') %}
+            {% for i in range(0, dates | count, 1) %}
+          {% if dates[i].split('/')[1].split(' ')[0] >
+          dates[i-1].split('/')[1].split(' ')[0] %} 
+            <tr><td colspan="5">-</td></tr> {% endif %}
+            <tr>
+            {%- if state_attr('sensor.pronote_parent_fanny_lesson','canceled')[i] == '0' -%}
+            <td>  
+            <mark>
+            {{ dates[i].split(' ')[0] }}</mark></td>
+            {% else %}
+            <td>  
+            <span>
+            <del>{{ dates[i].split(' ')[0] }}</span></td>
+            {%- endif -%}
+           <td>{{ state_attr('sensor.pronote_parent_fanny_lesson','start')[i] }} </td>
+            <td>{{ state_attr('sensor.pronote_parent_fanny_lesson','end')[i] }} </td>
+            <td>{{ state_attr('sensor.pronote_parent_fanny_lesson','subject')[i] }}
+          {%- if  state_attr('sensor.pronote_parent_fanny_lesson','status')[i]
+          != None %}
+           <span>{{ state_attr('sensor.pronote_parent_fanny_lesson','status')[i] }}</td>
+          {% endif %}  
+          <td>{{state_attr('sensor.pronote_parent_fanny_lesson','room')[i]
+          }}</td> {% endfor %}
+        card_mod:
+          style:
+            .: |
+              ha-card ha-markdown {
+                padding:0px
+              }
+              ha-card ha-markdown.no-header {
+                padding:0px
+              }
+            ha-markdown:
+              $:
+                ha-markdown-element: |
+                  h1 {
+                      font-weight: normal;
+                      font-size: 24px;
+                  }
+                  div {
+                      background-color:rgb(100, 100, 100);
+                      padding: 12px 12px;
+                      color:white;
+                      font-weight:normal;
+                      font-size:1.2em;
+                        border-top-left-radius: 5px; 
+                        border-top-right-radius: 5px; 
+                  }
+                  table{
+                    border-collapse: collapse;
+                    font-size: 0.9em;
+                    font-family: Roboto;
+                    width: auto;
+                    outline: 0px solid #393c3d;
+                    margin-top: 10px;
+                  } caption {
+                      text-align: center;
+                      font-weight: bold;
+                      font-size: 1.2em;
+                  } td {
+                      padding: 5px 5px 5px 5px;
+                      text-align: left;
+                      border-bottom: 0px solid #1c2020;
+                  }
+                  tr {
+                      border-bottom: 0px solid #1c2020;
+                  }
+                  tr:nth-of-type(even) {
+                      background-color: rgb(54, 54, 54, 0.3);
+                  }
+                  tr:last-of-type {
+                      border-bottom: transparent;
+                  }
+                  mark {
+                      background: lightgreen;
+                      color: #222627;
+                      border-radius: 5px;
+                      padding: 5px;
+                  }
+                  span {
+                      background: orange;
+                      color: #222627;
+                      border-radius: 5px;
+                      padding: 5px;
+                  }
+                  span {
+                      padding: 5px;
+                  }
+                  tr:nth-child(n+2) > td:nth-child(2) {
+                    text-align: left;
+                  }
+      - type: markdown
+        content: |
+          <div>Grades</div>
+            <table>
+            {% set subjects = state_attr('sensor.pronote_parent_fanny_grade','subject')%}
+            <tr>
+            <td><h4>Date<h3></td>
+            <td><h4>Course</td>
+            <td><h4>Grade</td>
+            <td><h4>Class</td>
+            <td><h4>Max</td>
+            <td><h4>Min</td>
+            <td><h4>Coeff</td>
+           <td><h4>Comment</td>
+            </tr>
+            {% for i in range(0, subjects | count, 1) %}
+            <tr>    
+            <td>{{ state_attr('sensor.pronote_parent_fanny_grade','date')[i] }}</td>
+            <td>{{ subjects[i] }}</td>
+            <td>{{ state_attr('sensor.pronote_parent_fanny_grade','student_grade')[i] }}</td>
+            <td>{{ state_attr('sensor.pronote_parent_fanny_grade','class_average')[i] }}</td>
+            <td>{{ state_attr('sensor.pronote_parent_fanny_grade','max')[i] }}</td>
+            <td>{{ state_attr('sensor.pronote_parent_fanny_grade','min')[i] }}</td>
+            <td>{{ state_attr('sensor.pronote_parent_fanny_grade','coefficient')[i] }}</td>
+              <td>{{ state_attr('sensor.pronote_parent_fanny_grade','comment')[i]}}</td>
+           </tr>
+          {% endfor %}
+        card_mod:
+          style:
+            .: |
+              ha-card ha-markdown {
+                padding:0px
+              }
+              ha-card ha-markdown.no-header {
+                padding:0px
+              }
+            ha-markdown:
+              $:
+                ha-markdown-element: |
+                  h1 {
+                      font-weight: normal;
+                      font-size: 24px;
+                  }
+                  h4 {
+                      font-weight: bold;
+                      padding: 5px;
+                      text-align: left;
+                      font-size: 12px;
+                  }
+                  div {
+                      background-color:rgb(100, 100, 100);
+                      padding: 12px 12px;
+                      color:white;
+                      font-weight:normal;
+                      font-size:1.2em;
+                        border-top-left-radius: 5px; 
+                        border-top-right-radius: 5px; 
+                  }
+                  table{
+                    border-collapse: collapse;
+                    font-size: 0.9em;
+                    font-family: Roboto;
+                    width: auto;
+                    outline: 0px solid #393c3d;
+                    margin-top: 10px;
+                  } caption {
+                      text-align: center;
+                      font-weight: bold;
+                      font-size: 1.2em;
+                  } td {
+                      padding: 5px 5px 5px 5px 5px 5px;
+                      text-align: center;
+                      border-bottom: 0px solid #1c2020;
+                  }
+                  tr {
+                      border-bottom: 0px solid #1c2020;
+                  }
+                  tr:nth-of-type(even) {
+                      background-color: rgb(54, 54, 54, 0.3);
+                  }
+                  tr:last-of-type {
+                      border-bottom: transparent;
+                  }
+                  mark {
+                      background: green;
+                      color: #222627;
+                      border-radius: 5px;
+                      padding: 5px;
+                  }
+                  span {
+                      background: orange;
+                      color: #222627;
+                      border-radius: 5px;
+                      padding: 5px;
+                  }
+                  span {
+                      padding: 5px;
+                  }
+                  tr:nth-child(n+2) > td:nth-child(2) {
+                    text-align: left;
+                  }
+      - type: markdown
+        content: >
+          <div>Averages</div>
+
+          <table>
+
+          {% set subjects =
+          state_attr('sensor.pronote_parent_fanny_average','subject')%}
+
+          <tr>
+
+          <td><h3>Cours<h3></td>
+
+          <td><h3>Average</td>
+
+          <td><h3>Class</td>
+
+          <td><h3>Max</td>
+
+          <td><h3>Min</td>
+
+          </tr>
+
+
+          {% for i in range(0, subjects | count, 1) %}
+
+          <tr> 
+            {% if state_attr('sensor.pronote_parent_fanny_average','student_average')[i]
+          >= '14' %} <td><mark>{{ subjects[i] }}</mark></td>  {% else %}
+          <td><span>{{ subjects[i] }}</td>  {% endif %}
+
+          <td>{{
+          state_attr('sensor.pronote_parent_fanny_average','student_average')[i]
+          }}</td>
+
+          <td>{{
+          state_attr('sensor.pronote_parent_fanny_average','class_average')[i]
+          }}</td>
+
+          <td>{{ state_attr('sensor.pronote_parent_fanny_average','max')[i]
+          }}</td>
+
+          <td>{{ state_attr('sensor.pronote_parent_fanny_average','min')[i]
+          }}</td>{% endfor %}
+        card_mod:
+          style:
+            .: |
+              ha-card ha-markdown {
+                padding:0px
+              }
+              ha-card ha-markdown.no-header {
+                padding:0px
+              }
+            ha-markdown:
+              $:
+                ha-markdown-element: |
+                  h1 {
+                      font-weight: normal;
+                      font-size: 24px;
+                  }
+                  div {
+                      background-color:rgb(100, 100, 100);
+                      padding: 12px 12px;
+                      color:white;
+                      font-weight:normal;
+                      font-size:1.2em;
+                        border-top-left-radius: 5px; 
+                        border-top-right-radius: 5px; 
+                  }
+                  table{
+                    border-collapse: collapse;
+                    font-size: 0.9em;
+                    font-family: Roboto;
+                    width: auto;
+                    outline: 0px solid #393c3d;
+                    margin-top: 10px;
+                  } caption {
+                      text-align: center;
+                      font-weight: bold;
+                      font-size: 1.2em;
+                  } td {
+                      padding: 5px 5px 5px 5px;
+                      text-align: left;
+                      border-bottom: 0px solid #1c2020;
+                  }
+                  tr {
+                      border-bottom: 0px solid #1c2020;
+                  }
+                  tr:nth-of-type(even) {
+                      background-color: rgb(54, 54, 54, 0.3);
+                  }
+                  tr:last-of-type {
+                      border-bottom: transparent;
+                  }
+                  mark {
+                      background: lightgreen;
+                      color: #222627;
+                      border-radius: 5px;
+                      padding: 5px;
+                  }
+                  span {
+                      background: orange;
+                      color: #222627;
+                      border-radius: 5px;
+                      padding: 5px;
+                  }
+                  span {
+                      padding: 5px;
+                  }
+                  tr:nth-child(n+2) > td:nth-child(2) {
+                    text-align: left;
+                  }
+      - type: markdown
+        content: |
+          <div>Absences</div>
+            <table>
+            {% set dates = state_attr('sensor.pronote_parent_fanny_absence','date')%}
+            {% for i in range(0, dates | count, 1) %}
+            <tr>
+            {% if state_attr('sensor.pronote_parent_fanny_absence','justified')[i] == '1' %}
+            <td>
+            <mark>
+            {{ dates[i] }}</mark></td>
+            {% else %}
+            <td><span>{{ dates[i] }}</span></td>
+            {% endif %}
+            <td>{{ state_attr('sensor.pronote_parent_fanny_absence','hours')[i] }}</td>
+            <td>{{ state_attr('sensor.pronote_parent_fanny_absence','reason')[i] }}</td>
+          </tr>
+          {% endfor %}
+        card_mod:
+          style:
+            .: |
+              ha-card ha-markdown {
+                padding:0px
+              }
+              ha-card ha-markdown.no-header {
+                padding:0px
+              }
+            ha-markdown:
+              $:
+                ha-markdown-element: |
+                  h1 {
+                      font-weight: normal;
+                      font-size: 24px;
+                  }
+                  div {
+                      background-color:rgb(100, 100, 100);
+                      padding: 12px 12px;
+                      color:white;
+                      font-weight:normal;
+                      font-size:1.2em;
+                        border-top-left-radius: 5px; 
+                        border-top-right-radius: 5px; 
+                  }
+                  table{
+                    border-collapse: collapse;
+                    font-size: 0.9em;
+                    font-family: Roboto;
+                    width: auto;
+                    outline: 0px solid #393c3d;
+                    margin-top: 10px;
+                  } caption {
+                      text-align: center;
+                      font-weight: bold;
+                      font-size: 1.2em;
+                  } td {
+                      padding: 5px 5px 5px 5px;
+                      text-align: left;
+                      border-bottom: 0px solid #1c2020;
+                  }
+                  tr {
+                      border-bottom: 0px solid #1c2020;
+                  }
+                  tr:nth-of-type(even) {
+                      background-color: rgb(54, 54, 54, 0.3);
+                  }
+                  tr:last-of-type {
+                      border-bottom: transparent;
+                  }
+                  mark {
+                      background: lightgreen;
+                      color: #222627;
+                      border-radius: 5px;
+                      padding: 5px;
+                  }
+                  span {
+                      background: orange;
+                      color: #222627;
+                      border-radius: 5px;
+                      padding: 5px;
+                  }
+                  span {
+                      padding: 5px;
+                  }
+                  tr:nth-child(n+2) > td:nth-child(2) {
+                    text-align: left;
+                  }
