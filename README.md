@@ -35,8 +35,8 @@ The sensors can be made visible in Home Assistant using the markdown-card, an ex
 
 1. Install directly from docker : `docker pull vingerha/pronote2mqtt:latest`
 It is recommended to map the volumes 'app' and 'data' so one can access these easier. 
-The python files must be copied into the 'app' folder. 
-The 'data' folder will contain the sqlite3 database: pronote2mqtt.db
+The docker entryscsript will ensure that the files are copied into that volumne and will (should) not overrride existin param.py or ent.py as these are used for local config. In exceptional cases, the python files must be manually copied into the 'app' folder (please send me any use-case as 'issue')
+The 'data' folder will contain the sqlite3 database: pronote2mqtt.db, then you can access its data with e.g. 'DB Browser for SQLite'.
 2. Update the params.py with your values to connect to MQTT and pronote.
 3. Update ent.py. I have added an ent.py based on the one by pronotepy. The package currently assumes that you are accessing over CAS (as do most students), so make sure that ent.py has your specific CAS properly setup...for details check pronotepy on how to update your CAS in ent.py.
 
@@ -58,7 +58,7 @@ Or from commandline, in the folder where you stored the files form /app, using t
 
 ### Long Term Usage
 
-Pronote2mqtt will try and reconnect at fixed times (param.py default: 10:00). It depends on pronotepy so cannot assure that it will continue to be working. 
+Pronote2mqtt will try and reconnect at fixed times (param.py default: 06:00). It depends on pronotepy so cannot assure that it will continue to be working. 
 
 ## Contributing
 
