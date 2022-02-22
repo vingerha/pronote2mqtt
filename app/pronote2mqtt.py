@@ -459,7 +459,7 @@ def run(myParams):
 #            sys.exit(1)
 
     # Release memory
-    del myMqtt
+#    del myMqtt
     del myPronote
 
 
@@ -482,10 +482,14 @@ def run(myParams):
     logging.info("-----------------------------------------------------------")
     logging.info("#                Next run                                 #")
     logging.info("-----------------------------------------------------------")
-    if myParams.scheduleTime is not None:
-        logging.info("The pronote2mqtt next run is scheduled at %s",myParams.scheduleTime)
+    if myParams.scheduleFrequency > 0:
+        logging.info("The pronote2mqtt runs are scheduled every => %s hours",myParams.scheduleFrequency)
     else:
-        logging.info("No schedule defined.")
+        if myParams.scheduleTime is not None:
+            logging.info("The pronote2mqtt next run is scheduled at %s",myParams.scheduleTime)
+        
+        else:
+            logging.info("No schedule or frequency  defined.")
 
 
     logging.info("-----------------------------------------------------------")
@@ -534,21 +538,34 @@ if __name__ == "__main__":
         logging.error("Error on parameters. End of program.")
         quit()
 
-    
+  
     # Run
-    if myParams.scheduleTime is not None:
-        
+
+
+    # if scheduleFrequency set
+    if myParams.scheduleFrequency is not None:
         # Run once at lauch
         run(myParams)
-
-        # Then run at scheduled time
-        schedule.every().day.at(myParams.scheduleTime).do(run,myParams)
+        
+        schedule.every(myParams.scheduleFrequency).hours.do(run,myParams)
         while True:
-            schedule.run_pending()
-            time.sleep(1)
+                schedule.run_pending()
+                time.sleep(1)
+              
+    else: 
+        # if scheduleTime set
+        if myParams.scheduleTime is not None:
+            # Run once at lauch
+            run(myParams)
+            schedule.every().day.at(myParams.scheduleTime).do(run,myParams)
         
-    else:
+            while True:
+                schedule.run_pending()
+                time.sleep(1)
         
-        # Run once
-        run(myParams)
-        logging.info("End of pronote2mqtt.")
+        else:      
+            # Run once
+            run(myParams)
+            logging.info("End of pronote2mqtt.")
+
+

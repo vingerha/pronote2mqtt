@@ -47,8 +47,9 @@ class Params:
     self.mqttSsl = False
     
     
-    # Run params
+    # Run params, scheduleFrequency (in hours) will take precendce over scheduleTime, if none or set then only 1 run.
     self.scheduleTime = '06:00'
+    self.scheduleFrequency = 2 
     
     # Publication params
     self.hassDiscovery = True
@@ -76,8 +77,6 @@ class Params:
     
     self.parser = argparse.ArgumentParser()
     self.parser.add_argument(
-        "--pronote_student_1",    help="PRONOTE student name, ex : 'name'")
-    self.parser.add_argument(
         "--pronote_username_1",    help="PRONOTE user name, ex : 'first.last'")
     self.parser.add_argument(
         "--pronote_password_1",    help="PRONOTE password")
@@ -88,8 +87,6 @@ class Params:
     self.parser.add_argument(
         "--pronote_cas_1",    help="PRONOTE case")
     
-    self.parser.add_argument(
-        "--pronote_student_2",    help="PRONOTE student name, ex : 'name'")
     self.parser.add_argument(
         "--pronote_username_2",    help="PRONOTE user name, ex : myemail@email.com")
     self.parser.add_argument(
@@ -102,7 +99,9 @@ class Params:
         "--pronote_cas_2",    help="PRONOTE case")    
         
     self.parser.add_argument(
-        "-s", "--schedule",   help="Schedule the launch of the script at hh:mm everyday")
+        "--schedule_time",   help="Schedule the launch of the script at hh:mm everyday")
+    self.parser.add_argument(
+        "--schedule_frequency",   help="Schedule the launch of the script very X hours")
     self.parser.add_argument(
         "--mqtt_host",        help="Hostname or ip adress of the Mqtt broker")
     self.parser.add_argument(
@@ -141,14 +140,12 @@ class Params:
   # Get params from arguments in command line
   def getFromArgs(self):
     
-    if self.args.pronote_student_1 is not None: self.pronoteStudent_1 = self.args.pronote_student_1
     if self.args.pronote_username_1 is not None: self.pronoteUsername_1 = self.args.pronote_username_1
     if self.args.pronote_password_1 is not None: self.pronotePassword_1 = self.args.pronote_password_1
     if self.args.pronote_prefixurl_1 is not None: self.pronotePrefixUrl_1 = self.args.pronote_prefixurl_1
     if self.args.pronote_ent_1 is not None: self.pronoteEnt_1 = self.args.pronote_end_1
     if self.args.pronote_cas_1 is not None: self.pronotePassword_1 = self.args.pronote_cas_1
     
-    if self.args.pronote_student_2 is not None: self.pronoteStudent_2 = self.args.pronote_student_2
     if self.args.pronote_username_2 is not None: self.pronoteUsername_2 = self.args.pronote_username_2
     if self.args.pronote_password_2 is not None: self.pronotePassword_2 = self.args.pronote_password_2
     if self.args.pronote_prefixurl_2 is not None: self.pronotePrefixUrl_2 = self.args.pronote_prefixurl_2
@@ -166,8 +163,8 @@ class Params:
     if self.args.mqtt_retain is not None: self.mqttRetain = _isItTrue(self.args.mqtt_retain)
     if self.args.mqtt_ssl is not None: self.mqttSsl = _isItTrue(self.args.mqtt_ssl)
       
-    if self.args.schedule is not None: self.scheduleTime = self.args.schedule
-      
+    if self.args.schedule_time is not None: self.scheduleTime = self.args.schedule_time      
+    if self.args.schedule_frequency is not None: self.scheduleFrequency = self.args.schedule_frequency
     
     if self.args.hass_discovery is not None: self.hassDiscovery = _isItTrue(self.args.hass_discovery)
     if self.args.hass_prefix is not None: self.hassPrefix = self.args.hass_prefix
@@ -181,10 +178,7 @@ class Params:
     
   # Check parameters
   def checkParams(self):
-    if self.pronoteStudent_1 is None:
-      logging.error("Parameter PRONOTE username is mandatory.")
-      return False
-    elif self.pronoteUsername_1 is None:
+    if self.pronoteUsername_1 is None:
       logging.error("Parameter PRONOTE username is mandatory.")
       return False
     elif self.pronotePassword_1 is None:
@@ -220,3 +214,4 @@ class Params:
           
     logging.info("Database options : Force reinitialization = %s, Path = %s", self.dbInit, self.dbPath)
     logging.info("Debug mode : Enable = %s", self.debug)
+
