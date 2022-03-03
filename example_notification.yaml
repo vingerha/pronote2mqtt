@@ -1,0 +1,26 @@
+alias: Demo grade update
+description: ''
+trigger:
+  - platform: state
+    entity_id: sensor.pronote_parent_fanny_evaluation
+condition: []
+action:
+  - service: notify.mobile_[your_mobile]
+    data:
+      message: >-
+        'Demo' {{
+        state_attr('sensor.pronote_parent_fanny_evaluation','date')[0] }}
+        - {{
+        state_attr('sensor.pronote_parent_fanny_evaluation','acquisition_level')[0]
+        }} - {{
+        state_attr('sensor.pronote_parent_fanny_evaluation','subject')[0]
+        }} 
+        {{- '\n' -}} 
+        'Demo' {{
+        state_attr('sensor.pronote_parent_fanny_evaluation','date')[1] }}
+        - {{
+        state_attr('sensor.pronote_parent_fanny_evaluation','acquisition_level')[1]
+        }} - {{
+        state_attr('sensor.pronote_parent_fanny_evaluation','subject')[1]
+        }}
+mode: single
