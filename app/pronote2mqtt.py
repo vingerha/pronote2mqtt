@@ -257,7 +257,7 @@ def run(myParams):
                     attributes[f'done'] = []
                     for myHomework in myStudent.homeworkList:
                         # Store homework into sensor
-                        attributes[f'date'].append(myHomework.homeworkDate.split("/",1)[1])
+                        attributes[f'date'].append(myHomework.homeworkDate)
                         attributes[f'title'].append(myHomework.homeworkSubject)
                         attributes[f'description'].append(re.sub(r'http\S+', '<URL REMOVED, see PRONOTE-APP>', myHomework.homeworkDescription))
                         attributes[f'done'].append(myHomework.homeworkDone)                       
@@ -284,7 +284,7 @@ def run(myParams):
                     attributes[f'acquisition_level'] = []
                     for myEvaluation in myStudent.evaluationShortList:
                         # Store evaluation into sensor
-                        attributes[f'date'].append(myEvaluation.evalDate.split("/",1)[1])
+                        attributes[f'date'].append(myEvaluation.evalDate)
                         attributes[f'subject'].append(myEvaluation.evalSubject)
                         attributes[f'acquisition_name'].append(myEvaluation.acqName)
                         attributes[f'acquisition_level'].append(myEvaluation.acqLevel)
@@ -374,7 +374,7 @@ def run(myParams):
                     attributes[f'comment'] = []
                     for myGrade in myStudent.gradeList:
                         # Store evaluation into sensor
-                        attributes[f'date'].append(myGrade.date.split("/",1)[1])
+                        attributes[f'date'].append(myGrade.date)
                         attributes[f'subject'].append(myGrade.subject)
                         attributes[f'student_grade'].append(myGrade.defaultOutOf)
                         attributes[f'class_average'].append(myGrade.average)
@@ -411,7 +411,7 @@ def run(myParams):
                     attributes[f'room'] = []
                     for myLesson in myStudent.lessonShortList:
                         # Store evaluation into sensor
-                        attributes[f'date'].append(myLesson.lessonDateTime.split("/",1)[1])
+                        attributes[f'date'].append(myLesson.lessonDateTime.split(" ",1)[0])
                         attributes[f'start'].append(myLesson.lessonStart)
                         attributes[f'end'].append(myLesson.lessonEnd)
                         attributes[f'subject'].append(myLesson.lessonSubject)
@@ -445,21 +445,21 @@ def run(myParams):
     ####################################################################################################################
     # STEP 4 : Disconnect mqtt broker (throws errors....to fix in future)
     ####################################################################################################################
-#    if myMqtt.isConnected:
-#
-#        logging.info("-----------------------------------------------------------")
-#        logging.info("#               Disconnexion from MQTT                    #")
-#        logging.info("-----------------------------------------------------------")
-#
-#        try:
-#            myMqtt.disconnect()
-#            logging.info("Mqtt broker disconnected")
-#        except:
-#            logging.error("Unable to disconnect mqtt broker")
-#            sys.exit(1)
+    if myMqtt.isConnected:
+
+        logging.info("-----------------------------------------------------------")
+        logging.info("#               Disconnexion from MQTT                    #")
+        logging.info("-----------------------------------------------------------")
+
+        try:
+            myMqtt.disconnect()
+            logging.info("Mqtt broker disconnected")
+        except:
+            logging.error("Unable to disconnect mqtt broker")
+            sys.exit(1)
 
     # Release memory
-#    del myMqtt
+    del myMqtt
     del myPronote
 
 
