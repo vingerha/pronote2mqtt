@@ -169,9 +169,9 @@ class Database:
                         , lessonRoom TEXT
                         , lessonCanceled TEXT
                         , lessonStatus TEXT
-                        , PRIMARY KEY(studentname,lessonDateTime,lessonSubject))''')
-    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_lessons_lid
-                    ON lessons (studentname,lessonDateTime,LessonSubject)''')
+                        , PRIMARY KEY(studentname,lessonDateTime,lessonSubject,lessonRoom, lessonCanceled))''')
+#    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_lessons_lid
+#                    ON lessons (studentname,lessonDateTime,LessonSubject, lessonStatus)''')
 
     # using key on period id and evalid
     logging.debug("Creation of Homework table")
