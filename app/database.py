@@ -169,9 +169,9 @@ class Database:
                         , lessonRoom TEXT
                         , lessonCanceled TEXT
                         , lessonStatus TEXT
-                        , PRIMARY KEY(studentname,lessonDateTime,lessonSubject))''')
-    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_lessons_lid
-                    ON lessons (studentname,lessonDateTime,LessonSubject)''')
+                        , PRIMARY KEY(studentname,lessonDateTime,lessonSubject,lessonRoom, lessonCanceled))''')
+#    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_lessons_lid
+#                    ON lessons (studentname,lessonDateTime,LessonSubject, lessonStatus)''')
 
     # using key on period id and evalid
     logging.debug("Creation of Homework table")
@@ -382,7 +382,10 @@ class Database:
   # Load homework
   def _loadHomework(self,student):
     studentname=student.studentFullname
-    query = f"SELECT * FROM homework WHERE studentname = '{studentname}' order by homeworkDate"
+    datestart = datetime.date.today().strftime("%Y/%m/%d")
+    dateend = datetime.date.today() + relativedelta(days=7)
+    dateend = dateend.strftime("%Y/%m/%d")
+    query = f"SELECT * FROM homework WHERE studentname = '{studentname}' and homeworkDate between '{datestart}' and '{dateend}' order by homeworkDate"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Homework

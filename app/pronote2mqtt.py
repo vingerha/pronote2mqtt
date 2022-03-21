@@ -257,7 +257,7 @@ def run(myParams):
                     attributes[f'done'] = []
                     for myHomework in myStudent.homeworkList:
                         # Store homework into sensor
-                        attributes[f'date'].append(myHomework.homeworkDate.split("/",1)[1])
+                        attributes[f'date'].append(myHomework.homeworkDate)
                         attributes[f'title'].append(myHomework.homeworkSubject)
                         attributes[f'description'].append(re.sub(r'http\S+', '<URL REMOVED, see PRONOTE-APP>', myHomework.homeworkDescription))
                         attributes[f'done'].append(myHomework.homeworkDone)                       
@@ -284,7 +284,7 @@ def run(myParams):
                     attributes[f'acquisition_level'] = []
                     for myEvaluation in myStudent.evaluationShortList:
                         # Store evaluation into sensor
-                        attributes[f'date'].append(myEvaluation.evalDate.split("/",1)[1])
+                        attributes[f'date'].append(myEvaluation.evalDate)
                         attributes[f'subject'].append(myEvaluation.evalSubject)
                         attributes[f'acquisition_name'].append(myEvaluation.acqName)
                         attributes[f'acquisition_level'].append(myEvaluation.acqLevel)
@@ -374,7 +374,7 @@ def run(myParams):
                     attributes[f'comment'] = []
                     for myGrade in myStudent.gradeList:
                         # Store evaluation into sensor
-                        attributes[f'date'].append(myGrade.date.split("/",1)[1])
+                        attributes[f'date'].append(myGrade.date)
                         attributes[f'subject'].append(myGrade.subject)
                         attributes[f'student_grade'].append(myGrade.defaultOutOf)
                         attributes[f'class_average'].append(myGrade.average)
@@ -411,7 +411,7 @@ def run(myParams):
                     attributes[f'room'] = []
                     for myLesson in myStudent.lessonShortList:
                         # Store evaluation into sensor
-                        attributes[f'date'].append(myLesson.lessonDateTime.split("/",1)[1])
+                        attributes[f'date'].append(myLesson.lessonDateTime.split(" ",1)[0])
                         attributes[f'start'].append(myLesson.lessonStart)
                         attributes[f'end'].append(myLesson.lessonEnd)
                         attributes[f'subject'].append(myLesson.lessonSubject)
@@ -445,18 +445,18 @@ def run(myParams):
     ####################################################################################################################
     # STEP 4 : Disconnect mqtt broker (throws errors....to fix in future)
     ####################################################################################################################
-#    if myMqtt.isConnected:
-#
-#        logging.info("-----------------------------------------------------------")
-#        logging.info("#               Disconnexion from MQTT                    #")
-#        logging.info("-----------------------------------------------------------")
-#
-#        try:
-#            myMqtt.disconnect()
-#            logging.info("Mqtt broker disconnected")
-#        except:
-#            logging.error("Unable to disconnect mqtt broker")
-#            sys.exit(1)
+    if myMqtt.isConnected:
+
+        logging.info("-----------------------------------------------------------")
+        logging.info("#               Disconnexion from MQTT                    #")
+        logging.info("-----------------------------------------------------------")
+
+        try:
+            myMqtt.disconnect()
+            logging.info("Mqtt broker disconnected")
+        except:
+            logging.error("Unable to disconnect mqtt broker")
+            sys.exit(1)
 
     # Release memory
     del myMqtt
@@ -482,10 +482,14 @@ def run(myParams):
     logging.info("-----------------------------------------------------------")
     logging.info("#                Next run                                 #")
     logging.info("-----------------------------------------------------------")
-    if myParams.scheduleTime is not None:
-        logging.info("The pronote2mqtt next run is scheduled at %s",myParams.scheduleTime)
+    if myParams.scheduleFrequency > 0:
+        logging.info("The pronote2mqtt runs are scheduled every => %s hours",myParams.scheduleFrequency)
     else:
-        logging.info("No schedule defined.")
+        if myParams.scheduleTime is not None:
+            logging.info("The pronote2mqtt next run is scheduled at %s",myParams.scheduleTime)
+        
+        else:
+            logging.info("No schedule or frequency  defined.")
 
 
     logging.info("-----------------------------------------------------------")
@@ -534,21 +538,34 @@ if __name__ == "__main__":
         logging.error("Error on parameters. End of program.")
         quit()
 
-    
+  
     # Run
-    if myParams.scheduleTime is not None:
-        
+
+
+    # if scheduleFrequency set
+    if myParams.scheduleFrequency is not None:
         # Run once at lauch
         run(myParams)
-
-        # Then run at scheduled time
-        schedule.every().day.at(myParams.scheduleTime).do(run,myParams)
+        
+        schedule.every(myParams.scheduleFrequency).hours.do(run,myParams)
         while True:
-            schedule.run_pending()
-            time.sleep(1)
+                schedule.run_pending()
+                time.sleep(1)
+              
+    else: 
+        # if scheduleTime set
+        if myParams.scheduleTime is not None:
+            # Run once at lauch
+            run(myParams)
+            schedule.every().day.at(myParams.scheduleTime).do(run,myParams)
         
-    else:
+            while True:
+                schedule.run_pending()
+                time.sleep(1)
         
-        # Run once
-        run(myParams)
-        logging.info("End of pronote2mqtt.")
+        else:      
+            # Run once
+            run(myParams)
+            logging.info("End of pronote2mqtt.")
+
+
