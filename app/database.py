@@ -166,9 +166,10 @@ class Database:
                         , lessonStart TEXT
                         , lessonEnd TEXT
                         , lessonSubject TEXT
-                        , lessonRoom TEXT
+                        , lessonRoom TEXT DEFAULT "nc" NOT NULL
                         , lessonCanceled TEXT
-                        , lessonStatus TEXT
+                        , lessonStatus TEXT DEFAULT "nc" NOT NULL
+                        , lessonTimeStamp datetime default current_timestamp
                         , PRIMARY KEY(studentname,lessonDateTime,lessonSubject,lessonRoom, lessonCanceled))''')
 #    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_lessons_lid
 #                    ON lessons (studentname,lessonDateTime,LessonSubject, lessonStatus)''')
@@ -264,6 +265,10 @@ class Database:
         logging.debug("Connexion to database")
         self.con = sqlite3.connect(self.path + "/" + DATABASE_NAME, timeout=DATABASE_TIMEOUT)
         self.cur = self.con.cursor()
+        
+    # dropdelete table lessons as impossible to track when records were entered/updated
+    logging.debug("Drop Lessons table")
+    self.cur.execute('''DELETE FROM lessons where studentname like 'VINGERHOEDS%' ''')
         
   # Get measures statistics
   def getGradesCount(self):
@@ -450,7 +455,7 @@ class Database:
     datestart = datetime.date.today().strftime("%Y/%m/%d %H:%M")
     dateend = datetime.date.today() + relativedelta(days=7)
     dateend = dateend.strftime("%Y/%m/%d %H:%M")
-    query = f"SELECT * FROM lessons WHERE studentname like '{studentname}' and lessonDateTime between '{datestart}' and '{dateend}' ORDER by lessonDateTime"
+    query = f"SELECT * FROM lessons WHERE studentname like '{studentname}' and lessonDateTime between '{datestart}' and '{dateend}' ORDER by lessonDateTime,lessonCanceled"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Eval
@@ -555,6 +560,7 @@ class Lessons():
     self.lessonRoom = result[6]
     self.lessonCanceled = result[7]
     self.lessonStatus = result[8]
+    self.lessonTimeStamp = result[9]
 
 class Homework():
 

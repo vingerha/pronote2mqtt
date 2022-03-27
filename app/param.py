@@ -46,10 +46,8 @@ class Params:
     self.mqttRetain = True
     self.mqttSsl = False
     
-    
-    # Run params, scheduleFrequency (in hours) will take precendce over scheduleTime, if none or set then only 1 run.
-    self.scheduleTime = '06:00'
-    self.scheduleFrequency = 2 
+    # schedule re-runs via cron (used in pronotepy2mqtt) in order: on minute 0 (so every full hour) / on hours 6 till 20 / every day in month / every month on weekdays sunday till friday
+    self.scheduleCron = '0 6-20 * * sun-fri' 
     
     # Publication params
     self.hassDiscovery = True
@@ -99,9 +97,7 @@ class Params:
         "--pronote_cas_2",    help="PRONOTE case")    
         
     self.parser.add_argument(
-        "--schedule_time",   help="Schedule the launch of the script at hh:mm everyday")
-    self.parser.add_argument(
-        "--schedule_frequency",   help="Schedule the launch of the script very X hours")
+        "--schedule_cron",   help="Schedule the launch of the script via pycron")    
     self.parser.add_argument(
         "--mqtt_host",        help="Hostname or ip adress of the Mqtt broker")
     self.parser.add_argument(
@@ -163,8 +159,7 @@ class Params:
     if self.args.mqtt_retain is not None: self.mqttRetain = _isItTrue(self.args.mqtt_retain)
     if self.args.mqtt_ssl is not None: self.mqttSsl = _isItTrue(self.args.mqtt_ssl)
       
-    if self.args.schedule_time is not None: self.scheduleTime = self.args.schedule_time      
-    if self.args.schedule_frequency is not None: self.scheduleFrequency = self.args.schedule_frequency
+    if self.args.schedule_cron is not None: self.scheduleCron = self.args.schedule_cron
     
     if self.args.hass_discovery is not None: self.hassDiscovery = _isItTrue(self.args.hass_discovery)
     if self.args.hass_prefix is not None: self.hassPrefix = self.args.hass_prefix
