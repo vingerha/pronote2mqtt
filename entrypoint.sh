@@ -20,7 +20,6 @@ fi
 echo "Copy base set of files to app ..."
 cp /app_temp/database.py "$APP"
 cp /app_temp/mqtt.py "$APP"
-cp /app_temp/pronote.py "$APP"
 cp /app_temp/pronote2mqtt.py "$APP"
 cp /app_temp/hass.py "$APP"
 
