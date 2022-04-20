@@ -5,4 +5,4 @@ envparse
 schedule
 paho-mqtt
 pycron
-https://github.com/bain3/pronotepy/archive/refs/heads/master.zip
+pronotepy==2.4.0

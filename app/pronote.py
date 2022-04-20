@@ -5,7 +5,9 @@ from datetime import timedelta
 import json
 import logging
 import math
-import ent
+# import ent // removed with pronotepy v2.4.0 covering more CAS
+from pronotepy.ent import *
+
 
 #Variables 
 #studentname="demo" #nom de votre enfant - ne sert que pour le nom du fichier json
