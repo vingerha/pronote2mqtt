@@ -46,12 +46,8 @@ class Params:
     self.mqttRetain = True
     self.mqttSsl = False
     
-<<<<<<< Updated upstream
-    # schedule re-runs via cron (used in pronotepy2mqtt) in order: on minute 0 (so every full hour) / on hours 6 till 20 / every day in month / every month on weekdays sunday till friday
-=======
-    
+   
     # cron (used in pronotepy2mqtt) in order: on minute 0 (so every full hour) / on hours 6 till 20 / every day in month / every month on weekdays sunday till friday
->>>>>>> Stashed changes
     self.scheduleCron = '0 6-20 * * sun-fri' 
     
     # Publication params
