@@ -1,5 +1,7 @@
 import pronotepy
+from pronotepy import ent
 import os
+import datetime               
 from datetime import date
 from datetime import timedelta 
 import json
@@ -7,13 +9,6 @@ import logging
 import math
 # import ent // removed with pronotepy v2.4.0 covering more CAS
 from pronotepy.ent import *
-
-
-#Variables 
-#studentname="demo" #nom de votre enfant - ne sert que pour le nom du fichier json
-#prefix_url = "....." # sert au prefix de l'url https://PREFIX.index-education.net/pronote/
-#username="demonstration" #utlisateur pronote  - a remplacer par le nom d'utilisateur pronote de l'élève
-#password="pronotevs" # mot de passe pronote - a remplacer par le mot de passe du compte de l'élève
 
 #Hardcoded (to be improved)
 lessonDays=15
@@ -469,6 +464,7 @@ class Lesson:
         self.lessonRoom = None
         self.lessonCanceled = None
         self.lessonStatus = None
+        self.lessonTimeStamp = datetime.datetime.now()
 
         self.lid = lesson["lid"]
         self.studentname= studentname
@@ -487,8 +483,8 @@ class Lesson:
 
         if dbTable:
             logging.debug("Store lessons %s, %s, %s, %s, %s, %s, %s, %s, %s",self.lid,self.studentname,self.lessonDateTime,self.lessonStart,self.lessonEnd,self.lessonSubject,self.lessonRoom,self.lessonCanceled,self.lessonStatus)
-            lesson_query = f"INSERT OR REPLACE INTO lessons VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-            db.cur.execute(lesson_query, [self.lid,self.studentname,self.lessonDateTime,self.lessonStart,self.lessonEnd,self.lessonSubject,self.lessonRoom,self.lessonCanceled,self.lessonStatus])
+            lesson_query = f"INSERT OR REPLACE INTO lessons VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            db.cur.execute(lesson_query, [self.lid,self.studentname,self.lessonDateTime,self.lessonStart,self.lessonEnd,self.lessonSubject,self.lessonRoom,self.lessonCanceled,self.lessonStatus,self.lessonTimeStamp])
 
 
 
