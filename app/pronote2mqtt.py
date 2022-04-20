@@ -27,13 +27,8 @@ import json
 
 import pronote
 
-
-# gazpar2mqtt constants
-<<<<<<< Updated upstream
-P2M_VERSION = '0.1.0'
-=======
+# pronote2mqtt constants
 P2M_VERSION = '0.2.0'
->>>>>>> Stashed changes
 P2M_DB_VERSION = '0.1.0'
 
 #######################################################################
