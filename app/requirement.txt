@@ -4,4 +4,4 @@ argparse
 envparse
 schedule
 paho-mqtt
-https://github.com/bain3/pronotepy/archive/refs/heads/master.zip
+pronotepy==2.4.0

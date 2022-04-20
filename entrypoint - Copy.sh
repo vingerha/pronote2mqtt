@@ -13,6 +13,10 @@ if [ ! -f "$APP/param.py" ]; then
     echo "Param.py non existing, copying default to app..."
     cp /app_temp/param.py "$APP/param.py"
 fi
+if [ ! -f "$APP/ent.py" ]; then
+    echo "ent.py non existing, copying default to app..."
+    cp /app_temp/ent.py "$APP/ent.py"
+fi
 if [ ! -f "$APP/pronote.py" ]; then
     echo "pronote.py non existing, copying default to app..."
     cp /app_temp/pronote.py "$APP/pronote.py"
