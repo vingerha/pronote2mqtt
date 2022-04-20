@@ -41,9 +41,10 @@ The 'data' folder will contain the sqlite3 database: pronote2mqtt.db, then you c
 3. Update ent.py. I have added an ent.py based on the one by pronotepy. The package currently assumes that you are accessing over CAS (as do most students), so make sure that ent.py has your specific CAS properly setup...for details check pronotepy on how to update your CAS in ent.py.
 
 
-**Latest**
+**Latest ; v0.3.0**
 
-This is a package undergoing development.
+Integrated with pronotepy 2.4.0 as this contains more CAS now, removed 'proprietary' ent.py
+Added pycron to be able the schedule the runs with more details, see param.py (removed all other scheduling options)
 
 #### Testing the package
 To self test pronote2mqtt, run the docker container: `docker run --name pronote2mqtt_test --tty vingerha/pronote2mqtt:latest`.
