@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Work in progress...
+import pycron
 import sys
 import datetime
 import schedule
@@ -28,7 +29,11 @@ import pronote
 
 
 # gazpar2mqtt constants
+<<<<<<< Updated upstream
 P2M_VERSION = '0.1.0'
+=======
+P2M_VERSION = '0.2.0'
+>>>>>>> Stashed changes
 P2M_DB_VERSION = '0.1.0'
 
 #######################################################################
@@ -409,15 +414,19 @@ def run(myParams):
                     attributes[f'canceled'] = []
                     attributes[f'status'] = []
                     attributes[f'room'] = []
-                    for myLesson in myStudent.lessonShortList:
-                        # Store evaluation into sensor
-                        attributes[f'date'].append(myLesson.lessonDateTime.split(" ",1)[0])
-                        attributes[f'start'].append(myLesson.lessonStart)
-                        attributes[f'end'].append(myLesson.lessonEnd)
-                        attributes[f'subject'].append(myLesson.lessonSubject)
-                        attributes[f'canceled'].append(myLesson.lessonCanceled)
-                        attributes[f'status'].append(myLesson.lessonStatus)
-                        attributes[f'room'].append(myLesson.lessonRoom)
+                    for index, myLesson in enumerate(myStudent.lessonShortList):
+                        # Store lesson into sensor
+                        # filter out 'duplicates', i.e. canceled lessons in case other registration for same slot
+                        # note that this assumes the canceled (value=1) to follow the replacement of the same slot (if any) so sorting from db as well
+                        if not (myStudent.lessonShortList[index].lessonDateTime == myStudent.lessonShortList[index-1].lessonDateTime and 
+                            myStudent.lessonShortList[index].lessonCanceled == '1'):                          
+                                attributes[f'date'].append(myLesson.lessonDateTime.split(" ",1)[0])
+                                attributes[f'start'].append(myLesson.lessonStart)
+                                attributes[f'end'].append(myLesson.lessonEnd)
+                                attributes[f'subject'].append(myLesson.lessonSubject)
+                                attributes[f'canceled'].append(myLesson.lessonCanceled)
+                                attributes[f'status'].append(myLesson.lessonStatus)
+                                attributes[f'room'].append(myLesson.lessonRoom)
                     
                     myEntity.addAttribute("date",attributes[f'date'])                    
                     myEntity.addAttribute("start",attributes[f'start'])   
@@ -482,14 +491,10 @@ def run(myParams):
     logging.info("-----------------------------------------------------------")
     logging.info("#                Next run                                 #")
     logging.info("-----------------------------------------------------------")
-    if myParams.scheduleFrequency > 0:
-        logging.info("The pronote2mqtt runs are scheduled every => %s hours",myParams.scheduleFrequency)
+    if myParams.scheduleCron:
+        logging.info("The pronote2mqtt runs are cron scheduled => %s (hour / range / daymth / mth / weekdays )",myParams.scheduleCron)  
     else:
-        if myParams.scheduleTime is not None:
-            logging.info("The pronote2mqtt next run is scheduled at %s",myParams.scheduleTime)
-        
-        else:
-            logging.info("No schedule or frequency  defined.")
+        logging.info("No schedule or frequency  defined.")
 
 
     logging.info("-----------------------------------------------------------")
@@ -538,34 +543,42 @@ if __name__ == "__main__":
         logging.error("Error on parameters. End of program.")
         quit()
 
+
+    
   
     # Run
-
-
-    # if scheduleFrequency set
-    if myParams.scheduleFrequency is not None:
-        # Run once at lauch
+    
+    # Run once at lauch
+    run(myParams)
+    
+    def job():
+        timenow = time.localtime()
+        logging.info("-----------------------------------------------------------")
+        logging.info("Pronotepy-cron-job at:...", str( time.strftime("%H:%M", timenow) )) 
+        logging.info("-----------------------------------------------------------")
         run(myParams)
+    
+
+    if myParams.scheduleCron is not None:
         
-        schedule.every(myParams.scheduleFrequency).hours.do(run,myParams)
-        while True:
-                schedule.run_pending()
-                time.sleep(1)
-              
-    else: 
-        # if scheduleTime set
-        if myParams.scheduleTime is not None:
-            # Run once at lauch
-            run(myParams)
-            schedule.every().day.at(myParams.scheduleTime).do(run,myParams)
+        logging.info("-----------------------------------------------------------")
+        logging.info("Awaiting cron to kick off => %s (hour / range / daymth / mth / weekdays", myParams.scheduleCron)  
+        logging.info("-----------------------------------------------------------")
         
-            while True:
-                schedule.run_pending()
-                time.sleep(1)
-        
-        else:      
-            # Run once
-            run(myParams)
-            logging.info("End of pronote2mqtt.")
+        while True:    
+            if pycron.is_now(myParams.scheduleCron):
+                logging.info("-----------------------------------------------------------")
+                logging.info("In scheduler (pycron)")  
+                logging.info("-----------------------------------------------------------")
+                job()
+                time.sleep(60)
+            
+    else:      
+        # Run once
+        logging.info("-----------------------------------------------------------")
+        logging.info("Only run once, no schedule")
+        logging.info("-----------------------------------------------------------")
+        run(myParams)
+        logging.info("End of pronote2mqtt.")
 
 
