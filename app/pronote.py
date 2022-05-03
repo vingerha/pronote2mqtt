@@ -227,16 +227,28 @@ class Pronote:
         while index <= lessonDays:
             lessons = client.lessons(dateLesson)
             for lesson in lessons:
-                jsondata['lessons'].append({
-                    'lid': lesson.id,
-                    'lessonDateTime': lesson.start.strftime("%Y/%m/%d %H:%M"),
-                    'lessonStart': lesson.start.strftime("%H:%M"),
-                    'lessonEnd': lesson.end.strftime("%H:%M"),
-                    'lessonSubject': lesson.subject.name,
-                    'lessonRoom': lesson.classroom,
-                    'lessonCanceled': lesson.canceled,
-                    'lessonStatus': lesson.status,
-            })
+                try:
+                    jsondata['lessons'].append({
+                        'lid': lesson.id,
+                        'lessonDateTime': lesson.start.strftime("%Y/%m/%d %H:%M"),
+                        'lessonStart': lesson.start.strftime("%H:%M"),
+                        'lessonEnd': lesson.end.strftime("%H:%M"),
+                        'lessonSubject': lesson.subject.name,
+                        'lessonRoom': lesson.classroom,
+                        'lessonCanceled': lesson.canceled,
+                        'lessonStatus': lesson.status,
+                })
+                except AttributeError:
+                    jsondata['lessons'].append({
+                        'lid': lesson.id,
+                        'lessonDateTime': lesson.start.strftime("%Y/%m/%d %H:%M"),
+                        'lessonStart': lesson.start.strftime("%H:%M"),
+                        'lessonEnd': lesson.end.strftime("%H:%M"),
+                        'lessonSubject': "ereur_nom",
+                        'lessonRoom': lesson.classroom,
+                        'lessonCanceled': lesson.canceled,
+                        'lessonStatus': lesson.status,
+                })    
             index += 1
             dateLesson = dateLesson + timedelta(days = 1)
         lessonList = jsondata

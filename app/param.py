@@ -210,4 +210,3 @@ class Params:
           
     logging.info("Database options : Force reinitialization = %s, Path = %s", self.dbInit, self.dbPath)
     logging.info("Debug mode : Enable = %s", self.debug)
-

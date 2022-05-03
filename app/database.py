@@ -441,7 +441,7 @@ class Database:
     studentname=student.studentFullname
     datestart = datetime.date.today() - relativedelta(days=30)
     datestart = datestart.strftime("%Y/%m/%d")
-    query = f"SELECT * FROM grades WHERE studentname like '{studentname}' and period_start = (select max(period_start) from grades) ORDER by date desc"
+    query = f"SELECT * FROM grades WHERE studentname like '{studentname}' and date >= '{datestart}' ORDER by date desc"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Homework
