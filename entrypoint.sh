@@ -17,10 +17,21 @@ if [ ! -f "$APP/pronote.py" ]; then
     echo "pronote.py non existing, copying default to app..."
     cp /app_temp/pronote.py "$APP/pronote.py"
 fi
-echo "Copy base set of files to app ..."
-cp /app_temp/database.py "$APP"
-cp /app_temp/mqtt.py "$APP"
-cp /app_temp/pronote2mqtt.py "$APP"
-cp /app_temp/hass.py "$APP"
+if [ ! -f "$APP/pronote2mqtt.py" ]; then
+    echo "pronote2mqtt.py non existing, copying default to app..."
+    cp /app_temp/pronote2mqtt.py "$APP/pronote2mqtt.py"
+fi
+if [ ! -f "$APP/database.py" ]; then
+    echo "pronote2mqtt.py non existing, copying default to app..."
+    cp /app_temp/database.py "$APP/database.py"
+fi
+if [ ! -f "$APP/mqtt.py" ]; then
+    echo "mqtt.py non existing, copying default to app..."
+    cp /app_temp/mqtt.py "$APP/mqtt.py"
+fi
+if [ ! -f "$APP/database.py" ]; then
+    echo "hass.py non existing, copying default to app..."
+    cp /app_temp/hass.py "$APP/hass.py"
+fi
 
 exec "$@"
