@@ -455,7 +455,7 @@ class Database:
     datestart = datetime.date.today().strftime("%Y/%m/%d %H:%M")
     dateend = datetime.date.today() + relativedelta(days=7)
     dateend = dateend.strftime("%Y/%m/%d %H:%M")
-    query = f"SELECT * FROM lessons WHERE studentname like '{studentname}' and lessonDateTime between '{datestart}' and '{dateend}' ORDER by lessonDateTime,lessonCanceled"
+    query = f"SELECT * FROM lessons WHERE studentname like '{studentname}' and lessonDateTime between '{datestart}' and '{dateend}' ORDER by lessonDateTime asc, lessonNum desc"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Eval
