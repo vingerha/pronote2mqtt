@@ -415,7 +415,7 @@ def run(myParams):
                         # filter out 'duplicates', i.e. canceled lessons in case other registration for same slot
                         # note that this assumes the canceled (value=1) to follow the replacement of the same slot (if any) so sorting from db as well  
                         if not (myStudent.lessonShortList[index].lessonDateTime == myStudent.lessonShortList[index-1].lessonDateTime and 
-                            myStudent.lessonShortList[index].lessonNum < myStudent.lessonShortList[index-1].lessonNum):                           
+                            myStudent.lessonShortList[index].lessonNum > myStudent.lessonShortList[index-1].lessonNum):                           
                                 attributes[f'date'].append(myLesson.lessonDateTime.split(" ",1)[0])
                                 attributes[f'start'].append(myLesson.lessonStart)
                                 attributes[f'end'].append(myLesson.lessonEnd)
