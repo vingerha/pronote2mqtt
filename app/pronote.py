@@ -237,6 +237,7 @@ class Pronote:
                         'lessonRoom': lesson.classroom,
                         'lessonCanceled': lesson.canceled,
                         'lessonStatus': lesson.status,
+                        'lessonNum': lesson.num,
                 })
                 except AttributeError:
                     jsondata['lessons'].append({
@@ -248,6 +249,7 @@ class Pronote:
                         'lessonRoom': lesson.classroom,
                         'lessonCanceled': lesson.canceled,
                         'lessonStatus': lesson.status,
+                        'lessonNum': lesson.num,
                 })    
             index += 1
             dateLesson = dateLesson + timedelta(days = 1)
@@ -476,7 +478,7 @@ class Lesson:
         self.lessonRoom = None
         self.lessonCanceled = None
         self.lessonStatus = None
-        self.lessonTimeStamp = datetime.datetime.now()
+        self.lessonNum = None
 
         self.lid = lesson["lid"]
         self.studentname= studentname
@@ -487,6 +489,7 @@ class Lesson:
         self.lessonRoom = lesson["lessonRoom"]
         self.lessonCanceled = lesson["lessonCanceled"]
         self.lessonStatus = lesson["lessonStatus"]
+        self.lessonNum = lesson["lessonNum"]
 
     # Store measure to database
     def store(self,db):
@@ -494,9 +497,9 @@ class Lesson:
         dbTable = "lessons"
 
         if dbTable:
-            logging.debug("Store lessons %s, %s, %s, %s, %s, %s, %s, %s, %s",self.lid,self.studentname,self.lessonDateTime,self.lessonStart,self.lessonEnd,self.lessonSubject,self.lessonRoom,self.lessonCanceled,self.lessonStatus)
+            logging.debug("Store lessons %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",self.lid,self.studentname,self.lessonDateTime,self.lessonStart,self.lessonEnd,self.lessonSubject,self.lessonRoom,self.lessonCanceled,self.lessonStatus,self.lessonNum)
             lesson_query = f"INSERT OR REPLACE INTO lessons VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-            db.cur.execute(lesson_query, [self.lid,self.studentname,self.lessonDateTime,self.lessonStart,self.lessonEnd,self.lessonSubject,self.lessonRoom,self.lessonCanceled,self.lessonStatus,self.lessonTimeStamp])
+            db.cur.execute(lesson_query, [self.lid,self.studentname,self.lessonDateTime,self.lessonStart,self.lessonEnd,self.lessonSubject,self.lessonRoom,self.lessonCanceled,self.lessonStatus,self.lessonNum])
 
 
 

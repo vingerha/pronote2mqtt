@@ -169,7 +169,7 @@ class Database:
                         , lessonRoom TEXT DEFAULT "nc" NOT NULL
                         , lessonCanceled TEXT
                         , lessonStatus TEXT DEFAULT "nc" NOT NULL
-                        , lessonTimeStamp datetime default current_timestamp
+                        , lessonNum TEXT
                         , PRIMARY KEY(studentname,lessonDateTime,lessonSubject,lessonRoom, lessonCanceled))''')
 #    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_lessons_lid
 #                    ON lessons (studentname,lessonDateTime,LessonSubject, lessonStatus)''')
@@ -560,7 +560,7 @@ class Lessons():
     self.lessonRoom = result[6]
     self.lessonCanceled = result[7]
     self.lessonStatus = result[8]
-    self.lessonTimeStamp = result[9]
+    self.lessonNum = result[9]
 
 class Homework():
 
