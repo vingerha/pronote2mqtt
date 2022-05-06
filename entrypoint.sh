@@ -29,7 +29,7 @@ if [ ! -f "$APP/mqtt.py" ]; then
     echo "mqtt.py non existing, copying default to app..."
     cp /app_temp/mqtt.py "$APP/mqtt.py"
 fi
-if [ ! -f "$APP/database.py" ]; then
+if [ ! -f "$APP/hass.py" ]; then
     echo "hass.py non existing, copying default to app..."
     cp /app_temp/hass.py "$APP/hass.py"
 fi
