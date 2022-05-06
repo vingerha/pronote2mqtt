@@ -32,4 +32,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: vingerha/pronote2mqtt:0.4.0
+          tags: vingerha/pronote2mqtt:latest
