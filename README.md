@@ -40,11 +40,12 @@ The 'data' folder will contain the sqlite3 database: pronote2mqtt.db, then you c
 2. Update the params.py with your values to connect to MQTT and pronote.
 3. Update ent.py. I have added an ent.py based on the one by pronotepy. The package currently assumes that you are accessing over CAS (as do most students), so make sure that ent.py has your specific CAS properly setup...for details check pronotepy on how to update your CAS in ent.py.
 
-
-**Latest ; v0.3.0**
-
+**0.3.0**
 Integrated with pronotepy 2.4.0 as this contains more CAS now, removed 'proprietary' ent.py
 Added pycron to be able the schedule the runs with more details, see param.py (removed all other scheduling options)
+
+**Latest ; v0.4.0**
+Fixed issue when pronote is presenting multiple lessons for the same slot (e.g. canceled => changed or changed => cancelled), solution is via highest 'num'
 
 #### Testing the package
 To self test pronote2mqtt, run the docker container: `docker run --name pronote2mqtt_test --tty vingerha/pronote2mqtt:latest`.
