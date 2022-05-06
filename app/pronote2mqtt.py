@@ -29,8 +29,8 @@ import pronote
 
 
 # pronote2mqtt constants
-P2M_VERSION = '0.2.4'
-P2M_DB_VERSION = '0.1.0'
+P2M_VERSION = '0.4.0'
+P2M_DB_VERSION = '0.2.0'
 
 #######################################################################
 #### Functions

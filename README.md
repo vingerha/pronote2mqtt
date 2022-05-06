@@ -46,6 +46,7 @@ Added pycron to be able the schedule the runs with more details, see param.py (r
 
 **Latest ; v0.4.0**
 Fixed issue when pronote is presenting multiple lessons for the same slot (e.g. canceled => changed or changed => cancelled), solution is via highest 'num'
+Note that in order to make this work, the database needs to be reïnitialised as a new column was added (lessonNum)
 
 #### Testing the package
 To self test pronote2mqtt, run the docker container: `docker run --name pronote2mqtt_test --tty vingerha/pronote2mqtt:latest`.
