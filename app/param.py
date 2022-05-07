@@ -27,7 +27,10 @@ class Params:
     self.pronoteEnt_1 = True
     self.pronoteCas_1 = ""
     self.pronoteGradesAverages_1 = True
-    self.pronoteParent1 = False
+    
+    self.pronoteParent_1 = True
+    # when using parent acces with more than 1 child, then add the fullname here in format "NAME Firstname", add the same setup below but then for the 2nd child
+    self.pronoteFullName_1 = ""
     
     self.pronoteUsername_2 = ''
     self.pronotePassword_2 = ''
@@ -35,7 +38,9 @@ class Params:
     self.pronoteEnt_2 = True
     self.pronoteCas_2 = ''
     self.pronoteGradesAverages_2 = False
-    self.pronoteParent2 = False
+    
+    self.pronoteParent_2 = False
+    self.pronoteFullName_2 = ""
     
     # Mqtt params
     self.mqttHost = ''

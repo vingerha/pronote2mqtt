@@ -32,7 +32,7 @@ class Pronote:
         self.whoiam = None
         self.isConnected = False
         
-    def getData(self,prefix_url,username,password,cas,GradeAverage,parent):
+    def getData(self,prefix_url,username,password,cas,GradeAverage,parent,fullname):
 #    def getData(self,prefix_url,GradeAverage):
         self.isConnected = False
         if cas:
@@ -49,6 +49,9 @@ class Pronote:
         else:
            logging.error("Error while authenticating when calling")
            return
+        
+        if fullname:
+            client.set_child(fullname)       
         
         jsondata = {}
         
