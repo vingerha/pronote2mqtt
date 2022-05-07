@@ -32,14 +32,18 @@ class Pronote:
         self.whoiam = None
         self.isConnected = False
         
-    def getData(self,prefix_url,username,password,cas,GradeAverage):
+    def getData(self,prefix_url,username,password,cas,GradeAverage,parent):
 #    def getData(self,prefix_url,GradeAverage):
         self.isConnected = False
         if cas:
             _ent = getattr(ent, cas)
         else:
             _ent = ''
-        client = pronotepy.Client('https://'+prefix_url+'.index-education.net/pronote/eleve.html', username, password, _ent)
+        if parent:
+            client = pronotepy.ParentClient('https://'+prefix_url+'.index-education.net/pronote/parent.html', username, password, _ent)
+        else:
+            client = pronotepy.Client('https://'+prefix_url+'.index-education.net/pronote/eleve.html', username, password, _ent)
+            
         if client.logged_in:
            self.isConnected = True
         else:

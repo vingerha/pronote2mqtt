@@ -27,6 +27,7 @@ class Params:
     self.pronoteEnt_1 = True
     self.pronoteCas_1 = ""
     self.pronoteGradesAverages_1 = True
+    self.pronoteParent1 = False
     
     self.pronoteUsername_2 = ''
     self.pronotePassword_2 = ''
@@ -34,6 +35,7 @@ class Params:
     self.pronoteEnt_2 = True
     self.pronoteCas_2 = ''
     self.pronoteGradesAverages_2 = False
+    self.pronoteParent2 = False
     
     # Mqtt params
     self.mqttHost = ''

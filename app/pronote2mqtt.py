@@ -122,7 +122,7 @@ def run(myParams):
 
 #Kick off for Student 1
     logging.info("Student 1-----------------------------------------------------")
-    myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1)
+    myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1,myParams.pronoteParent1)
     if myParams.pronoteGradesAverages_1:
         for myAverage in myPronote.averageList:
             myAverage.store(myDb)
@@ -153,7 +153,7 @@ def run(myParams):
 #Kick off for Student 2
     if myParams.pronoteUsername_2:
         logging.info("Student 2-----------------------------------------------------")
-        myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2)
+        myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2,myParams.pronoteParent2)
         if myParams.pronoteGradesAverages_2:
             for myAverage in myPronote.averageList:
                 myAverage.store(myDb)
