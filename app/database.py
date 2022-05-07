@@ -424,7 +424,7 @@ class Database:
   def _loadAverage(self,student):
     studentname=student.studentFullname
     # averages have been loaded for all periods but are the same for all periods, extracting only Yeardata
-    query = f"SELECT * FROM averages WHERE studentname like '{studentname}' and period_name like 'Année continue'"
+    query = f"SELECT * FROM averages WHERE studentname like '{studentname}' and period_start = (select max(period_start) from averages)"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Homework
