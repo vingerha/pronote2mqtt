@@ -57,7 +57,7 @@ Fixed issue when pronote is presenting multiple lessons for the same slot (e.g. 
 Note that in order to make this work, the database needs to be reïnitialised as a new column was added (lessonNum)
 
 **latest**
-Initial attempts to add the option to extract data as 'parent' and not 'eleve'
+Initial attempts to add the option to extract data as 'parent' and not 'eleve', includes a solution for having two kids on the same school.
 Fixed 'averages' as not longer provided for 'Année continue', towards MQTT it publishes only the last period (Trimestre)
 
 #### Testing the package
