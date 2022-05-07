@@ -24,10 +24,16 @@ In HA automations, one can add a notification that will send a app-message if up
 
 ## About
 
+### Disclaimer
+As many others on github, I am creating/maintaining this software in my spare time. 
+With any new update/version, I do not (!) verify if this is backwards compatible and the database may need to be reset, leading to possible data-losses.
+Advise 1: at-least make a backup of your database and app folder.
+Advise 2: run a new separate container on the latest image and test it out, before deciding to use it in full...e.g. create a pronote2mqtt_update
+
 ### Dependencies
 
- - pronotepy
- - MQTT
+1. pronotepy: this is the actual software that extracts the data from pronote (https://github.com/bain3/pronotepy). The docker image includes this packages and any information on the version is noted in my release notes below
+2. MQTT as a broker, you need to install this yourselves
 
 
 ### Installation
@@ -44,9 +50,13 @@ The 'data' folder will contain the sqlite3 database: pronote2mqtt.db, then you c
 Integrated with pronotepy 2.4.0 as this contains more CAS now, removed 'proprietary' ent.py
 Added pycron to be able the schedule the runs with more details, see param.py (removed all other scheduling options)
 
-**Latest ; v0.4.0**
+**v0.4.0**
 Fixed issue when pronote is presenting multiple lessons for the same slot (e.g. canceled => changed or changed => cancelled), solution is via highest 'num'
 Note that in order to make this work, the database needs to be reïnitialised as a new column was added (lessonNum)
+
+**latest**
+Initial attempts to add the option to extract data as 'parent' and not 'eleve'
+Fixed 'averages' as not longer provided for 'Année continue', towards MQTT it publishes only the last period (Trimestre)
 
 #### Testing the package
 To self test pronote2mqtt, run the docker container: `docker run --name pronote2mqtt_test --tty vingerha/pronote2mqtt:latest`.
