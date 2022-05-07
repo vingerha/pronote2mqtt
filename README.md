@@ -27,8 +27,9 @@ In HA automations, one can add a notification that will send a app-message if up
 ### Disclaimer
 As many others on github, I am creating/maintaining this software in my spare time. 
 With any new update/version, I do not (!) verify if this is backwards compatible and the database may need to be reset, leading to possible data-losses.
-Advise 1: at-least make a backup of your database and app folder.
-Advise 2: run a new separate container on the latest image and test it out, before deciding to use it in full...e.g. create a pronote2mqtt_update
+
+- Advise 1: at-least make a backup of your database and app folder before loading new image and starting the container
+- Advise 2: run a new separate container on the latest image and test it out, before deciding to use it in full...e.g. create a pronote2mqtt_update
 
 ### Dependencies
 
@@ -36,7 +37,8 @@ Advise 2: run a new separate container on the latest image and test it out, befo
 2. MQTT as a broker, you need to install this yourselves
 
 
-### Installation
+##Installation
+### Releases
 **Initial version**
 
 1. Install directly from docker : `docker pull vingerha/pronote2mqtt:latest`
@@ -67,7 +69,9 @@ Or from commandline, in the folder where you stored the files form /app, using t
 
 *Please keep in mind that the deault param.py settings have a demo-user only, so you need to add upir username/pwd/ent/cas in param.py*
 
-
+#### Upgradeing
+When (re)starting the container, it verifies if the app folder contains the correct files. If not, then it will copy them from the source.
+If you have downloaded a new image and created a new container, one should remove all files EXCEPT param.py...this way your new version has a chance on starting without any additional updates.
 
 ### Long Term Usage
 
