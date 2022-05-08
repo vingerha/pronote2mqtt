@@ -37,30 +37,34 @@ With any new update/version, I do not (!) verify if this is backwards compatible
 2. MQTT as a broker, you need to install this yourselves
 
 
-##Installation
-### Releases
-**Initial version**
+#### Releases
 
-1. Install directly from docker : `docker pull vingerha/pronote2mqtt:latest`
-It is recommended to map the volumes 'app' and 'data' so one can access these easier. 
-The docker entryscsript will ensure that the files are copied into that volumne and will (should) not overrride existin param.py or ent.py as these are used for local config. In exceptional cases, the python files must be manually copied into the 'app' folder (please send me any use-case as 'issue')
-The 'data' folder will contain the sqlite3 database: pronote2mqtt.db, then you can access its data with e.g. 'DB Browser for SQLite'.
-2. Update the params.py with your values to connect to MQTT and pronote.
-3. Update ent.py. I have added an ent.py based on the one by pronotepy. The package currently assumes that you are accessing over CAS (as do most students), so make sure that ent.py has your specific CAS properly setup...for details check pronotepy on how to update your CAS in ent.py.
-
-**0.3.0**
-Integrated with pronotepy 2.4.0 as this contains more CAS now, removed 'proprietary' ent.py
-Added pycron to be able the schedule the runs with more details, see param.py (removed all other scheduling options)
+**latest**
+Note: 'latest' will see updates as and when I see fit wihtout much communication (other then below) and I am not guaranteeing it to work. 
+Initial attempts to add the option to extract data as 'parent' and not 'eleve', includes a solution for having two kids on the same school.
+Fixed 'averages' as not longer provided for 'Année continue', towards MQTT it publishes only the last period (Trimestre)
 
 **v0.4.0**
 Fixed issue when pronote is presenting multiple lessons for the same slot (e.g. canceled => changed or changed => cancelled), solution is via highest 'num'
 Note that in order to make this work, the database needs to be reïnitialised as a new column was added (lessonNum)
 
-**latest**
-Initial attempts to add the option to extract data as 'parent' and not 'eleve', includes a solution for having two kids on the same school.
-Fixed 'averages' as not longer provided for 'Année continue', towards MQTT it publishes only the last period (Trimestre)
+**0.3.0**
+Integrated with pronotepy 2.4.0 as this contains more CAS now, removed 'proprietary' ent.py
+Added pycron to be able the schedule the runs with more details, see param.py (removed all other scheduling options)
 
-#### Testing the package
+##Installation
+
+### Base install
+
+1. Install directly from docker : `docker pull vingerha/pronote2mqtt:latest`
+It is recommended to map the volumes 'app' and 'data' so one can access these easier...if docker already has write access then it will create thse folders itself.
+Example: 'docker run --name pronote2mqtt -v /home/docker/pronote2mqtt/app:/app -v /home/docker/pronote2mqtt:/data --tty vingerha/pronote2mqtt:latest'
+The docker entryscsript will ensure that the files are copied into that volume and will (should) not overrride existin param.py or ent.py as these are used for local config. In exceptional cases, the python files must be manually copied into the 'app' folder (please send me any use-case as 'issue')
+The 'data' folder will contain the sqlite3 database: pronote2mqtt.db, then you can access its data with e.g. 'DB Browser for SQLite'.
+2. Update the params.py with your values to connect to MQTT and pronote.
+3. Update ent.py. I have added an ent.py based on the one by pronotepy. The package currently assumes that you are accessing over CAS (as do most students), so make sure that ent.py has your specific CAS properly setup...for details check pronotepy on how to update your CAS in ent.py.
+
+### Testing the package
 To self test pronote2mqtt, run the docker container: `docker run --name pronote2mqtt_test --tty vingerha/pronote2mqtt:latest`.
 After the run, in the container you will find a pronote2mqtt.db in /data (which is also a parmetered value)
 
@@ -69,9 +73,63 @@ Or from commandline, in the folder where you stored the files form /app, using t
 
 *Please keep in mind that the deault param.py settings have a demo-user only, so you need to add upir username/pwd/ent/cas in param.py*
 
-#### Upgradeing
+### Upgrade
 When (re)starting the container, it verifies if the app folder contains the correct files. If not, then it will copy them from the source.
 If you have downloaded a new image and created a new container, one should remove all files EXCEPT param.py...this way your new version has a chance on starting without any additional updates.
+
+### param.py ('latest' version)
+Explanations with the various params
+
+    self.pronoteUsername_1 : username to get access to pronote, use quotes
+    self.pronotePassword_1 : related password, use quotes
+    self.pronotePrefixUrl_1 : pre-fix url to the pronote url, you should have received this from your school,  https://'prefix_url'.index-education.net/pronote/eleve.html
+    self.pronoteEnt_1 : if your access requires a ENT to grant access, True or False
+    self.pronoteCas_1 : the ent/cas that you are part of, use quotes 
+    self.pronoteGradesAverages_1 : collect grades and averages for this access, 'new' form collèges no longer use this, they have 'Evaluations' (color scheme), True or False
+    
+    self.pronoteParent_1 : if you are using a parent access instead of eleve, i.e. https://'+prefix_url+'.index-education.net/pronote/parent.html, True or False
+    self.pronoteFullName_1 : if you are using parent access and (!) have more children add child name in the form "NAME Firstname"
+    
+	.. for the second section with '_2', same as above but when having a second child or when using parent with 2 children in the same school
+	
+	At the moment it does not support more that 2 children, if you require more than 2, then the workaround is to add a secondary container allowing you to add two more
+ 
+    
+    # Mqtt params, note: I have not setup or tested SSL connection and for the moment not supporting that
+    self.mqttHost = '' : enter ipaddress
+    self.mqttPort = 1883 : change only if you changed the default mqtt port
+    self.mqttClientId = 'pronote2mqtt' : change at your convenience
+    self.mqttUsername = '' : add if needed
+    self.mqttPassword = '' : add if needed
+    self.mqttQos = 1 : change at your convenience
+    self.mqttTopic = 'pronote' : change at your convenience
+    self.mqttRetain = True : change at your convenience
+    self.mqttSsl = False : change at your convenience
+    
+   
+    # cron (used in pronotepy2mqtt) in order: on minute 0 (so every full hour) / on hours 6 till 20 / every day in month / every month on weekdays sunday till friday
+    self.scheduleCron = '0 6-20 * * sun-fri' 
+    
+    # Publication params
+    self.hassDiscovery = True : to publish it for HA discovery
+    self.hassPrefix = 'homeassistant' : the topic section in which it occurs
+    self.hassDeviceName = 'pronote' : prefix to identify them
+    self.hassPeriodSensor = True : adds periods as a sensor too, most installs donot need this
+    self.hassPeriodSensorCount = 10 : how many periods are shown, most installs donot need this
+    
+    # Database params
+    self.dbInit = True : resets the database from scratch each and every run. Set to False if you want to accumulate data
+    self.dbPath = './data' : folder in which the database is stored, leave as-is unless you have a good reason to store elsewhere
+    
+    # Debug params
+    self.debug = False : when set to True it will send (a lot) of log messages, only use in case of issues 
+    
+    # Step 2 : Init arguments for command line
+    self.args = self.initArg() : donot change unless you know what you are doing
+     
+    # Step 3 : Get args from command line and overwrite env if needed
+    self.getFromArgs() : donot change unless you know what you are doing
+
 
 ### Long Term Usage
 
