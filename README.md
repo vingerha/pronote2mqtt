@@ -52,7 +52,7 @@ Note that in order to make this work, the database needs to be reïnitialised as
 Integrated with pronotepy 2.4.0 as this contains more CAS now, removed 'proprietary' ent.py
 Added pycron to be able the schedule the runs with more details, see param.py (removed all other scheduling options)
 
-##Installation
+## Installation
 
 ### Base install
 
@@ -131,17 +131,14 @@ Explanations with the various params
     self.getFromArgs() : donot change unless you know what you are doing
 
 
-### Long Term Usage
+### Scheduled runs
 
-Pronote2mqtt will try and reconnect at fixed times (param.py default: 06:00). It depends on pronotepy so cannot assure that it will continue to be working. 
+Pronote2mqtt will try and reconnect at fixed times as per param.py where ootb it is to sun-fri between 6 and 20, using a cron-alike setup (pycron). 
 
-## Contributing
+## Contributing and/or enhancement requests
 
 Feel free to contribute anything. Any help is appreciated. To contribute, please create a pull request with your changes.
-
-## Adding content
-
-Most parts are covered but if you need anything that is not yet implemented, you can [create an issue] (https://github.com/vingerha/pronote2mqtt/issues/new) with your request. (or you can contribute by adding it yourself)
+Most parts are covered to my personal needs, but if you need anything that is not yet implemented, you can [create an issue] (https://github.com/vingerha/pronote2mqtt/issues/new) with your request. (or you can contribute by adding it yourself)
 
 ## License
 
