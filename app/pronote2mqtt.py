@@ -550,7 +550,7 @@ if __name__ == "__main__":
     def job():
         timenow = time.localtime()
         logging.info("-----------------------------------------------------------")
-        logging.info("Pronotepy-cron-job at:...", str( time.strftime("%H:%M", timenow) )) 
+        logging.info("Pronotepy-cron-job at:... %s", str( time.strftime("%H:%M", timenow) )) 
         logging.info("-----------------------------------------------------------")
         run(myParams)
     
@@ -567,7 +567,7 @@ if __name__ == "__main__":
                 logging.info("In scheduler (pycron)")  
                 logging.info("-----------------------------------------------------------")
                 job()
-                time.sleep(60)
+            time.sleep(60)
             
     else:      
         # Run once
