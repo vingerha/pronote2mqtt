@@ -5,4 +5,4 @@ envparse
 schedule
 paho-mqtt
 pycron
-pronotepy
+pronotepy==master
