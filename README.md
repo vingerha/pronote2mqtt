@@ -43,19 +43,19 @@ With any new update/version, I do not (!) verify if this is backwards compatible
 
 **latest**
 Note: 'latest' will see updates as and when I see fit wihtout much communication (other then below) and I am not guaranteeing it to work. 
-Integrated pronotepy 2.5.0
+- Integrated pronotepy 2.5.0
 
 **v0.4.1**
-Added option to extract data as 'parent' and not 'eleve', includes a solution for having two kids on the same school.
-Fixed 'averages' as not longer provided for 'Année continue', towards MQTT it publishes only the last period (Trimestre)
+- Added option to extract data as 'parent' and not 'eleve', includes a solution for having two kids on the same school.
+- Fixed 'averages' as not longer provided for 'Année continue', towards MQTT it publishes only the last period (Trimestre)
 
 **v0.4.0**
-Fixed issue when pronote is presenting multiple lessons for the same slot (e.g. canceled => changed or changed => cancelled), solution is via highest 'num'
-Note that in order to make this work, the database needs to be reïnitialised as a new column was added (lessonNum)
+- Fixed issue when pronote is presenting multiple lessons for the same slot (e.g. canceled => changed or changed => cancelled), solution is via highest 'num'
+- Note that in order to make this work, the database needs to be reïnitialised as a new column was added (lessonNum)
 
 **0.3.0**
-Integrated with pronotepy 2.4.0 as this contains more CAS now, removed 'proprietary' ent.py
-Added pycron to be able the schedule the runs with more details, see param.py (removed all other scheduling options)
+- Integrated with pronotepy 2.4.0 as this contains more CAS now, removed 'proprietary' ent.py
+- Added pycron to be able the schedule the runs with more details, see param.py (removed all other scheduling options)
 
 ## Installation
 
