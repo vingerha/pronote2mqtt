@@ -43,7 +43,10 @@ With any new update/version, I do not (!) verify if this is backwards compatible
 
 **latest**
 Note: 'latest' will see updates as and when I see fit wihtout much communication (other then below) and I am not guaranteeing it to work. 
-Initial attempts to add the option to extract data as 'parent' and not 'eleve', includes a solution for having two kids on the same school.
+Integrated pronotepy 2.5.0
+
+**v0.4.1**
+Added option to extract data as 'parent' and not 'eleve', includes a solution for having two kids on the same school.
 Fixed 'averages' as not longer provided for 'Année continue', towards MQTT it publishes only the last period (Trimestre)
 
 **v0.4.0**

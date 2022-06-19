@@ -33,7 +33,6 @@ class Pronote:
         self.isConnected = False
         
     def getData(self,prefix_url,username,password,cas,GradeAverage,parent,fullname):
-#    def getData(self,prefix_url,GradeAverage):
         self.isConnected = False
         if cas:
             _ent = getattr(ent, cas)
@@ -165,37 +164,40 @@ class Pronote:
             logging.error("Period list is empty") 
 
 #evaluations
-        logging.info("Collecting Evaluations---------------------------------------------------")
-        periods = client.periods
-        jsondata['evaluations'] = []
-        for period in periods:
-            for eval in period.evaluations:
-                for acq in eval.acquisitions:
-                    jsondata['evaluations'].append({
-                        'pid': period.id,
-                        'periodName': period.name,
-                        'periodStart': period.start.strftime("%Y/%m/%d"),
-                        'periodEnd': period.end.strftime("%Y/%m/%d"),
-                        'eid': eval.id,
-                        'evalName': eval.name,
-                        'evalDomain': eval.domain,
-                        'evalTeacher': eval.teacher,
-                        'evalCoefficient': eval.coefficient,
-                        'evalDescription': eval.description,
-                        'evalSubject': eval.subject.name,
-                        'evalDate': eval.date.strftime("%Y/%m/%d"),
-                        'acqId': acq.order,
-                        'acqName': acq.name,
-                        'acqLevel': acq.level,
-                        'acqCoefficient': acq.coefficient,
-            })
-        evalList = jsondata
-        if evalList:
-           for eval in evalList["evaluations"]:
-               myEval = Evaluation(self.studentname,eval)
-               self.addEval(myEval)
+        if not GradeAverage:
+            logging.info("Collecting Evaluations---------------------------------------------------")
+            periods = client.periods
+            jsondata['evaluations'] = []
+            for period in periods:
+                for eval in period.evaluations:
+                    for acq in eval.acquisitions:
+                        jsondata['evaluations'].append({
+                            'pid': period.id,
+                            'periodName': period.name,
+                            'periodStart': period.start.strftime("%Y/%m/%d"),
+                            'periodEnd': period.end.strftime("%Y/%m/%d"),
+                            'eid': eval.id,
+                            'evalName': eval.name,
+                            'evalDomain': eval.domain,
+                            'evalTeacher': eval.teacher,
+                            'evalCoefficient': eval.coefficient,
+                            'evalDescription': eval.description,
+                            'evalSubject': eval.subject.name,
+                            'evalDate': eval.date.strftime("%Y/%m/%d"),
+                            'acqId': acq.order,
+                            'acqName': acq.name,
+                            'acqLevel': acq.level,
+                            'acqCoefficient': acq.coefficient,
+                })
+            evalList = jsondata
+            if evalList:
+               for eval in evalList["evaluations"]:
+                   myEval = Evaluation(self.studentname,eval)
+                   self.addEval(myEval)
+            else:
+                logging.error("Evaluations list is empty")
         else:
-            logging.error("Evaluations list is empty")
+            logging.info("Skipping Averages---------------------------------------------------")
 
 #absences
         logging.info("Collecting Absences---------------------------------------------------")
