@@ -6,3 +6,4 @@ schedule
 paho-mqtt
 pycron
 pronotepy==2.5.0
+unidecode

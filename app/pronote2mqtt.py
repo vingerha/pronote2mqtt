@@ -27,6 +27,9 @@ import json
 
 import pronote
 
+# added to normalise topic in case of other characters such as accent, umlaut, etc.
+import unidecode
+
 
 # pronote2mqtt constants
 P2M_VERSION = '0.4.0'
@@ -232,21 +235,21 @@ def run(myParams):
                 logging.info("---------------------------------")
                 
                 # Create the device corresponding to the user
-                deviceId = myParams.hassDeviceName.replace(" ","_") + "_" +  myStudent.studentFullname.replace(" ","_")
-                deviceName = myParams.hassDeviceName + " " +  myStudent.studentFullname
+                deviceId = myParams.hassDeviceName.replace(" ","_") + "_" +  unidecode.unidecode(myStudent.studentFullname.replace(" ","_"))
+                deviceName = myParams.hassDeviceName + " " +  unidecode.unidecode(myStudent.studentFullname)
                 myDevice = hass.Device(myHass,myStudent.sid,deviceId,deviceName)
                 
                 # Create entity Student
                 logging.info("Creation of the Student entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'student','student',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)
+                myEntity.setValue(unidecode.unidecode(myStudent.studentFullname))
                 myEntity.addAttribute("school",myStudent.studentSchool)
                 myEntity.addAttribute("current_class",myStudent.studentClass)
                 
                 # create homework sensor
                 logging.info("Creation of the HOMEWORK entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'homework','homework',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)                 
+                myEntity.setValue(unidecode.unidecode(myStudent.studentFullname))                 
                 
                 attributes = {}
                 if myStudent.homeworkList:
@@ -273,7 +276,7 @@ def run(myParams):
                 # create evaluation sensor
                 logging.info("Creation of the EVALUATION/Acquisitions entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'evaluation','evaluation',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)                 
+                myEntity.setValue(unidecode.unidecode(myStudent.studentFullname))
                 logging.info("Collecting and Publishing values Evaluation from shortlist (last x days)...")
                 attributes = {}
                 if myStudent.evaluationShortList:
@@ -301,7 +304,7 @@ def run(myParams):
                 # create absences sensor
                 logging.info("Creation of the Absences entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'absence','absence',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)                  
+                myEntity.setValue(unidecode.unidecode(myStudent.studentFullname))
                 logging.info("Collecting and Publishing values Absences from shortlist (last x days)...")
                 attributes = {}
                 if myStudent.absenceShortList:
@@ -329,7 +332,7 @@ def run(myParams):
                 # create averages sensor
                 logging.info("Creation of the Averages entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'average','average',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)                
+                myEntity.setValue(unidecode.unidecode(myStudent.studentFullname))
                 logging.info("Collecting and Publishing values Averages from shortlist (last x days)...")
                 attributes = {}
                 if myStudent.averageList:
@@ -359,7 +362,7 @@ def run(myParams):
                 # create grades sensor
                 logging.info("Creation of the Grades entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'grade','grade',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)                  
+                myEntity.setValue(unidecode.unidecode(myStudent.studentFullname))
                 logging.info("Collecting and Publishing values Grades from shortlist (last x days)...")
                 attributes = {}
                 if myStudent.gradeList:
@@ -398,7 +401,7 @@ def run(myParams):
                 # create lessons sensor
                 logging.info("Creation of the Lesson entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'lesson','lesson',hass.NONE_TYPE,None,None)
-                myEntity.setValue(myStudent.studentFullname)                  
+                myEntity.setValue(unidecode.unidecode(myStudent.studentFullname))
                 attributes = {}
                 if myStudent.lessonShortList:
                     logging.info("Collecting and Publishing values Lessons from shortlist (last x days)...")
@@ -464,10 +467,9 @@ def run(myParams):
             sys.exit(1)
 
     # Release memory
-    del myMqtt
+    logging.info("Cleaning up previous run")
     del myPronote
-
-
+    del myMqtt
 
     ####################################################################################################################
     # STEP 5 : Disconnect from database
@@ -492,7 +494,7 @@ def run(myParams):
     else:
         logging.info("No schedule or frequency  defined.")
 
-
+   
     logging.info("-----------------------------------------------------------")
     logging.info("#                  End of program                         #")
     logging.info("-----------------------------------------------------------")
@@ -537,10 +539,7 @@ if __name__ == "__main__":
         logging.info("Parameters are ok !")
     else:
         logging.error("Error on parameters. End of program.")
-        quit()
-
-
-    
+        quit() 
   
     # Run
     
