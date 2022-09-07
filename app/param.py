@@ -91,7 +91,7 @@ class Params:
     self.parser.add_argument(
         "--pronote_ent_1",    help="PRONOTE ent")
     self.parser.add_argument(
-        "--pronote_cas_1",    help="PRONOTE case")
+        "--pronote_cas_1",    help="PRONOTE cas")
     
     self.parser.add_argument(
         "--pronote_username_2",    help="PRONOTE user name, ex : myemail@email.com")
@@ -102,7 +102,7 @@ class Params:
     self.parser.add_argument(
         "--pronote_ent_2",    help="PRONOTE ent")
     self.parser.add_argument(
-        "--pronote_cas_2",    help="PRONOTE case")    
+        "--pronote_cas_2",    help="PRONOTE cas")
         
     self.parser.add_argument(
         "--schedule_cron",   help="Schedule the launch of the script via pycron")    
