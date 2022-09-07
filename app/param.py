@@ -147,14 +147,14 @@ class Params:
     if self.args.pronote_username_1 is not None: self.pronoteUsername_1 = self.args.pronote_username_1
     if self.args.pronote_password_1 is not None: self.pronotePassword_1 = self.args.pronote_password_1
     if self.args.pronote_prefixurl_1 is not None: self.pronotePrefixUrl_1 = self.args.pronote_prefixurl_1
-    if self.args.pronote_ent_1 is not None: self.pronoteEnt_1 = self.args.pronote_end_1
-    if self.args.pronote_cas_1 is not None: self.pronotePassword_1 = self.args.pronote_cas_1
-    
+    if self.args.pronote_ent_1 is not None: self.pronoteEnt_1 = _isItTrue(self.args.pronote_ent_1)
+    if self.args.pronote_cas_1 is not None: self.pronoteCas_1 = self.args.pronote_cas_1
+
     if self.args.pronote_username_2 is not None: self.pronoteUsername_2 = self.args.pronote_username_2
     if self.args.pronote_password_2 is not None: self.pronotePassword_2 = self.args.pronote_password_2
     if self.args.pronote_prefixurl_2 is not None: self.pronotePrefixUrl_2 = self.args.pronote_prefixurl_2
-    if self.args.pronote_ent_2 is not None: self.pronoteEnt_2 = self.args.pronote_end_2
-    if self.args.pronote_cas_2 is not None: self.pronotePassword_2 = self.args.pronote_cas_2
+    if self.args.pronote_ent_2 is not None: self.pronoteEnt_2 = _isItTrue(self.args.pronote_ent_2)
+    if self.args.pronote_cas_2 is not None: self.pronoteCas_2 = self.args.pronote_cas_2
 
     
     if self.args.mqtt_host is not None: self.mqttHost = self.args.mqtt_host
