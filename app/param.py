@@ -92,7 +92,11 @@ class Params:
         "--pronote_ent_1",    help="PRONOTE ent")
     self.parser.add_argument(
         "--pronote_cas_1",    help="PRONOTE cas")
-    
+    self.parser.add_argument(
+      "--pronote_parent_1",    help="PRONOTE parent")
+    self.parser.add_argument(
+      "--pronote_fullName_1",    help="PRONOTE child full name")
+
     self.parser.add_argument(
         "--pronote_username_2",    help="PRONOTE user name, ex : myemail@email.com")
     self.parser.add_argument(
@@ -103,7 +107,11 @@ class Params:
         "--pronote_ent_2",    help="PRONOTE ent")
     self.parser.add_argument(
         "--pronote_cas_2",    help="PRONOTE cas")
-        
+    self.parser.add_argument(
+      "--pronote_parent_2",    help="PRONOTE parent")
+    self.parser.add_argument(
+      "--pronote_fullName_2",    help="PRONOTE child full name")
+
     self.parser.add_argument(
         "--schedule_cron",   help="Schedule the launch of the script via pycron")    
     self.parser.add_argument(
@@ -149,14 +157,17 @@ class Params:
     if self.args.pronote_prefixurl_1 is not None: self.pronotePrefixUrl_1 = self.args.pronote_prefixurl_1
     if self.args.pronote_ent_1 is not None: self.pronoteEnt_1 = _isItTrue(self.args.pronote_ent_1)
     if self.args.pronote_cas_1 is not None: self.pronoteCas_1 = self.args.pronote_cas_1
+    if self.args.pronote_parent_1 is not None: self.pronoteParent_1 = self.args.pronote_parent_1
+    if self.args.pronote_fullName_1 is not None: self.pronoteFullName_1 = self.args.pronote_fullName_1
 
     if self.args.pronote_username_2 is not None: self.pronoteUsername_2 = self.args.pronote_username_2
     if self.args.pronote_password_2 is not None: self.pronotePassword_2 = self.args.pronote_password_2
     if self.args.pronote_prefixurl_2 is not None: self.pronotePrefixUrl_2 = self.args.pronote_prefixurl_2
     if self.args.pronote_ent_2 is not None: self.pronoteEnt_2 = _isItTrue(self.args.pronote_ent_2)
     if self.args.pronote_cas_2 is not None: self.pronoteCas_2 = self.args.pronote_cas_2
+    if self.args.pronote_parent_2 is not None: self.pronoteParent_2 = self.args.pronote_parent_2
+    if self.args.pronote_fullName_2 is not None: self.pronoteFullName_2 = self.args.pronote_fullName_2
 
-    
     if self.args.mqtt_host is not None: self.mqttHost = self.args.mqtt_host
     if self.args.mqtt_port is not None: self.mqttPort = int(self.args.mqtt_port)
     if self.args.mqtt_clientId is not None: self.mqttClientId = self.args.mqtt_clientId
