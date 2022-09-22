@@ -93,6 +93,8 @@ class Params:
     self.parser.add_argument(
         "--pronote_cas_1",    help="PRONOTE cas")
     self.parser.add_argument(
+      "--pronote_gradesAverages_1",    help="PRONOTE grades averages")
+    self.parser.add_argument(
       "--pronote_parent_1",    help="PRONOTE parent")
     self.parser.add_argument(
       "--pronote_fullName_1",    help="PRONOTE child full name")
@@ -107,6 +109,8 @@ class Params:
         "--pronote_ent_2",    help="PRONOTE ent")
     self.parser.add_argument(
         "--pronote_cas_2",    help="PRONOTE cas")
+    self.parser.add_argument(
+      "--pronote_gradesAverages_2",    help="PRONOTE grades averages")
     self.parser.add_argument(
       "--pronote_parent_2",    help="PRONOTE parent")
     self.parser.add_argument(
@@ -157,6 +161,7 @@ class Params:
     if self.args.pronote_prefixurl_1 is not None: self.pronotePrefixUrl_1 = self.args.pronote_prefixurl_1
     if self.args.pronote_ent_1 is not None: self.pronoteEnt_1 = _isItTrue(self.args.pronote_ent_1)
     if self.args.pronote_cas_1 is not None: self.pronoteCas_1 = self.args.pronote_cas_1
+    if self.args.pronote_gradesAverages_1 is not None: self.pronoteGradesAverages_1 = self.args.pronote_gradesAverages_1
     if self.args.pronote_parent_1 is not None: self.pronoteParent_1 = self.args.pronote_parent_1
     if self.args.pronote_fullName_1 is not None: self.pronoteFullName_1 = self.args.pronote_fullName_1
 
@@ -165,6 +170,7 @@ class Params:
     if self.args.pronote_prefixurl_2 is not None: self.pronotePrefixUrl_2 = self.args.pronote_prefixurl_2
     if self.args.pronote_ent_2 is not None: self.pronoteEnt_2 = _isItTrue(self.args.pronote_ent_2)
     if self.args.pronote_cas_2 is not None: self.pronoteCas_2 = self.args.pronote_cas_2
+    if self.args.pronote_gradesAverages_2 is not None: self.pronoteGradesAverages_2 = self.args.pronote_gradesAverages_2
     if self.args.pronote_parent_2 is not None: self.pronoteParent_2 = self.args.pronote_parent_2
     if self.args.pronote_fullName_2 is not None: self.pronoteFullName_2 = self.args.pronote_fullName_2
 
