@@ -371,6 +371,8 @@ def run(myParams):
                     attributes[f'date'] = []
                     attributes[f'subject'] = []
                     attributes[f'student_grade'] = []
+                    attributes[f'grade'] = []
+                    attributes[f'out_of'] = []
                     attributes[f'class_average'] = []
                     attributes[f'coefficient'] = []
                     attributes[f'max'] = []
@@ -381,6 +383,8 @@ def run(myParams):
                         attributes[f'date'].append(myGrade.date)
                         attributes[f'subject'].append(myGrade.subject)
                         attributes[f'student_grade'].append(myGrade.defaultOutOf)
+                        attributes[f'grade'].append(myGrade.grade)
+                        attributes[f'out_of'].append(myGrade.outOf)
                         attributes[f'class_average'].append(myGrade.average)
                         attributes[f'coefficient'].append(myGrade.coefficient)
                         attributes[f'max'].append(myGrade.max)
@@ -390,6 +394,8 @@ def run(myParams):
                     myEntity.addAttribute("date",attributes[f'date'])                    
                     myEntity.addAttribute("subject",attributes[f'subject'])   
                     myEntity.addAttribute("student_grade",attributes[f'student_grade'])
+                    myEntity.addAttribute("grade",attributes[f'grade'])
+                    myEntity.addAttribute("out_of",attributes[f'out_of'])
                     myEntity.addAttribute("class_average",attributes[f'class_average'])
                     myEntity.addAttribute("coefficient",attributes[f'coefficient'])
                     myEntity.addAttribute("max",attributes[f'max'])
