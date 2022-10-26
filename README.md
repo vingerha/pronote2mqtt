@@ -45,12 +45,13 @@ With any new update/version, I do not (!) verify if this is backwards compatible
 Note: 'latest' will see updates as and when I see fit wihtout much communication (other then below) and I am not guaranteeing it to work. 
 - Integrated pronotepy 2.5.0
 
-**latest**
-- integrated pronotepy 2.5.0
+**0.5.0**
+- integrated pronotepy 2.7.0
 - merged two pull requests to align parameters and split out grade / out of
 - updated datbase tables evaluations: 'null' field seen as unique in SQLite and added few new fields
 - updated datbase tables lessons, lessonStatus
 - at the start of the run, lessons are deleted for thos today+future, this as lesson records can not be identified as valid wrt to lessons loaded in the past. Too many variations exist. IMO this is not an issue as it concerns today and future so always up to date with pronite after each run
+- NOT fixed: issue with agora06 as still awaiting pronotepy to embed this
 
 
 **v0.4.1**
