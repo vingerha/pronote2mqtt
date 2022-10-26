@@ -43,7 +43,6 @@ With any new update/version, I do not (!) verify if this is backwards compatible
 
 **latest**
 Note: 'latest' will see updates as and when I see fit wihtout much communication (other then below) and I am not guaranteeing it to work. 
-- Integrated pronotepy 2.5.0
 
 **0.5.0**
 - integrated pronotepy 2.7.0
