@@ -9,10 +9,23 @@ import logging
 import math
 # import ent // removed with pronotepy v2.4.0 covering more CAS
 from pronotepy.ent import *
+import requests
+from requests.adapters import TimeoutSauce
 
 #Hardcoded (to be improved)
 lessonDays=15
 homeworkDays=15
+
+
+class MyTimeout(TimeoutSauce):
+    def __init__(self, *args, **kwargs):
+        if kwargs['connect'] is None:
+            kwargs['connect'] = 5 # change here for different connection timeout
+        if kwargs['read'] is None:
+            kwargs['read'] = 5 # change here for different read timeout
+        super(MyTimeout, self).__init__(*args, **kwargs)
+
+requests.adapters.TimeoutSauce = MyTimeout
 
 class Pronote:
     def __init__(self):
@@ -186,7 +199,9 @@ class Pronote:
                             'evalDate': eval.date.strftime("%Y/%m/%d"),
                             'acqId': acq.order,
                             'acqName': acq.name,
+                            'acqAbbreviation': acq.abbreviation,
                             'acqLevel': acq.level,
+                            'acqDomain': acq.domain,
                             'acqCoefficient': acq.coefficient,
                 })
             evalList = jsondata
@@ -198,6 +213,7 @@ class Pronote:
                 logging.error("Evaluations list is empty")
         else:
             logging.info("Skipping Averages---------------------------------------------------")
+            
 
 #absences
         logging.info("Collecting Absences---------------------------------------------------")
@@ -298,8 +314,7 @@ class Pronote:
 
         else:
             logging.error("Homework list is empty")
-
-    
+               
     def addPeriod(self,period):
         self.periodList.append(period)
         
@@ -440,9 +455,11 @@ class Evaluation:
         self.evalDate = None
         self.acquisitionId = None
         self.acquisitionName = None
+        self.acquisitionAbbreviation = None
         self.acquisitionLevel = None
+        self.acquisitionDomain = None
         self.acquisitionCoefficient = None
-
+        
         self.pid = eval["pid"]
         self.periodName = eval["periodName"]
         self.periodStart = eval["periodStart"]
@@ -458,7 +475,9 @@ class Evaluation:
         self.evalDate = eval["evalDate"]
         self.acquisitionId = eval["acqId"]
         self.acquisitionName = eval["acqName"]
+        self.acquisitionAbbreviation = eval["acqAbbreviation"]
         self.acquisitionLevel = eval["acqLevel"]
+        self.acquisitionDomain = eval["acqDomain"]
         self.acquisitionCoefficient = eval["acqCoefficient"]
 
     # Store measure to database
@@ -467,10 +486,10 @@ class Evaluation:
         dbTable = "evaluations"
 
         if dbTable:
-            logging.debug("Store evaluations %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.eid,self.evalName,self.evalDomain,self.evalTeacher,self.evalCoefficient,self.evalDescription,self.evalSubject,self.evalDate,self.acquisitionId,self.acquisitionName,self.acquisitionLevel,self.acquisitionCoefficient)
-            eval_query = f"INSERT OR REPLACE INTO evaluations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            logging.debug("Store evaluations %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.eid,self.evalName,self.evalDomain,self.evalTeacher,self.evalCoefficient,self.evalDescription,self.evalSubject,self.evalDate,self.acquisitionId,self.acquisitionName,self.acquisitionAbbreviation,self.acquisitionLevel,self.acquisitionDomain,self.acquisitionCoefficient)
+            eval_query = f"INSERT OR REPLACE INTO evaluations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             db.cur.execute(eval_query, [self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.eid,self.evalName,self.evalDomain,self.evalTeacher,\
-                          self.evalCoefficient,self.evalDescription,self.evalSubject,self.evalDate,self.acquisitionId,self.acquisitionName,self.acquisitionLevel,self.acquisitionCoefficient])
+                          self.evalCoefficient,self.evalDescription,self.evalSubject,self.evalDate,self.acquisitionId,self.acquisitionName,self.acquisitionAbbreviation,self.acquisitionLevel,self.acquisitionDomain,self.acquisitionCoefficient])
 
 class Lesson:
 
