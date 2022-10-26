@@ -131,13 +131,15 @@ class Database:
                         , subject TEXT
                         , date TEXT
                         , aid TEXT
-                        , acquisition_name TEXT
+                        , acquisition_name TEXT NOT NULL DEFAULT "na"
+                        , acquisition_abbreviation TEXT
                         , acquisition_level TEXT
+                        , acquisition_domain TEXT
                         , acquisition_coefficient TEXT
-                        , PRIMARY KEY(period_name,studentname,subject,date,aid))''')
+                        , PRIMARY KEY(period_name,studentname,subject,date,aid,acquisition_name,acquisition_level, acquisition_domain,acquisition_coefficient))''')
     self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_evaluations_aid
-                    ON evaluations (period_name,studentname,subject,date,aid)''')
-   
+                    ON evaluations (period_name,studentname,subject,date,aid,acquisition_name,acquisition_level,acquisition_domain,acquisition_coefficient)''')
+                      
     # using key on period id and evalid
     logging.debug("Creation of Absences table")
     self.cur.execute('''CREATE TABLE IF NOT EXISTS absences (
@@ -170,9 +172,9 @@ class Database:
                         , lessonCanceled TEXT
                         , lessonStatus TEXT DEFAULT "nc" NOT NULL
                         , lessonNum TEXT
-                        , PRIMARY KEY(studentname,lessonDateTime,lessonSubject,lessonRoom, lessonCanceled))''')
-#    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_lessons_lid
-#                    ON lessons (studentname,lessonDateTime,LessonSubject, lessonStatus)''')
+                        , PRIMARY KEY(studentname,lessonDateTime,lessonSubject,lessonRoom, lessonCanceled, lessonCanceled))''')
+    self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_lessons_lid
+                    ON lessons (studentname,lessonDateTime,LessonSubject, lessonRoom, lessonStatus, lessonCanceled)''')
 
     # using key on period id and evalid
     logging.debug("Creation of Homework table")
@@ -265,6 +267,11 @@ class Database:
         logging.debug("Connexion to database")
         self.con = sqlite3.connect(self.path + "/" + DATABASE_NAME, timeout=DATABASE_TIMEOUT)
         self.cur = self.con.cursor()
+        
+# delete data from lessons as impossible to distinguish between historical records for a lesson and new/changed records for the very same lesson
+# With the presented attribues, one cannot identify which has the real value/truth
+    logging.debug("Delete today & future Lessons to fix mismatches/duplicates that avoid presenting the correct lesson/status")
+    self.cur.execute('''DELETE from lessons where lessonDateTime >= date('now')''')        
         
   # Get measures statistics
   def getGradesCount(self):
@@ -523,10 +530,12 @@ class Evaluations():
     self.evalDescription = result[10]
     self.evalSubject = result[11]
     self.evalDate = result[12]
-    self.acqId = result[13]
+    self.acqId = result[13] 
     self.acqName = result[14]
-    self.acqLevel = result[15]
-    self.acqCoefficient = result[16]
+    self.acqAbbreviation = result[15]
+    self.acqLevel = result[16]
+    self.acqDomain = result[17]
+    self.acqCoefficient = result[18]
 
 class Absences():
 
