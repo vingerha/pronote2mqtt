@@ -28,4 +28,4 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: vingerha/pronote2mqtt:latest
+        tags: vingerha/pronote2mqtt:test_donot_use
