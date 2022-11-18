@@ -189,7 +189,24 @@ class Database:
     self.cur.execute('''CREATE UNIQUE INDEX IF NOT EXISTS idx_homework_hid
                     ON homework (studentname,homeworkDate,homeworkSubject,homeworkDescription)''')
 
-
+    # using key on period id and evalid
+    logging.debug("Creation of Punishments table")
+    self.cur.execute('''CREATE TABLE IF NOT EXISTS punishments (
+                        pid TEXT
+                        , period_name TEXT
+                        , period_start TEXT
+                        , period_end TEXT
+                        , studentname TEXT
+                        , punid TEXT
+                        , pundate TEXT
+                        , during_lesson TEXT
+                        , reasons TEXT
+                        , circumstances TEXT
+                        , nature TEXT
+                        , duration
+                        , homework TEXT
+                        , exclusion TEXT
+                        , PRIMARY KEY(studentname,pid,punid))''')
     # Commit
     self.commit()
 
@@ -322,6 +339,9 @@ class Database:
 
     logging.debug("Drop Absences table")
     self.cur.execute('''DROP TABLE IF EXISTS absences''')
+
+    logging.debug("Drop Punishment table")
+    self.cur.execute('''DROP TABLE IF EXISTS punishments''')
        
     # Commit work
     self.commit()
@@ -374,6 +394,10 @@ class Database:
     #load Lessons
     for myStudent in self.studentList:
         self._loadLessonsShortList(myStudent)
+
+    #load Punishments
+    for myStudent in self.studentList:
+        self._loadPunishmentShortList(myStudent)
      
   # Load students
   def _loadStudents(self):
@@ -464,7 +488,19 @@ class Database:
     # Create object Eval
     for result in queryResult:
       myLesson = Lessons(result)
-      student.lessonShortList.append(myLesson)      
+      student.lessonShortList.append(myLesson)   
+
+   # load punishments
+  def _loadPunishmentShortList(self,student):
+    studentname=student.studentFullname
+    # punishments have been loaded for all periods but are the same for all periods, extracting last period
+    query = f"SELECT * FROM punishments WHERE studentname like '{studentname}' and period_name like 'Année continue' ORDER by pundate desc"
+    self.cur.execute(query)
+    queryResult = self.cur.fetchall()
+    # Create object Punishment
+    for result in queryResult:
+      myPunishment = Punishments(result)
+      student.punishmentShortList.append(myPunishment)       
 
 # classes
 class Grades():
@@ -590,3 +626,22 @@ class Student():
     self.averageList = []    
     self.gradeList = []    
     self.lessonShortList = []
+    self.punishmentShortList = []
+
+class Punishments():
+
+  def __init__(self,result):
+    self.pid = result[0]
+    self.period_name = result[1]
+    self.period_start = result[2]
+    self.period_end = result[3]
+    self.studentname = result[4]
+    self.punid = result[5]
+    self.punishmentDate = result[6]
+    self.punishmentDuringLesson = result[7]
+    self.punishmentReasons = result[8]
+    self.punishmentCircumstances = result[9]
+    self.punishmentNature = result[10]
+    self.punishmentDuration = result[11]
+    self.punishmentHomework = result[12]   
+    self.punishmentExclusion = result[13]

@@ -150,6 +150,9 @@ def run(myParams):
         
     for myAbsence in myPronote.absenceList:
         myAbsence.store(myDb)
+        
+    for myPunishment in myPronote.punishmentList:
+        myPunishment.store(myDb)    
     
     myDb.commit()
 
@@ -180,7 +183,10 @@ def run(myParams):
             myStudent.store(myDb)
             
         for myAbsence in myPronote.absenceList:
-            myAbsence.store(myDb)        
+            myAbsence.store(myDb)
+
+        for myPunishment in myPronote.punishmentList:
+            myPunishment.store(myDb)              
         
         myDb.commit()
    
@@ -333,10 +339,10 @@ def run(myParams):
                 logging.info("Creation of the Averages entity")
                 myEntity = hass.Entity(myDevice,hass.SENSOR,'average','average',hass.NONE_TYPE,None,None)
                 myEntity.setValue(unidecode.unidecode(myStudent.studentFullname))
-                logging.info("Collecting and Publishing values Averages from shortlist (last x days)...")
+                logging.info("Collecting and Publishing values Averages for last period...")
                 attributes = {}
                 if myStudent.averageList:
-                    logging.info("Collecting and Publishing values Average from shortlist (last x days)...")
+                    logging.info("Collecting and Publishing values Average for last period...")
                     logging.info("---------------------------------")
                     attributes[f'subject'] = []
                     attributes[f'student_average'] = []
@@ -442,15 +448,51 @@ def run(myParams):
                     myEntity.addAttribute("room",attributes[f'room'])
                                   
                     logging.info("Lesson added to HA sensor !")                      
-                
+                              
+                # create punishment sensor
+                logging.info("Creation of the Punishment entity")
+                myEntity = hass.Entity(myDevice,hass.SENSOR,'punishment','punishment',hass.NONE_TYPE,None,None)
+                myEntity.setValue(unidecode.unidecode(myStudent.studentFullname))
+                logging.info("Collecting and Publishing values Punishments from shortlist/period...")
+                attributes = {}
+                if myStudent.punishmentShortList:
+                    logging.info("Collecting and Publishing values Punishment from shortlist/period...")
+                    logging.info("---------------------------------")
+                    attributes[f'pundate'] = []
+                    attributes[f'reasons'] = []
+                    attributes[f'circumstances'] = []
+                    attributes[f'nature'] = []
+                    attributes[f'duration'] = []
+                    attributes[f'homework'] = []
+                    attributes[f'exclusion'] = []
+                    
+                    for myPunishment in myStudent.punishmentShortList:
+                        # Store evaluation into sensor
+                        attributes[f'pundate'].append(myPunishment.punishmentDate.split("/",1)[1])
+                        attributes[f'reasons'].append(myPunishment.punishmentReasons)
+                        attributes[f'circumstances'].append(myPunishment.punishmentCircumstances)
+                        attributes[f'nature'].append(myPunishment.punishmentNature)
+                        attributes[f'duration'].append((myPunishment.punishmentDuration)[:4])
+                        attributes[f'homework'].append(myPunishment.punishmentHomework)
+                        attributes[f'exclusion'].append(myPunishment.punishmentExclusion)
+                        
+                       
+                    myEntity.addAttribute("date",attributes[f'pundate'])
+                    myEntity.addAttribute("reasons",attributes[f'reasons'])
+                    myEntity.addAttribute("circumstances",attributes[f'circumstances'])
+                    myEntity.addAttribute("nature",attributes[f'nature'])
+                    myEntity.addAttribute("duration",attributes[f'duration'])
+                    myEntity.addAttribute("homework",attributes[f'homework'])
+                    myEntity.addAttribute("exclusion",attributes[f'exclusion'])
+                                  
+                    logging.info("Punishment added to HA sensor !")  
+                    
                 # Publish config, state (when value not none), attributes (when not none)
                 logging.info("Publishing period devices...")
                 logging.info("You can retrieve published values subscribing topic %s",myDevice.hass.prefix + "/+/" + myDevice.id + "/#")
                 for topic,payload in myDevice.getStatePayload().items():
                     myMqtt.publish(topic,payload)
-                logging.info("Devices published !")
-                
-                
+                logging.info("Devices published !")                                    
 
         except:
             logging.error("Home Assistant discovery mode : unable to publish period value to mqtt broker")

@@ -7,7 +7,7 @@ from datetime import timedelta
 import json
 import logging
 import math
-# import ent // removed with pronotepy v2.4.0 covering more CAS
+
 from pronotepy.ent import *
 import requests
 from requests.adapters import TimeoutSauce
@@ -42,6 +42,7 @@ class Pronote:
         self.homeworkList = []
         self.studentList = []
         self.absenceList = []
+        self.punishmentList = []
         self.whoiam = None
         self.isConnected = False
         
@@ -314,6 +315,36 @@ class Pronote:
 
         else:
             logging.error("Homework list is empty")
+                        
+#punishments
+        logging.info("Collecting Punishments---------------------------------------------------")
+        periods = client.periods
+        jsondata['punishments'] = []
+        for period in periods:
+            for punishment in period.punishments:
+                jsondata['punishments'].append({
+                    'pid': period.id,
+                    'periodName': period.name,
+                    'periodStart': period.start.strftime("%Y/%m/%d"),
+                    'periodEnd': period.end.strftime("%Y/%m/%d"),
+                    'punid': punishment.id,
+                    'punishmentDate': punishment.given.strftime("%Y/%m/%d"),
+                    'punishmentDuringLesson': punishment.during_lesson,
+                    'punishmentReasons': punishment.reasons,
+                    'punishmentCircumstances': punishment.circumstances,
+                    'punishmentNature': punishment.nature,
+                    'punishmentDuration': str(punishment.duration),
+                    'punishmentHomework': punishment.homework,
+                    'punishmentExclusion': punishment.exclusion,                    
+                })
+        punishmentList = jsondata
+        #print(punishmentList)
+        if punishmentList:
+           for punishment in punishmentList["punishments"]:
+               myPunishment = Punishment(self.studentname,punishment)
+               self.addPunishment(myPunishment)
+        else:
+            logging.error("Punishment list is empty")            
                
     def addPeriod(self,period):
         self.periodList.append(period)
@@ -338,7 +369,10 @@ class Pronote:
         
     def addAbsence(self,absence):
         self.absenceList.append(absence)        
-
+        
+    def addPunishment(self,punishment):
+        self.punishmentList.append(punishment) 
+        
 class Grade:
     
     # Constructor
@@ -658,3 +692,51 @@ class Absence:
             logging.debug("Store absences %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.abid,self.absenceFrom,self.absenceTo,self.absenceJustified,self.absenceHours,self.absenceDays,self.absenceReasons)
             absence_query = f"INSERT OR REPLACE INTO absences VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             db.cur.execute(absence_query, [self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.abid,self.absenceFrom,self.absenceTo,self.absenceJustified,self.absenceHours,self.absenceDays,self.absenceReasons])            
+            
+            
+            
+class Punishment:
+
+    # Constructor
+    def __init__(self, studentname, punishment):
+
+        # Init attributes
+        self.pid = None
+        self.period_name = None
+        self.period_start = None
+        self.period_end = None
+        self.studentname = None
+        self.punid = None
+        self.punishmentDate = None
+        self.punishmentDuringLesson = None
+        self.punishmentCircumstances = None
+        self.punishmentNature = None
+        self.punishmentDuration = None
+        self.punishmentHomework = None
+        self.punishmentExclusion = None
+        
+        self.pid = punishment["pid"]
+        self.periodName = punishment["periodName"]
+        self.periodStart = punishment["periodStart"]
+        self.periodEnd = punishment["periodEnd"]
+        self.studentname = studentname
+        self.punid = punishment["punid"]
+        self.punishmentDate = punishment["punishmentDate"]
+        self.punishmentDuringLesson = punishment["punishmentDuringLesson"]
+        self.punishmentReasons = ' '.join(punishment["punishmentReasons"])
+        self.punishmentCircumstances = punishment["punishmentCircumstances"]
+        self.punishmentNature = punishment["punishmentNature"]
+        self.punishmentDuration = punishment["punishmentDuration"]
+        self.punishmentHomework = punishment["punishmentHomework"]
+        self.punishmentExclusion = punishment["punishmentExclusion"]
+        
+    # Store measure to database
+    def store(self,db):
+
+        dbTable = "punishments"
+
+        if dbTable:
+#            logging.debug("Store punishments %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.punid,self.punishmentDate,self.punishmentDuringLesson,self.punishmentCircumstances,self.punishmentNature,self.punishmentHomework,self.punishmentExclusion)
+            punishment_query = f"INSERT OR REPLACE INTO punishments VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            db.cur.execute(punishment_query, [self.pid,self.periodName,self.periodStart,self.periodEnd,self.studentname,self.punid,self.punishmentDate,self.punishmentDuringLesson,self.punishmentReasons,self.punishmentCircumstances,self.punishmentNature,self.punishmentDuration,self.punishmentHomework,self.punishmentExclusion])                      
+             
