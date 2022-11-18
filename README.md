@@ -17,6 +17,7 @@ The integration will create a device per student/user and sensors for
 - Absence
 - Homework
 - Evaluation (Note: Evaluation is replacing Grade over time, i.e. 'mentions' instead of grade-values)
+- Punishment
 
 Note for below, you need to install the card-mod from hacs
 The sensors can be made visible in Home Assistant using the markdown-card, an example is included. (https://github.com/vingerha/pronote2mqtt/blob/main/example_markdown.yaml)
