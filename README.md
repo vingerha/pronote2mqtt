@@ -17,6 +17,7 @@ The integration will create a device per student/user and sensors for
 - Absence
 - Homework
 - Evaluation (Note: Evaluation is replacing Grade over time, i.e. 'mentions' instead of grade-values)
+- Punishment
 
 Note for below, you need to install the card-mod from hacs
 The sensors can be made visible in Home Assistant using the markdown-card, an example is included. (https://github.com/vingerha/pronote2mqtt/blob/main/example_markdown.yaml)
@@ -43,6 +44,8 @@ With any new update/version, I do not (!) verify if this is backwards compatible
 
 **latest**
 Note: 'latest' will see updates as and when I see fit wihtout much communication (other then below) and I am not guaranteeing it to work. 
+- added Punishments as sensor IMPORTANT: pronotepy 'master' needed if you want to use if for student. pronotepy has a solution but not yet integrated in this one, still using pronotepy 2.7.0.
+
 
 **0.5.0**
 - integrated pronotepy 2.7.0
