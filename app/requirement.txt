@@ -5,5 +5,5 @@ envparse
 schedule
 paho-mqtt
 pycron
-pronotepy==2.7.0
+pronotepy==2.8.0
 unidecode

@@ -203,10 +203,10 @@ class Database:
                         , reasons TEXT
                         , circumstances TEXT
                         , nature TEXT
-                        , duration
+                        , duration TEXT
                         , homework TEXT
                         , exclusion TEXT
-                        , PRIMARY KEY(studentname,pid,punid))''')
+                        , PRIMARY KEY(studentname,period_name,period_start,pundate,reasons))''')
     # Commit
     self.commit()
 
@@ -443,7 +443,7 @@ class Database:
     # not collecting all 
     datestart = datetime.date.today() - relativedelta(days=30)
     datestart = datestart.strftime("%Y/%m/%d %H:%M")
-    query = f"SELECT * FROM absences WHERE studentname like '{studentname}' and from_date >= '{datestart}' and period_name like 'Année continue'"
+    query = f"SELECT * FROM absences WHERE studentname like '{studentname}' and from_date >= '{datestart}' and period_name like 'Année continue' order by from_date DESC"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Absence
