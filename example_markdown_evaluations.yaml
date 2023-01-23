@@ -1,25 +1,25 @@
 type: markdown
 content: |
-  <div>Evaluations Florian</div>
+  <div>Evaluations</div>
     <table>
-    {% set dates = state_attr('sensor.pronote_vingerhoeds_florian_evaluation','date')%}
+    {% set dates = state_attr('sensor.pronote_parent_fanny_evaluation','date')%}
     {% for i in range(0, dates | count, 1) %}
     <tr>
-    {% if state_attr('sensor.pronote_vingerhoeds_florian_evaluation','acquisition_level')[i] == 'Expert' %}
+    {% if state_attr('sensor.pronote_parent_fanny_evaluation','acquisition_level')[i] == 'Expert' %}
     <td>
     <mark>
     {{ dates[i].split("/",1)[1] }}</mark></td>
-    {% elif state_attr('sensor.pronote_vingerhoeds_florian_evaluation','acquisition_level')[i] == 'Maîtrise satisfaisante' %}
+    {% elif state_attr('sensor.pronote_parent_fanny_evaluation','acquisition_level')[i] == 'Maîtrise satisfaisante' %}
     <td><p>{{dates[i].split("/",1)[1]}}</p></td>
-    {% elif state_attr('sensor.pronote_vingerhoeds_florian_evaluation','acquisition_level')[i] == 'Maîtrise insuffisante'  %}
+    {% elif state_attr('sensor.pronote_parent_fanny_evaluation','acquisition_level')[i] == 'Maîtrise insuffisante'  %}
     <td><strong>{{dates[i].split("/",1)[1]}}</strong></td>
-    {% elif state_attr('sensor.pronote_vingerhoeds_florian_evaluation','acquisition_level')[i] == 'Absent'  %}
+    {% elif state_attr('sensor.pronote_parent_fanny_evaluation','acquisition_level')[i] == 'Absent'  %}
     <td><u>{{dates[i].split("/",1)[1]+'A'}}</u></td>
     {% else %}
     <td><em>{{dates[i].split("/",1)[1]}}</em></td>
     {% endif %}
-    <td>{{ state_attr('sensor.pronote_vingerhoeds_florian_evaluation','subject')[i] }}</td>
-    <td>{{ state_attr('sensor.pronote_vingerhoeds_florian_evaluation','acquisition_name')[i] }}</td>
+    <td>{{ state_attr('sensor.pronote_parent_fanny_evaluation','subject')[i] }}</td>
+    <td>{{ state_attr('sensor.pronote_parent_fanny_evaluation','acquisition_name')[i] }}</td>
   </tr>
   {% endfor %}
 card_mod:
