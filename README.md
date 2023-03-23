@@ -47,7 +47,8 @@ Note: 'latest' will see updates as and when I see fit wihtout much communication
 
 
 **0.6.0**
-- added punishments (see issue open on 2023-03-22)
+- added punishments (see new issue opened on 2023-03-23)
+- Integrate new pronotepy release 2.8.0
 
 **0.5.0**
 - integrated pronotepy 2.7.0
