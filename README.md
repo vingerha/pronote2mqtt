@@ -44,8 +44,10 @@ With any new update/version, I do not (!) verify if this is backwards compatible
 
 **latest**
 Note: 'latest' will see updates as and when I see fit wihtout much communication (other then below) and I am not guaranteeing it to work. 
-- added Punishments as sensor IMPORTANT: pronotepy 'master' needed if you want to use if for student. pronotepy has a solution but not yet integrated in this one, still using pronotepy 2.7.0.
 
+
+**0.6.0**
+- added punishments (see issue open on 2023-03-22)
 
 **0.5.0**
 - integrated pronotepy 2.7.0
