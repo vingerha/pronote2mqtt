@@ -320,23 +320,27 @@ class Pronote:
         logging.info("Collecting Punishments---------------------------------------------------")
         periods = client.periods
         jsondata['punishments'] = []
-        for period in periods:
-            for punishment in period.punishments:
-                jsondata['punishments'].append({
-                    'pid': period.id,
-                    'periodName': period.name,
-                    'periodStart': period.start.strftime("%Y/%m/%d"),
-                    'periodEnd': period.end.strftime("%Y/%m/%d"),
-                    'punid': punishment.id,
-                    'punishmentDate': punishment.given.strftime("%Y/%m/%d"),
-                    'punishmentDuringLesson': punishment.during_lesson,
-                    'punishmentReasons': punishment.reasons,
-                    'punishmentCircumstances': punishment.circumstances,
-                    'punishmentNature': punishment.nature,
-                    'punishmentDuration': str(punishment.duration),
-                    'punishmentHomework': punishment.homework,
-                    'punishmentExclusion': punishment.exclusion,                    
-                })
+        try: 
+            for period in periods:
+                    for punishment in period.punishments:         
+                            jsondata['punishments'].append({
+                                'pid': period.id,
+                                'periodName': period.name,
+                                'periodStart': period.start.strftime("%Y/%m/%d"),
+                                'periodEnd': period.end.strftime("%Y/%m/%d"),
+                                'punid': punishment.id,
+                                'punishmentDate': punishment.given.strftime("%Y/%m/%d"),
+                                'punishmentDuringLesson': punishment.during_lesson,
+                                'punishmentReasons': punishment.reasons,
+                                'punishmentCircumstances': punishment.circumstances,
+                                'punishmentNature': punishment.nature,
+                                'punishmentDuration': str(punishment.duration),
+                                'punishmentHomework': punishment.homework,
+                                'punishmentExclusion': punishment.exclusion,                    
+                        })
+        except:
+            logging.error("Error getting punishments from pronotepy")
+            
         punishmentList = jsondata
         #print(punishmentList)
         if punishmentList:

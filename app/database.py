@@ -289,6 +289,12 @@ class Database:
 # With the presented attribues, one cannot identify which has the real value/truth
     logging.debug("Delete today & future Lessons to fix mismatches/duplicates that avoid presenting the correct lesson/status")
     self.cur.execute('''DELETE from lessons where lessonDateTime >= date('now')''')        
+
+# delete data from Absences as the corrections do not lead to removal of the old ones
+# With the presented attribues, one cannot identify which has the real value/truth
+    logging.debug("Delete today & future Lessons to fix mismatches/duplicates that avoid presenting the correct lesson/status")
+    self.cur.execute('''DELETE from absences ''')  
+
         
   # Get measures statistics
   def getGradesCount(self):
@@ -480,7 +486,7 @@ class Database:
     studentname=student.studentFullname
     # not collecting all 
     datestart = datetime.date.today().strftime("%Y/%m/%d %H:%M")
-    dateend = datetime.date.today() + relativedelta(days=7)
+    dateend = datetime.date.today() + relativedelta(days=10)
     dateend = dateend.strftime("%Y/%m/%d %H:%M")
     query = f"SELECT * FROM lessons WHERE studentname like '{studentname}' and lessonDateTime between '{datestart}' and '{dateend}' ORDER by lessonDateTime asc, CAST(lessonNum as INTEGER) desc"
     self.cur.execute(query)
@@ -493,8 +499,8 @@ class Database:
    # load punishments
   def _loadPunishmentShortList(self,student):
     studentname=student.studentFullname
-    # punishments have been loaded for all periods but are the same for all periods, extracting last period
-    query = f"SELECT * FROM punishments WHERE studentname like '{studentname}' and period_name like 'Année continue' ORDER by pundate desc"
+    # punishments have been loaded for all periods but are the same for all periods, extracting for current year based on 'now'
+    query = f"SELECT * FROM punishments WHERE studentname like '{studentname}' and period_name like 'Année continue' and (date('now') > substr(period_start,0,5)||'-'||substr(period_start,6,2)||'-'|| substr(period_start,9,2) and date('now') < substr(period_end,0,5)||'-'||substr(period_end,6,2)||'-'|| substr(period_end,9,2)) ORDER by pundate desc"
     self.cur.execute(query)
     queryResult = self.cur.fetchall()
     # Create object Punishment

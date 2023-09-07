@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Work in progress...
 import pycron
 import sys
 import datetime
@@ -32,7 +31,7 @@ import unidecode
 
 
 # pronote2mqtt constants
-P2M_VERSION = '0.4.0'
+P2M_VERSION = '0.6.x'
 P2M_DB_VERSION = '0.2.0'
 
 #######################################################################
@@ -125,42 +124,9 @@ def run(myParams):
 
 #Kick off for Student 1
     logging.info("Student 1-----------------------------------------------------")
-    myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1,myParams.pronoteParent_1,myParams.pronoteFullName_1)
-    if myParams.pronoteGradesAverages_1:
-        for myAverage in myPronote.averageList:
-            myAverage.store(myDb)
-        for myGrade in myPronote.gradeList:
-            myGrade.store(myDb)
- 
-    for myPeriod in myPronote.periodList:
-        myPeriod.store(myDb)
-    
-    if not myParams.pronoteGradesAverages_1:    
-        for myEval in myPronote.evalList:
-            myEval.store(myDb)
-
-    for myLesson in myPronote.lessonList:
-        myLesson.store(myDb)
-
-    for myHomework in myPronote.homeworkList:
-        myHomework.store(myDb)
-
-    for myStudent in myPronote.studentList:
-        myStudent.store(myDb)
-        
-    for myAbsence in myPronote.absenceList:
-        myAbsence.store(myDb)
-        
-    for myPunishment in myPronote.punishmentList:
-        myPunishment.store(myDb)    
-    
-    myDb.commit()
-
-#Kick off for Student 2
-    if myParams.pronoteUsername_2:
-        logging.info("Student 2-----------------------------------------------------")
-        myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2,myParams.pronoteParent_2,myParams.pronoteFullName_2)
-        if myParams.pronoteGradesAverages_2:
+    try:
+        myPronote.getData(myParams.pronotePrefixUrl_1,myParams.pronoteUsername_1,myParams.pronotePassword_1,myParams.pronoteCas_1,myParams.pronoteGradesAverages_1,myParams.pronoteParent_1,myParams.pronoteFullName_1)
+        if myParams.pronoteGradesAverages_1:
             for myAverage in myPronote.averageList:
                 myAverage.store(myDb)
             for myGrade in myPronote.gradeList:
@@ -169,7 +135,7 @@ def run(myParams):
         for myPeriod in myPronote.periodList:
             myPeriod.store(myDb)
         
-        if not myParams.pronoteGradesAverages_2:    
+        if not myParams.pronoteGradesAverages_1:    
             for myEval in myPronote.evalList:
                 myEval.store(myDb)
 
@@ -178,17 +144,56 @@ def run(myParams):
 
         for myHomework in myPronote.homeworkList:
             myHomework.store(myDb)
-            
+
         for myStudent in myPronote.studentList:
             myStudent.store(myDb)
             
         for myAbsence in myPronote.absenceList:
             myAbsence.store(myDb)
-
+            
         for myPunishment in myPronote.punishmentList:
-            myPunishment.store(myDb)              
+            myPunishment.store(myDb)    
         
         myDb.commit()
+    except: 
+        logging.error("Unable to properly connect for Student 1")
+
+#Kick off for Student 2
+    if myParams.pronoteUsername_2:
+        logging.info("Student 2-----------------------------------------------------")
+        try:
+            myPronote.getData(myParams.pronotePrefixUrl_2,myParams.pronoteUsername_2,myParams.pronotePassword_2,myParams.pronoteCas_2,myParams.pronoteGradesAverages_2,myParams.pronoteParent_2,myParams.pronoteFullName_2)
+            if myParams.pronoteGradesAverages_2:
+                for myAverage in myPronote.averageList:
+                    myAverage.store(myDb)
+                for myGrade in myPronote.gradeList:
+                    myGrade.store(myDb)
+         
+            for myPeriod in myPronote.periodList:
+                myPeriod.store(myDb)
+            
+            if not myParams.pronoteGradesAverages_2:    
+                for myEval in myPronote.evalList:
+                    myEval.store(myDb)
+
+            for myLesson in myPronote.lessonList:
+                myLesson.store(myDb)
+
+            for myHomework in myPronote.homeworkList:
+                myHomework.store(myDb)
+                
+            for myStudent in myPronote.studentList:
+                myStudent.store(myDb)
+                
+            for myAbsence in myPronote.absenceList:
+                myAbsence.store(myDb)
+
+            for myPunishment in myPronote.punishmentList:
+                myPunishment.store(myDb)              
+            
+            myDb.commit()
+        except: 
+            logging.error("Unable to properly connect for Student 2")
    
     ####################################################################################################################
     # STEP 2 : Connect to MQTT
