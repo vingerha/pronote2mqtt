@@ -5,7 +5,7 @@ Reasoning:
 - the added value of having a database has turned close to 0 for me
 - there are new solutions in place which I also support from the back end https://github.com/delphiki/hass-pronote
 
-## Hence... I will keep this alive till December and without a good reaosn, it will be abandonded..you can post your messages in the Issues
+## Hence... I will keep this alive till December and without a good reason, it will be abandonded..you can post your messages in the Issues
 
 
 
